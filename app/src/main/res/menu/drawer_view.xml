@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+
+    <group android:checkableBehavior="single">
+
+        <item
+
+            android:id="@+id/nav_first_fragment"
+
+            android:icon="@drawable/ic_menu_camera"
+
+            android:title="Ordinazione" />
+
+        <item
+
+            android:id="@+id/nav_second_fragment"
+
+            android:icon="@drawable/ic_menu_gallery"
+
+            android:title="Fattorini" />
+
+        <item
+
+            android:id="@+id/nav_third_fragment"
+
+            android:icon="@drawable/ic_menu_manage"
+
+            android:title="Contatti" />
+
+    </group>
+
+    <group>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Logout" />
+
+    </group>
+
+
+</menu>

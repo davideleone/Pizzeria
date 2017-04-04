@@ -81,7 +81,7 @@
 
                 <TextView
                     android:id="@+id/col_Via"
-                    android:layout_width="150dp"
+                    android:layout_width="200dp"
                     android:layout_height="60dp"
                     android:layout_toEndOf="@id/col_Totale"
                     android:gravity="center"
@@ -108,123 +108,6 @@
                     android:layout_centerVertical="true">
                 </Spinner>
             </RelativeLayout>
-
-            <!--<TableRow
-                android:background="@drawable/table_bottom_style">
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="28-03-2017"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="80dp"
-                    android:text="18:30"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Davide"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Leone"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:text="15.00 €"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Via Zanini 6"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Villafranca"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <ImageButton
-                    android:layout_width="60dp"
-                    android:src="@drawable/mostra"
-                    android:background="@null"/>
-
-                <ImageButton
-                    android:layout_width="60dp"
-                    android:src="@drawable/accetta"
-                    android:background="@null"/>
-
-                <ImageButton
-                    android:layout_width="60dp"
-                    android:src="@drawable/consegna"
-                    android:background="@null"/>
-
-                <ImageButton
-                    android:layout_width="60dp"
-                    android:src="@drawable/elimina"
-                    android:background="@null"/>
-
-            </TableRow>
-
-            <TableRow
-                android:layout_height="80dp"
-                android:layout_width="match_parent"
-                android:gravity="center_vertical"
-                android:background="@drawable/table_bottom_style">
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="28-03-2017"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="75dp"
-                    android:text="18:30"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Davide"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Leone"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="85dp"
-                    android:text="15.00 €"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Via Zanini 6"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-                <TextView
-                    android:layout_width="150dp"
-                    android:text="Villafranca"
-                    android:textSize="25sp"
-                    android:gravity="center"/>
-
-            </TableRow>-->
         </TableLayout>
     </ScrollView>
 
