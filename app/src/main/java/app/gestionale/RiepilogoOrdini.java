@@ -13,6 +13,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,16 +33,26 @@ import java.util.Locale;
 
 public class RiepilogoOrdini extends Fragment {
 
-    private Spinner listadate;
-    private ArrayAdapter<String> listaDate;
     private TableLayout tabellaOrdini;
     private FragmentActivity listener;
     private Bundle bundle;
     private Context context;
-    private String fattorini[]= {"Matteo", "Mirko", "Davide"};
-    private Spinner listafattorini;
-    private ArrayAdapter<String> listaFattorini;
 
+    private Spinner spinnerDate;
+    private ArrayAdapter<String> arrayDate;
+    private String dataRicerca;
+
+    private List<Integer> idOrdini = new ArrayList<Integer>();
+
+    private String fattorini[] = {"Matteo", "Mirko", "Davide"};
+    private Spinner spinnerFattorini;
+    private ArrayAdapter<String> arrayFattorini;
+
+    private List<Integer> idFattorini = new ArrayList<Integer>();
+    private List<String> nomiFattorini = new ArrayList<String>();
+    private List<TableRow> listaRows = new ArrayList<TableRow>();
+    private TextView recyclableTextView;
+    private ImageButton recyclableImageButton;
 
     @Override
     public void onAttach(Context context) {
@@ -67,7 +79,7 @@ public class RiepilogoOrdini extends Fragment {
         super.onCreate(savedInstanceState);
 
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_ordini);
-        listadate = (Spinner) view.findViewById(R.id.date_settimane);
+        spinnerDate = (Spinner) view.findViewById(R.id.date_settimane);
 
         String[] dateSettimana;
         Calendar c = Calendar.getInstance(Locale.ITALY);
@@ -92,35 +104,82 @@ public class RiepilogoOrdini extends Fragment {
 
         dateSettimana[dateSettimana.length - 1] = giorno + "-" + mese + "-" + anno;
 
-        listaDate = new ArrayAdapter<String>(context, R.layout.date_spinner, dateSettimana); //selected item will look like a spinner set from XML
-        listaDate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        listadate.setAdapter(listaDate);
+        arrayDate = new ArrayAdapter<String>(context, R.layout.date_spinner, dateSettimana); //selected item will look like a spinner set from XML
+        arrayDate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        spinnerDate.setAdapter(arrayDate);
+        dataRicerca = Funzioni.formattaData(spinnerDate.getSelectedItem().toString()); // FIRST RUN
+        spinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (!dataRicerca.equals(Funzioni.formattaData(spinnerDate.getSelectedItem().toString()))) {
+                    dataRicerca = Funzioni.formattaData(spinnerDate.getSelectedItem().toString());
+                    aggiornaTabella();
+                }
             }
-        });*/
 
-        listafattorini = new Spinner(context);
-        listaFattorini = new ArrayAdapter<String>(context, R.layout.fattorini_spinner, fattorini); //selected item will look like a spinner set from XML
-        listaFattorini.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        listafattorini.setAdapter(listaFattorini);
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                return;
+            }
+        });
 
-        caricaOrdini(listadate.getSelectedItem().toString());
+        spinnerFattorini = new Spinner(context);
+
+        caricaOrdini();
+        aggiornaFattorini();
         return view;
     }
 
-    public void caricaOrdini(String data) {
-        List<HashMap<String, Object>> risultatoQuery2;
-        risultatoQuery2 = DBmanager.selectQuery(EnumQuery.MONITORA_ORDINE.getValore(), data);
-        Iterator<HashMap<String, Object>> itr2 = risultatoQuery2.iterator();
+    private void aggiornaTabella() {
+        // DELETE OLD
+        for (TableRow k : listaRows) tabellaOrdini.removeView(k);
+        listaRows.clear();
+
+        // UPDATE
+        caricaOrdini();
+    }
+
+    private void aggiornaFattorini() {
+        // DELETE OLD
+        nomiFattorini.clear();
+        idFattorini.clear();
+
+        // UPDATE
+        List<HashMap<String, Object>> risultatoQuery;
+        risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_ELENCO_FATTORINI.getValore());
+        Iterator<HashMap<String, Object>> itr2 = risultatoQuery.iterator();
         if (itr2.hasNext()) {
             while (itr2.hasNext()) {
                 HashMap<String, Object> riga = itr2.next();
+                final Integer idFatt = Integer.parseInt(riga.get("idfattorino").toString());
+                final String nomeFatt = riga.get("nomecompleto").toString();
+                nomiFattorini.add(nomeFatt);
+                idFattorini.add(idFatt);
+            }
+        }
+
+        // UPDATE SPINNER
+        String[] arrayFatt = new String[nomiFattorini.size()];
+        arrayFatt = nomiFattorini.toArray(arrayFatt);
+
+        arrayFattorini = new ArrayAdapter<String>(context, R.layout.fattorini_spinner, arrayFatt);
+        arrayFattorini.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFattorini.setAdapter(arrayFattorini);
+
+    }
+
+    private int getFattorinoSelezionato() {
+        return idFattorini.get(spinnerFattorini.getSelectedItemPosition());
+    }
+
+    public void caricaOrdini() {
+        List<HashMap<String, Object>> risultatoQuery;
+        risultatoQuery = DBmanager.selectQuery(EnumQuery.MONITORA_ORDINE.getValore(), dataRicerca);
+        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
+        if (itr.hasNext()) {
+            while (itr.hasNext()) {
+                HashMap<String, Object> riga = itr.next();
                 final String cognome = riga.get("cognome").toString();
                 final String idOrdine = riga.get("id").toString();
                 final String stato = riga.get("tipo").toString();
@@ -144,7 +203,6 @@ public class RiepilogoOrdini extends Fragment {
                 ImageButton btnConsegna = makeTableRowWithImageButton(R.drawable.consegna);
                 ImageButton btnElimina = makeTableRowWithImageButton(R.drawable.elimina);
 
-
                 btnConsegna.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -153,22 +211,27 @@ public class RiepilogoOrdini extends Fragment {
                         RelativeLayout.LayoutParams spinnerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         spinnerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                         spinnerParams.addRule(RelativeLayout.CENTER_VERTICAL);
-                        listafattorini.setLayoutParams(spinnerParams);
-                        layoutDialog.addView(listafattorini);
+                        spinnerFattorini.setLayoutParams(spinnerParams);
+                        if (spinnerFattorini.getParent() != null)
+                            ((ViewGroup) spinnerFattorini.getParent()).removeView(spinnerFattorini);
+                        layoutDialog.addView(spinnerFattorini);
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(context);
                         builder.setTitle("Scelta Fattorino");
                         builder.setView(layoutDialog);
                         builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-
+                                DBmanager.updateQuery(EnumQuery.ASSEGNA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
+                                DBmanager.updateQuery(EnumQuery.MANDA_IN_CONSEGNA.getValore(), false, idOrdine);
+                                Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
+                                aggiornaTabella();
                             }
                         });
                         builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
                         builder.create().show();
                     }
                 });
@@ -186,15 +249,14 @@ public class RiepilogoOrdini extends Fragment {
                     public void onClick(View v) {
                         new AlertDialog.Builder(context)
                                 .setTitle("Elimina ordine")
-                                .setMessage("Sei sicuro di voler eliminare l'ordine di "+cognome+"?")
+                                .setMessage("Sei sicuro di voler eliminare l'ordine di " + cognome + "?")
                                 .setPositiveButton("Si, elimina", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE0.getValore(), false, idOrdine);
                                         DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE1.getValore(), false, idOrdine);
                                         DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE2.getValore(), false, idOrdine);
                                         DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE3.getValore(), false, idOrdine);
-                                        tabellaOrdini.removeAllViews();
-                                        caricaOrdini(listadate.getSelectedItem().toString());
+                                        aggiornaTabella();
                                         Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
                                     }
                                 })
@@ -203,7 +265,7 @@ public class RiepilogoOrdini extends Fragment {
                                         dialog.cancel();
                                     }
                                 })
-                                .setIcon(R.drawable.logo)
+                                //.setIcon(R.drawable.logo)
                                 .show();
 
                     }
@@ -221,13 +283,13 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(btnConsegna);
                 row.addView(btnElimina);
 
+                listaRows.add(row);
                 tabellaOrdini.addView(row);
             }
-        } else Toast.makeText(context, "Nessun nuovo ordine", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, "Nessun nuovo ordine", Toast.LENGTH_SHORT).show();
+        }
     }
-
-    private TextView recyclableTextView;
-    private ImageButton recyclableImageButton;
 
     private TextView makeTableRowWithText(String text, int resource) {
         recyclableTextView = new TextView(context);
@@ -245,6 +307,5 @@ public class RiepilogoOrdini extends Fragment {
         recyclableImageButton.setBackgroundColor(Color.TRANSPARENT);
         return recyclableImageButton;
     }
-
 
 }

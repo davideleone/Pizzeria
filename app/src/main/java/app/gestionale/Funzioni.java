@@ -1,7 +1,9 @@
 package app.gestionale;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public class Funzioni {
@@ -32,5 +34,14 @@ public class Funzioni {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public static String formattaData(String ts) {
+        return (ts.isEmpty() ? "" : ts.split("-")[2] + "-" + ts.split("-")[1] + "-" + ts.split("-")[0]);
+    }
+
+    public static String formattaData(Timestamp ts) {
+        String dataStr = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date(ts.getTime()));
+        return dataStr;
     }
 }

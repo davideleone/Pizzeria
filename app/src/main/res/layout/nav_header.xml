@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="192dp"
-    xmlns:facebook="http://schemas.android.com/tools"
     android:background="@color/colorPrimary"
-    android:paddingTop="16dp"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark"
+    android:gravity="center"
     android:orientation="horizontal"
-    android:gravity="center">
-
-    <ImageView
-         android:id="@+id/logo"
-         android:src="@drawable/logo"
-         android:layout_width="150dp"
-         android:layout_height="150dp"
-         android:layout_alignParentTop="true"
-         android:layout_alignParentStart="true" />
-
+    android:paddingTop="16dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+    <!--
+        <ImageView
+             android:id="@+id/logo"
+             android:src="@drawable/logo"
+             android:layout_width="150dp"
+             android:layout_height="150dp"
+             android:layout_alignParentTop="true"
+             android:layout_alignParentStart="true" />
+    -->
 </RelativeLayout>
