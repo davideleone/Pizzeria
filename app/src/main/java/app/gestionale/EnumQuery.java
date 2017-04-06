@@ -12,6 +12,7 @@ public enum EnumQuery {
     ACCETTA_ORDINE("UPDATE ordine SET tipo = '2' where id = ?"),
     MANDA_IN_CONSEGNA("UPDATE ordine SET tipo = '3' where id = ?"),
     ASSEGNA_FATTORINO("INSERT INTO consegna VALUES (?, ?);"),
+    CAMBIA_FATTORINO("UPDATE consegna SET fattorino = ? WHERE ordine = ?;"),
     MODIFICA_ORARIO("UPDATE ordine SET oraconsegna = ?::time without time zone where id = ?"),
     COUNT_ORDINI("select count(id) as nordini from ordine where dataconsegna = ?::date and oraconsegna = ?::time without time zone"),
     GET_CLIENTE("SELECT C.id, C.nome, C.cognome, C.prefisso, C.telefono from cliente c join crea cc on c.id = cc.idcliente where cc.idordine = ?"),

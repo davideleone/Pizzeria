@@ -32,10 +32,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class RiepilogoOrdini extends Fragment {
 
     private TableLayout tabellaOrdini;
+    private TableLayout tabellaAssegnati;
+
     private FragmentActivity listener;
     private Bundle bundle;
     private Context context;
@@ -49,7 +52,9 @@ public class RiepilogoOrdini extends Fragment {
 
     private List<Integer> idFattorini = new ArrayList<Integer>();
     private List<String> nomiFattorini = new ArrayList<String>();
-    private List<TableRow> listaRows = new ArrayList<TableRow>();
+
+    private Map<TableRow, TableLayout> mappaRows = new HashMap<TableRow, TableLayout>();
+
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
 
@@ -78,6 +83,8 @@ public class RiepilogoOrdini extends Fragment {
         super.onCreate(savedInstanceState);
 
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_ordini);
+        tabellaAssegnati = (TableLayout) view.findViewById(R.id.tabella_ordini_assegnati);
+
         spinnerDate = (Spinner) view.findViewById(R.id.date_settimane);
 
         String[] dateSettimana;
@@ -145,8 +152,8 @@ public class RiepilogoOrdini extends Fragment {
 
     private void aggiornaTabella() {
         // DELETE OLD
-        for (TableRow k : listaRows) tabellaOrdini.removeView(k);
-        listaRows.clear();
+        for (Map.Entry<TableRow, TableLayout> entry  : mappaRows.entrySet()) (entry.getValue()).removeView(entry.getKey());
+        mappaRows.clear();
 
         // UPDATE
         caricaOrdini();
@@ -194,7 +201,7 @@ public class RiepilogoOrdini extends Fragment {
                 HashMap<String, Object> riga = itr.next();
                 final String cognome = riga.get("cognome").toString();
                 final String idOrdine = riga.get("id").toString();
-                final String stato = riga.get("tipo").toString();
+                final int stato = Integer.parseInt(riga.get("tipo").toString());
                 final String consegna = riga.get("consegna").toString();
                 final String totale = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("totale").toString())) + " \u20ac";
                 final String social = riga.get("social").toString();
@@ -233,9 +240,14 @@ public class RiepilogoOrdini extends Fragment {
                         builder.setView(layoutDialog);
                         builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                DBmanager.updateQuery(EnumQuery.ASSEGNA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
-                                DBmanager.updateQuery(EnumQuery.MANDA_IN_CONSEGNA.getValore(), false, idOrdine);
-                                Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
+                                if(stato != 3){
+                                    DBmanager.updateQuery(EnumQuery.ASSEGNA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
+                                    DBmanager.updateQuery(EnumQuery.MANDA_IN_CONSEGNA.getValore(), false, idOrdine);
+                                    Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    DBmanager.updateQuery(EnumQuery.CAMBIA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
+                                    Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
+                                }
                                 aggiornaTabella();
                             }
                         });
@@ -295,8 +307,8 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(btnConsegna);
                 row.addView(btnElimina);
 
-                listaRows.add(row);
-                tabellaOrdini.addView(row);
+                mappaRows.put(row,((stato != 3) ? tabellaOrdini : tabellaAssegnati));
+                ((stato != 3) ? tabellaOrdini : tabellaAssegnati).addView(row);
             }
         } else {
             Toast.makeText(context, "Nessun nuovo ordine", Toast.LENGTH_SHORT).show();

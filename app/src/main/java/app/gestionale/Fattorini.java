@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -45,6 +47,7 @@ public class Fattorini extends Fragment {
 
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
+    private String m_Text = "";
 
     @Override
     public void onAttach(Context context) {
@@ -75,36 +78,44 @@ public class Fattorini extends Fragment {
 
         caricaOrdini();
      //   aggiornaFattorini();
-/**
+
         FloatingActionButton btn_add = (FloatingActionButton) view.findViewById(R.id.btn_Aggiungi);
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Scelta Fattorino");
-                builder.setView(layoutDialog);
-                builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
+            public void onClick(View view) {/**
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("Title");
+                // I'm using fragment here so I'm using getView() to provide ViewGroup
+                // but you can provide here any other instance of ViewGroup from your Fragment / Activity
+                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.text_inpu_password, (ViewGroup) getView(), false);
+                // Set up the input
+                final EditText input = (EditText) viewInflated.findViewById(R.id.input);
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                builder.setView(viewInflated);
+
+                // Set up the buttons
+                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        DBmanager.updateQuery(EnumQuery.ASSEGNA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
-                        DBmanager.updateQuery(EnumQuery.MANDA_IN_CONSEGNA.getValore(), false, idOrdine);
-                        Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
-                        aggiornaTabella();
+                        dialog.dismiss();
+                        m_Text = input.getText().toString();
                     }
                 });
-                builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 });
-                builder.create().show();
+
+                builder.show();*/
             }
-        });*/
+        });
 
         return view;
     }
 
     public void caricaOrdini() {
-        System.out.println("DATA = " + Funzioni.getCurrentDate());
         List<HashMap<String, Object>> risultatoQuery;
         risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_TOTALE_FATTORINI.getValore(), Funzioni.getCurrentDate());
         Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
