@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/layoutCaricamento"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="350dp"
         android:gravity="center"
         android:visibility="gone">
 
@@ -64,8 +64,7 @@
         <RelativeLayout
             android:id="@+id/parteBibite"
             android:layout_width="578dp"
-            android:layout_height="300dp"
-            android:gravity="center_horizontal">
+            android:layout_height="300dp">
 
             <Button
                 android:id="@+id/coca_latt"
@@ -84,6 +83,24 @@
                 android:minWidth="150dp"
                 android:text="Fanta" />
 
+            <Button
+                android:id="@+id/the_pesca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fanta"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="The Pesca" />
+
+            <Button
+                android:id="@+id/the_limone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/the_pesca"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="The Limone" />
+
         </RelativeLayout>
 
     </ScrollView>
@@ -95,16 +112,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:layout_marginTop="30dp"
-        android:background="@color/colorPrimary" />
-
-    <View
-        android:id="@+id/viewH"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="30dp"
-        android:layout_marginStart="30dp"
         android:background="@color/colorPrimary" />
 
 
