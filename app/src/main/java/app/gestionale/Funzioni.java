@@ -3,7 +3,9 @@ package app.gestionale;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class Funzioni {
@@ -43,5 +45,9 @@ public class Funzioni {
     public static String formattaData(Timestamp ts) {
         String dataStr = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date(ts.getTime()));
         return dataStr;
+    }
+
+    public static String getCurrentDate() {
+        return new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance(Locale.ITALY).getTime());
     }
 }

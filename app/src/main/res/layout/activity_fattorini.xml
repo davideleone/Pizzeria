@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:gravity="center"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".Fattorini">
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp">
+
+        <TableLayout
+            android:id="@+id/tabella_fattorini"
+            android:layout_width="1229dp"
+            android:layout_height="633dp"
+            android:background="#FDB55D">
+
+            <RelativeLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#EF634D">
+
+                <TextView
+                    android:id="@+id/col_Nome"
+                    android:layout_width="450dp"
+                    android:layout_height="60dp"
+                    android:gravity="center"
+                    android:text="Nome fattorino"
+                    android:textColor="#ffffff"
+                    android:textSize="25sp" />
+
+                <TextView
+                    android:id="@+id/col_Totale"
+                    android:layout_width="450dp"
+                    android:layout_height="60dp"
+                    android:layout_toEndOf="@id/col_Nome"
+                    android:gravity="center"
+                    android:text="Importo totale"
+                    android:textColor="#ffffff"
+                    android:textSize="25sp" />
+
+                <TextView
+                    android:id="@+id/col_Azioni"
+                    android:layout_width="250dp"
+                    android:layout_height="60dp"
+                    android:layout_toEndOf="@id/col_Totale"
+                    android:gravity="center"
+                    android:text="Azioni"
+                    android:textColor="#ffffff"
+                    android:textSize="25sp" />
+
+            </RelativeLayout>
+        </TableLayout>
+    </ScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btn_Aggiungi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/plus" />
+</RelativeLayout>

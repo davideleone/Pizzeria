@@ -103,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_first_fragment:
                 fragmentClass = RiepilogoOrdini.class;
                 break;
-            /*case R.id.nav_second_fragment:
-                //fragmentClass = MonitoraOrdine.class;
-                break;
+            case R.id.nav_second_fragment:
+                fragmentClass = Fattorini.class;
+                break;/**
             case R.id.nav_third_fragment:
                 //fragmentClass = Contatti.class;
                 break;

@@ -43,7 +43,13 @@ public enum EnumQuery {
     ADD_TOTALE_PIZZA_CON_EXTRA("UPDATE contiene SET prezzoprodotto = prezzoprodotto + (SELECT E.prezzo FROM Extra E JOIN Contiene C ON C.id_colonna = E.idcolonnaextra WHERE C.id_colonna = ? AND E.tipo = '1' AND E.idextra = (SELECT MAX(idextra) FROM Extra)) WHERE id_colonna = ? returning prezzoprodotto"),
     REMOVE_TOTALE_PIZZA_CON_EXTRA("UPDATE contiene SET prezzoprodotto = prezzoprodotto - (SELECT E.prezzo FROM Extra E JOIN Contiene C ON C.id_colonna = E.idcolonnaextra WHERE C.id_colonna = ? AND E.nomeextra = ? AND E.idextra = (SELECT MAX(idextra) FROM Extra)) WHERE id_colonna = ?"),
     GET_FATTURATO("select sum(totale) from ordine where dataconsegna > '2017-03-01' and dataconsegna < '2017-03-31'"),
-    GET_ELENCO_FATTORINI("SELECT idfattorino, nome || ' ' || cognome AS nomecompleto FROM fattorino;");
+    GET_ELENCO_FATTORINI("SELECT idfattorino, nome || ' ' || cognome AS nomecompleto FROM fattorino;"),
+    GET_TOTALE_FATTORINI("SELECT SUM(O.totale) AS prezzotot, F.nome || ' ' || F.cognome AS nomefatt\n" +
+            "FROM fattorino AS F\n" +
+            "INNER JOIN consegna AS C ON C.fattorino = F.idfattorino\n" +
+            "INNER JOIN ordine AS O ON O.id = C.ordine\n" +
+            "WHERE O.dataconsegna = ?::date\n" +
+            "GROUP BY nomeFatt;");
     private String qVal;
 
     private EnumQuery(String qVal) {
