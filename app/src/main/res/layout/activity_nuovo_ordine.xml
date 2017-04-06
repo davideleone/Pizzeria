@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/layoutCaricamento"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/caricamento"
+            android:layout_width="645dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/caricamento"
+            android:layout_centerHorizontal="true"
+            android:text="Un attimo di pazienza..."
+            android:textColor="@color/colorPrimary" />
+
+    </RelativeLayout>
+
+    <ScrollView
+
+        android:layout_width="500dp"
+        android:layout_height="300dp"
+        android:layout_alignEnd="@+id/view"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp">
+
+        <RelativeLayout
+            android:id="@+id/parteBottoni"
+            android:layout_width="578dp"
+            android:layout_height="300dp"
+            android:gravity="center_horizontal">
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <ScrollView
+
+        android:layout_width="600dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_toEndOf="@id/view">
+
+        <RelativeLayout
+            android:id="@+id/parteBibite"
+            android:layout_width="578dp"
+            android:layout_height="300dp"
+            android:gravity="center_horizontal">
+
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="2dp"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/colorPrimary" />
+
+    <View
+        android:id="@+id/viewH"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:background="@color/colorPrimary" />
+
+
+</RelativeLayout>
