@@ -46,6 +46,7 @@
             android:gravity="center_horizontal">
 
 
+
         </RelativeLayout>
 
     </ScrollView>
@@ -66,6 +67,22 @@
             android:layout_height="300dp"
             android:gravity="center_horizontal">
 
+            <Button
+                android:id="@+id/coca_latt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Coca (0.33)" />
+
+            <Button
+                android:id="@+id/fanta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/coca_latt"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Fanta" />
 
         </RelativeLayout>
 
