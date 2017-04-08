@@ -6,17 +6,25 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 public class Loading extends AsyncTask<Void, Integer, Void> {
 
     ProgressDialog dialog;
     ProgressBar bar;
     Context context;
+    RelativeLayout layoutPizze;
 
 
     Loading(ProgressBar bar, Context context) {
         this.bar = bar;
         this.context = context;
+    }
+
+    Loading(ProgressBar bar, Context context, RelativeLayout layoutPizze) {
+        this.bar = bar;
+        this.context = context;
+        this.layoutPizze = layoutPizze;
     }
 
     @Override
