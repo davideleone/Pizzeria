@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Gestionale.iml" filepath="$PROJECT_DIR$/Gestionale.iml" />
       <module fileurl="file://$PROJECT_DIR$/Pizzeria.iml" filepath="$PROJECT_DIR$/Pizzeria.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/postgresql-9.4.1212.jre6/postgresql-9.4.1212.jre6.iml" filepath="$PROJECT_DIR$/postgresql-9.4.1212.jre6/postgresql-9.4.1212.jre6.iml" />

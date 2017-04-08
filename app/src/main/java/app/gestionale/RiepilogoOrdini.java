@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -257,6 +258,70 @@ public class RiepilogoOrdini extends Fragment {
                 btnMostra.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        RelativeLayout layoutDettaglio = new RelativeLayout(context);
+
+                        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramsStatoText.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        TextView textStato = new TextView(context);
+                        textStato.setId(View.generateViewId());
+                        textStato.setText("Stato: ");
+                        textStato.setTextAppearance(context, R.style.testo);
+
+                        RelativeLayout.LayoutParams paramsStato = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        paramsStato.addRule(RelativeLayout.END_OF, textStato.getId());
+                        paramsStato.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        ImageView imgStato = new ImageView(context);
+                        imgStato.setId(View.generateViewId());
+                        imgStato.setLayoutParams(paramsStato);
+                        imgStato.setImageResource(R.drawable.giallo);
+
+                        RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        paramsConsegna.addRule(RelativeLayout.BELOW, textStato.getId());
+                        paramsConsegna.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        TextView textConsegna = new TextView(context);
+                        textConsegna.setId(View.generateViewId());
+                        textConsegna.setText("Assegnato a: ");
+                        textConsegna.setTextAppearance(context, R.style.testo);
+                        textConsegna.setLayoutParams(paramsConsegna);
+
+                        RelativeLayout.LayoutParams paramsLinea = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                        paramsLinea.addRule(RelativeLayout.BELOW, textConsegna.getId());
+                        paramsLinea.setMargins(10, 10, 10, 0);
+                        View separator = new View(context);
+                        separator.setBackgroundColor(getResources().getColor(R.color.grigio));
+                        separator.setLayoutParams(paramsLinea);
+
+
+                        layoutDettaglio.addView(textStato);
+                        layoutDettaglio.addView(imgStato);
+                        layoutDettaglio.addView(textConsegna);
+                        layoutDettaglio.addView(separator);
+
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle("Scelta Fattorino");
+                        builder.setView(layoutDettaglio);
+                        builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (stato != 3) {
+                                    DBmanager.updateQuery(EnumQuery.ASSEGNA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
+                                    DBmanager.updateQuery(EnumQuery.MANDA_IN_CONSEGNA.getValore(), false, idOrdine);
+                                    Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    DBmanager.updateQuery(EnumQuery.CAMBIA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
+                                    Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
+                                }
+                                aggiornaTabella();
+                            }
+                        });
+                        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.create().show();
+
                         getPizzeOrdine(idOrdine);
                     }
                 });
