@@ -165,8 +165,7 @@ public class RiepilogoOrdini extends Fragment {
         idFattorini.clear();
 
         // UPDATE
-        List<HashMap<String, Object>> risultatoQuery;
-        risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_ELENCO_FATTORINI.getValore());
+        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_ELENCO_FATTORINI.getValore());
         Iterator<HashMap<String, Object>> itr2 = risultatoQuery.iterator();
         if (itr2.hasNext()) {
             while (itr2.hasNext()) {
@@ -192,9 +191,42 @@ public class RiepilogoOrdini extends Fragment {
         return idFattorini.get(spinnerFattorini.getSelectedItemPosition());
     }
 
-    public void caricaOrdini() {
-        List<HashMap<String, Object>> risultatoQuery;
-        risultatoQuery = DBmanager.selectQuery(EnumQuery.MONITORA_ORDINE.getValore(), dataRicerca);
+    private void getPizzeOrdine(String idOrdine){
+        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_PIZZA_IN_ORDINE.getValore(), idOrdine);
+        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
+        if (itr.hasNext()) {
+            while (itr.hasNext()) {
+                HashMap<String, Object> riga = itr.next();
+                final String nomePizza = riga.get("nomeprodotto").toString();
+                final String prezzoPizza = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("prezzoprodotto").toString())) + " \u20ac";
+                final String idExtra = riga.get("id_colonna").toString();
+                List<String> ingredienti = getIngredientiPizza(idExtra);
+                System.out.println("PIZZA = " + nomePizza);
+                System.out.println("PREZZO = " + prezzoPizza);
+                System.out.println("INGREDIENTI = ");
+                for(String item : ingredienti){
+                    System.out.println(item);
+                }
+                System.out.println("---------------------------");
+            }
+        }
+    }
+
+    private List<String> getIngredientiPizza(String idExtra){
+        List<String> ingredienti = new ArrayList<String>();
+        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_LISTA_INGREDIENTI_ED_EXTRA.getValore(), idExtra, idExtra, idExtra);
+        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
+        if (itr.hasNext()) {
+            while (itr.hasNext()) {
+                HashMap<String, Object> riga = itr.next();
+                ingredienti.add(riga.get("nomeingrediente").toString());
+            }
+        }
+        return ingredienti;
+    }
+
+    private void caricaOrdini() {
+        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.MONITORA_ORDINE.getValore(), dataRicerca);
         Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
         if (itr.hasNext()) {
             while (itr.hasNext()) {
@@ -221,6 +253,13 @@ public class RiepilogoOrdini extends Fragment {
                 ImageButton btnAccetta = makeTableRowWithImageButton(R.drawable.accetta);
                 ImageButton btnConsegna = makeTableRowWithImageButton(R.drawable.consegna);
                 ImageButton btnElimina = makeTableRowWithImageButton(R.drawable.elimina);
+
+                btnMostra.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getPizzeOrdine(idOrdine);
+                    }
+                });
 
                 btnConsegna.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -280,6 +319,9 @@ public class RiepilogoOrdini extends Fragment {
                                         DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE1.getValore(), false, idOrdine);
                                         DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE2.getValore(), false, idOrdine);
                                         DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE3.getValore(), false, idOrdine);
+                                        /** TODO
+                                            AGGIUNGERE SU DB REGOLA -> ON DELETE CASCADE COSI DA AVERE SOLO UN'UNICA QUERY
+                                         */
                                         aggiornaTabella();
                                         Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
                                     }
