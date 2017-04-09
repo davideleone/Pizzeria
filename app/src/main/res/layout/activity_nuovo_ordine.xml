@@ -5,7 +5,18 @@
     android:background="@color/colorPrimaryDark"
     android:orientation="vertical">
 
+
     <RelativeLayout
+        android:id="@+id/partePizze"
+        android:layout_width="578dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_toStartOf="@+id/view">
+
+        <RelativeLayout
         android:id="@+id/layoutCaricamento"
         android:layout_width="wrap_content"
         android:layout_height="350dp"
@@ -28,21 +39,51 @@
 
     </RelativeLayout>
 
-    <ScrollView
 
-        android:layout_width="500dp"
-        android:layout_height="300dp"
-        android:layout_alignEnd="@+id/view"
+        <RelativeLayout
+            android:id="@+id/intestazioniPizze"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:layout_toStartOf="@+id/pizze"
+                android:background="@color/giallo" />
+
+            <TextView
+                android:id="@+id/pizze"
+                style="@style/testoGrande"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Pizze"
+                android:textColor="@color/giallo" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/pizze"
+                android:background="@color/giallo" />
+        </RelativeLayout>
+
+
+        <ScrollView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp">
+            android:layout_below="@id/intestazioniPizze">
 
         <RelativeLayout
             android:id="@+id/parteBottoni"
-            android:layout_width="578dp"
-            android:layout_height="300dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             android:gravity="center_horizontal">
 
 
@@ -51,21 +92,56 @@
 
     </ScrollView>
 
-    <ScrollView
+    </RelativeLayout>
 
-        android:layout_width="600dp"
-        android:layout_height="300dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:layout_toEndOf="@id/view">
 
         <RelativeLayout
             android:id="@+id/parteBibite"
             android:layout_width="578dp"
-            android:layout_height="300dp">
+            android:layout_height="300dp"
+            android:layout_marginBottom="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_toEndOf="@+id/view">
 
+            <RelativeLayout
+                android:id="@+id/intestazioniBibite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="30dp"
+                    android:layout_toStartOf="@+id/bibite"
+                    android:background="@color/giallo" />
+
+                <TextView
+                    android:id="@+id/bibite"
+                    style="@style/testoGrande"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="Bibite"
+                    android:textColor="@color/giallo" />
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="30dp"
+                    android:layout_toEndOf="@+id/bibite"
+                    android:background="@color/giallo" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/intestazioniBibite"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp">
             <Button
                 android:id="@+id/coca_latt"
                 android:layout_width="wrap_content"
@@ -96,23 +172,71 @@
                 android:id="@+id/the_limone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/the_pesca"
+                android:layout_toEndOf="@id/coca_latt"
                 android:minHeight="75dp"
                 android:minWidth="150dp"
                 android:text="The Limone" />
 
-        </RelativeLayout>
+                <Button
+                    android:id="@+id/moretti_33"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/the_limone"
+                    android:layout_toEndOf="@id/coca_latt"
+                    android:minHeight="75dp"
+                    android:minWidth="150dp"
+                    android:text="Moretti (0.33)" />
 
-    </ScrollView>
+                <Button
+                    android:id="@+id/peroni_33"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/moretti_33"
+                    android:layout_toEndOf="@id/coca_latt"
+                    android:minHeight="75dp"
+                    android:minWidth="150dp"
+                    android:text="Peroni (0.33)" />
+
+                <Button
+                    android:id="@+id/moretti_66"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/the_limone"
+                    android:minHeight="75dp"
+                    android:minWidth="150dp"
+                    android:text="Moretti (0.66)" />
+
+                <Button
+                    android:id="@+id/peroni_66"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/moretti_66"
+                    android:layout_toEndOf="@id/the_limone"
+                    android:minHeight="75dp"
+                    android:minWidth="150dp"
+                    android:text="Peroni (0.66)" />
+
+                <Button
+                    android:id="@+id/coca_bott"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/peroni_66"
+                    android:layout_toEndOf="@id/the_limone"
+                    android:minHeight="75dp"
+                    android:minWidth="150dp"
+                    android:text="Coca (1.5)" />
+            </RelativeLayout>
+
+        </RelativeLayout>
 
     <View
         android:id="@+id/view"
-        android:layout_width="2dp"
-        android:layout_height="300dp"
+        android:layout_width="1dp"
+        android:layout_height="310dp"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:layout_marginTop="30dp"
-        android:background="@color/colorPrimary" />
+        android:background="@color/giallo" />
 
 
 </RelativeLayout>

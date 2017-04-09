@@ -55,7 +55,7 @@ public class NuovoOrdine extends Fragment {
         layoutCaricamento = (RelativeLayout) view.findViewById(R.id.layoutCaricamento);
         progressBar = (ProgressBar) view.findViewById(R.id.caricamento);
 
-        new Loading(progressBar, context) {
+        /*new Loading(progressBar, context) {
 
             @Override
             protected void onPreExecute() {
@@ -65,7 +65,12 @@ public class NuovoOrdine extends Fragment {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                impostaBottoni();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        impostaBottoni();
+                    }
+                });
                 return super.doInBackground(voids);
             }
 
@@ -75,7 +80,7 @@ public class NuovoOrdine extends Fragment {
                 layoutBottoni.setVisibility(View.VISIBLE);
 
             }
-        }.execute();
+        }.execute();*/
         impostaBottoni();
 
         return view;
@@ -89,27 +94,26 @@ public class NuovoOrdine extends Fragment {
         if (itr.hasNext()) {
             int countElementi = 0;
             int countRiga = 0;
+            boolean flag = false;
             while (itr.hasNext()) {
                 HashMap<String, Object> riga = itr.next();
                 final String nomePizza = riga.get("nome").toString();
 
                 System.out.println("Elementi : " + layoutBottoni.getChildCount());
 
-                RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                Button btnPizzaUno = nuovoBtn(nomePizza);
-                /*if (layoutBottoni.getChildCount() > 1) layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoni.getChildAt(layoutBottoni.getChildCount()).getId());
-                    if (countElementi > 0) {
-                        btnPizzaUno.setLayoutParams(layoutBtnDx);
-                        if (countElementi > 1) { //nuova riga di bottoni
-                            countElementi = 0;
-                            RelativeLayout.LayoutParams layoutBtnSotto = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            //layoutBtnSotto.addRule(RelativeLayout.BELOW, layoutBottoni.getChildAt(layoutBottoni.getChildCount()).getId());
-                            layoutBtnSotto.setMargins(0, 20, 0, 0);
-                            btnPizzaUno.setLayoutParams(layoutBtnSotto);
-                        }
-                    }*/
-                layoutBottoni.addView(btnPizzaUno);
-                countElementi++;
+                RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                Button btnPizza = nuovoBtn(nomePizza);
+                if (layoutBottoni.getChildCount() > 0)
+                    if (countElementi > 3) {
+                        layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoni.getChildAt(layoutBottoni.getChildCount() - 1).getId());
+                        flag = true;
+                    } else
+                        layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoni.getChildAt(layoutBottoni.getChildCount() - 1).getId());
+
+                btnPizza.setLayoutParams(layoutBtnDx);
+                if (flag) countElementi = 0;
+                else countElementi++;
+                layoutBottoni.addView(btnPizza);
             }
         }
     }
