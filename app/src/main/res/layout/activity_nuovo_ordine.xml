@@ -9,8 +9,7 @@
     <RelativeLayout
         android:id="@+id/partePizze"
         android:layout_width="578dp"
-        android:layout_height="300dp"
-        android:layout_marginBottom="30dp"
+        android:layout_height="375dp"
         android:layout_marginEnd="30dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
@@ -76,8 +75,9 @@
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-            android:layout_below="@id/intestazioniPizze">
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/intestazioniPizze"
+            android:layout_marginBottom="45dp">
 
         <RelativeLayout
             android:id="@+id/parteBottoni"
@@ -232,11 +232,191 @@
     <View
         android:id="@+id/view"
         android:layout_width="1dp"
-        android:layout_height="310dp"
+        android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="30dp"
         android:layout_marginTop="30dp"
         android:background="@color/giallo" />
 
+    <View
+        android:id="@+id/view_orizzontale_sx"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_alignEnd="@id/view"
+        android:layout_below="@id/partePizze"
+        android:layout_marginStart="30dp"
+        android:background="@color/giallo" />
+
+    <View
+        android:id="@+id/view_orizzontale_dx"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_alignStart="@id/view"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="30dp"
+        android:background="@color/giallo" />
+
+
+    <RelativeLayout
+        android:id="@+id/parteGastronomia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@id/partePizze"
+        android:layout_alignStart="@id/partePizze"
+        android:layout_below="@id/view_orizzontale_sx"
+        android:layout_marginTop="30dp">
+
+
+        <RelativeLayout
+            android:id="@+id/intestazioniGastronomia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:layout_toStartOf="@+id/gastronomia"
+                android:background="@color/giallo" />
+
+            <TextView
+                android:id="@+id/gastronomia"
+                style="@style/testoGrande"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Gastronomia"
+                android:textColor="@color/giallo" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/gastronomia"
+                android:background="@color/giallo" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/intestazioniGastronomia"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp">
+
+            <Button
+                android:id="@+id/arancino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Arancino" />
+
+            <Button
+                android:id="@+id/panz_prosciutto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/arancino"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Panz. Prosc." />
+
+            <Button
+                android:id="@+id/panz_no_prosciutto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/panz_prosciutto"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Panz. No Prosc." />
+
+            <Button
+                android:id="@+id/panuozzo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/panz_no_prosciutto"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Panuozzo" />
+
+            <Button
+                android:id="@+id/panuozzo_xxl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/panuozzo"
+                android:layout_toEndOf="@id/arancino"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Panuozzo Xxl" />
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/parteConto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/view_orizzontale_dx"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_toEndOf="@+id/view">
+
+        <RelativeLayout
+            android:id="@+id/intestazioneConto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:layout_toStartOf="@+id/conto"
+                android:background="@color/giallo" />
+
+            <TextView
+                android:id="@+id/conto"
+                style="@style/testoGrande"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="Conto"
+                android:textColor="@color/giallo" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/conto"
+                android:background="@color/giallo" />
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/intestazioneConto"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp">
+
+            <RelativeLayout
+                android:id="@+id/riassuntoOrdine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
+
+
+            </RelativeLayout>
+        </ScrollView>
+
+
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -93,26 +93,32 @@ public class NuovoOrdine extends Fragment {
         Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
         if (itr.hasNext()) {
             int countElementi = 0;
-            int countRiga = 0;
-            boolean flag = false;
             while (itr.hasNext()) {
                 HashMap<String, Object> riga = itr.next();
                 final String nomePizza = riga.get("nome").toString();
 
-                System.out.println("Elementi : " + layoutBottoni.getChildCount());
-
                 RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                Button btnPizza = nuovoBtn(nomePizza);
-                if (layoutBottoni.getChildCount() > 0)
-                    if (countElementi > 3) {
+                Button btnPizza;
+
+                if (nomePizza.equals("PROSCIUTTO E FUNGHI"))
+                    btnPizza = nuovoBtn("PROSC. E FUNGHI");
+                else
+                    btnPizza = nuovoBtn(nomePizza);
+
+                if (layoutBottoni.getChildCount() > 0) {
+                    if (countElementi > 3)
+                        if (countElementi % 4 == 0) {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoni.getChildAt(layoutBottoni.getChildCount() - 3).getId());
+                        } else {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoni.getChildAt(layoutBottoni.getChildCount() - 4).getId());
+                            layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoni.getChildAt(layoutBottoni.getChildCount() - 1).getId());
+                        }
+                    else
                         layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoni.getChildAt(layoutBottoni.getChildCount() - 1).getId());
-                        flag = true;
-                    } else
-                        layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoni.getChildAt(layoutBottoni.getChildCount() - 1).getId());
+                }
 
                 btnPizza.setLayoutParams(layoutBtnDx);
-                if (flag) countElementi = 0;
-                else countElementi++;
+                countElementi++;
                 layoutBottoni.addView(btnPizza);
             }
         }
