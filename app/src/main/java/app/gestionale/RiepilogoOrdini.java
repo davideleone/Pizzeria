@@ -26,7 +26,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -135,7 +134,7 @@ public class RiepilogoOrdini extends Fragment {
         spinnerFattorini = new Spinner(context);
 
         caricaOrdini();
-        aggiornaFattorini();
+        caricaFattorini();
 
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -161,19 +160,28 @@ public class RiepilogoOrdini extends Fragment {
         caricaOrdini();
     }
 
-    private void aggiornaFattorini() {
+    private void caricaFattorini(){
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                aggiornaFattorini( output );
+            };
+        }, "GET_ELENCO_FATTORINI", new String[]{}).execute();
+    }
+
+    private void aggiornaFattorini(Object param) {
         // DELETE OLD
         nomiFattorini.clear();
         idFattorini.clear();
 
         // UPDATE
-        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_ELENCO_FATTORINI.getValore());
-        Iterator<HashMap<String, Object>> itr2 = risultatoQuery.iterator();
-        if (itr2.hasNext()) {
-            while (itr2.hasNext()) {
-                HashMap<String, Object> riga = itr2.next();
-                final Integer idFatt = Integer.parseInt(riga.get("idfattorino").toString());
-                final String nomeFatt = riga.get("nomecompleto").toString();
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        if(!lista.isEmpty()){
+            while (itr.hasNext()) {
+                HashMap<String, String> riga = itr.next();
+                final Integer idFatt = Integer.parseInt(riga.get("idfattorino"));
+                final String nomeFatt = riga.get("nomecompleto");
                 nomiFattorini.add(nomeFatt);
                 idFattorini.add(idFatt);
             }
@@ -189,8 +197,8 @@ public class RiepilogoOrdini extends Fragment {
 
     }
 
-    private int getFattorinoSelezionato() {
-        return idFattorini.get(spinnerFattorini.getSelectedItemPosition());
+    private String getFattorinoSelezionato() {
+        return idFattorini.get(spinnerFattorini.getSelectedItemPosition()).toString();
     }
 
     private void getPizzeOrdine(String idOrdine){
@@ -227,30 +235,39 @@ public class RiepilogoOrdini extends Fragment {
         return ingredienti;
     }
 
-    private void caricaOrdini() {
-        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.MONITORA_ORDINE.getValore(), dataRicerca);
-        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
-        if (itr.hasNext()) {
+    private void caricaOrdini(){
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                processaOrdini( output );
+            };
+        }, "MONITORA_ORDINE", new String[]{dataRicerca}).execute();
+    }
+
+    private void processaOrdini(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        if(!lista.isEmpty()){
             while (itr.hasNext()) {
-                HashMap<String, Object> riga = itr.next();
-                final String cognome = riga.get("cognome").toString();
-                final String idOrdine = riga.get("id").toString();
-                final int stato = Integer.parseInt(riga.get("tipo").toString());
-                final String consegna = riga.get("consegna").toString();
-                final String totale = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("totale").toString())) + " \u20ac";
-                final String social = riga.get("social").toString();
-                final String telefono = riga.get("prefisso").toString() + riga.get("telefono").toString();
+                HashMap<String, String> riga = itr.next();
+                final String cognome = riga.get("cognome");
+                final String idOrdine = riga.get("id");
+                final int stato = Integer.parseInt(riga.get("tipo"));
+                final String consegna = riga.get("consegna");
+                final String totale = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("totale"))) + " \u20ac";
+                final String social = riga.get("social");
+                final String telefono = riga.get("prefisso") + riga.get("telefono");
 
                 TableRow row = new TableRow(context);
                 row.setBackgroundResource(R.drawable.table_bottom_style);
 
-                TextView dataOrdine = makeTableRowWithText(riga.get("dataconsegna").toString(), R.dimen.dim_150dp);
-                TextView oraOrdine = makeTableRowWithText(riga.get("oraconsegna").toString().substring(0, 5), R.dimen.dim_80dp);
-                TextView nomeCliente = makeTableRowWithText((riga.get("nome").toString()), R.dimen.dim_150dp);
+                TextView dataOrdine = makeTableRowWithText(riga.get("dataconsegna"), R.dimen.dim_150dp);
+                TextView oraOrdine = makeTableRowWithText(riga.get("oraconsegna").substring(0, 5), R.dimen.dim_80dp);
+                TextView nomeCliente = makeTableRowWithText((riga.get("nome")), R.dimen.dim_150dp);
                 TextView cognomeCliente = makeTableRowWithText(cognome, R.dimen.dim_150dp);
                 TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_100dp);
-                TextView viaOrdine = makeTableRowWithText(riga.get("via").toString(), R.dimen.dim_200dp);
-                TextView cittaOrdine = makeTableRowWithText(riga.get("citta").toString(), R.dimen.dim_150dp);
+                TextView viaOrdine = makeTableRowWithText(riga.get("via"), R.dimen.dim_200dp);
+                TextView cittaOrdine = makeTableRowWithText(riga.get("citta"), R.dimen.dim_150dp);
 
                 ImageButton btnMostra = makeTableRowWithImageButton(R.drawable.mostra);
                 ImageButton btnAccetta = makeTableRowWithImageButton(R.drawable.accetta);
@@ -259,10 +276,8 @@ public class RiepilogoOrdini extends Fragment {
 
                 btnMostra.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-
+                public void onClick(View v) {
                         final RelativeLayout layoutContenitore = new RelativeLayout(context);
-
 
                         RelativeLayout layoutDettaglio = new RelativeLayout(context);
                         layoutDettaglio.setId(View.generateViewId());
@@ -326,30 +341,25 @@ public class RiepilogoOrdini extends Fragment {
 
                         layoutPizze = dettaglioPizze(idOrdine, layoutPizze);
 
-                        /*
-                        //DA SISTEMARE
-                        new Loading(progressBar, context, layoutPizze){
-                            @Override
-                            protected void onPreExecute() {
-                                bar.setVisibility(View.VISIBLE);
-                                layoutPizze.setVisibility(View.GONE);
-                            }
+                        /**
+                         //DA SISTEMARE
+                         new Loading(progressBar, context, layoutPizze){
+                        @Override protected void onPreExecute() {
+                        bar.setVisibility(View.VISIBLE);
+                        layoutPizze.setVisibility(View.GONE);
+                        }
 
-                            @Override
-                            protected void onProgressUpdate(Integer... values) {
-                                layoutPizze = dettaglioPizze(idOrdine, layoutPizze);
-                                super.onProgressUpdate(values);
-                            }
+                        @Override protected void onProgressUpdate(Integer... values) {
+                        layoutPizze = dettaglioPizze(idOrdine, layoutPizze);
+                        super.onProgressUpdate(values);
+                        }
 
-                            @Override
-                            protected void onPostExecute(Void result) {
-                                bar.setVisibility(View.GONE);
-                                layoutPizze.setVisibility(View.VISIBLE);
-                                layoutContenitore.addView(layoutPizze);
-                            }
+                        @Override protected void onPostExecute(Void result) {
+                        bar.setVisibility(View.GONE);
+                        layoutPizze.setVisibility(View.VISIBLE);
+                        layoutContenitore.addView(layoutPizze);
+                        }
                         }.execute();*/
-
-
 
 
                         layoutDettaglio.addView(textStato);
@@ -374,44 +384,57 @@ public class RiepilogoOrdini extends Fragment {
                     @Override
                     public void onClick(View v) {
 
-                        RelativeLayout layoutDialog = new RelativeLayout(context);
-                        RelativeLayout.LayoutParams spinnerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        spinnerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                        spinnerParams.addRule(RelativeLayout.CENTER_VERTICAL);
-                        spinnerFattorini.setLayoutParams(spinnerParams);
-                        if (spinnerFattorini.getParent() != null)
-                            ((ViewGroup) spinnerFattorini.getParent()).removeView(spinnerFattorini);
-                        layoutDialog.addView(spinnerFattorini);
+                    RelativeLayout layoutDialog = new RelativeLayout(context);
+                    RelativeLayout.LayoutParams spinnerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    spinnerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    spinnerParams.addRule(RelativeLayout.CENTER_VERTICAL);
+                    spinnerFattorini.setLayoutParams(spinnerParams);
+                    if (spinnerFattorini.getParent() != null)
+                        ((ViewGroup) spinnerFattorini.getParent()).removeView(spinnerFattorini);
+                    layoutDialog.addView(spinnerFattorini);
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setTitle("Scelta Fattorino");
-                        builder.setView(layoutDialog);
-                        builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                if(stato != 3){
-                                    DBmanager.updateQuery(EnumQuery.ASSEGNA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
-                                    DBmanager.updateQuery(EnumQuery.MANDA_IN_CONSEGNA.getValore(), false, idOrdine);
-                                    Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
-                                }else{
-                                    DBmanager.updateQuery(EnumQuery.CAMBIA_FATTORINO.getValore(), false, getFattorinoSelezionato(), idOrdine);
-                                    Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
-                                }
-                                aggiornaTabella();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Scelta Fattorino");
+                    builder.setView(layoutDialog);
+                    builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (stato != 3) {
+                                new HttpManager.AsyncManager(new AsyncResponse() {
+                                    @Override
+                                    public void processFinish(Object output) {
+                                        new HttpManager.AsyncManager(new AsyncResponse() {
+                                            @Override
+                                            public void processFinish(Object output) {
+                                                Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
+                                                aggiornaTabella();
+                                            };
+                                        }, "MANDA_IN_CONSEGNA", new String[]{idOrdine}).execute();
+                                    };
+                                }, "ASSEGNA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
+                            } else {
+                                new HttpManager.AsyncManager(new AsyncResponse() {
+                                    @Override
+                                    public void processFinish(Object output) {
+                                        Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
+                                        aggiornaTabella();
+                                    };
+                                }, "CAMBIA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
                             }
-                        });
-                        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        builder.create().show();
+                        }
+                    });
+                    builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.create().show();
                     }
                 });
 
                 btnAccetta.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        DBmanager.updateQuery(EnumQuery.ACCETTA_ORDINE.getValore(), false, idOrdine);
+                        HttpManager.execSimple("ACCETTA_ORDINE", idOrdine);
                     }
                 });
 
@@ -419,30 +442,34 @@ public class RiepilogoOrdini extends Fragment {
                 btnElimina.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        new AlertDialog.Builder(context)
-                                .setTitle("Elimina ordine")
-                                .setMessage("Sei sicuro di voler eliminare l'ordine di " + cognome + "?")
-                                .setPositiveButton("Si, elimina", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE0.getValore(), false, idOrdine);
-                                        DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE1.getValore(), false, idOrdine);
-                                        DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE2.getValore(), false, idOrdine);
-                                        DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE3.getValore(), false, idOrdine);
-                                        /** TODO
-                                            AGGIUNGERE SU DB REGOLA -> ON DELETE CASCADE COSI DA AVERE SOLO UN'UNICA QUERY
-                                         */
-                                        aggiornaTabella();
-                                        Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                })
-                                .setIcon(R.drawable.logo)
-                                .show();
-
+                    new AlertDialog.Builder(context)
+                            .setTitle("Elimina ordine")
+                            .setMessage("Sei sicuro di voler eliminare l'ordine di " + cognome + "?")
+                            .setPositiveButton("Si, elimina", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    /** TODO
+                                     AGGIUNGERE SU DB REGOLA -> ON DELETE CASCADE COSI DA AVERE SOLO UN'UNICA QUERY
+                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE0.getValore(), false, idOrdine);
+                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE1.getValore(), false, idOrdine);
+                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE2.getValore(), false, idOrdine);
+                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE3.getValore(), false, idOrdine);
+                                    */
+                                    new HttpManager.AsyncManager(new AsyncResponse() {
+                                        @Override
+                                        public void processFinish(Object output) {
+                                            aggiornaTabella();
+                                            Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
+                                        };
+                                    }, "ELIMINA_ORDINE", new String[]{idOrdine}).execute();
+                                }
+                            })
+                            .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .setIcon(R.drawable.logo)
+                            .show();
                     }
                 });
 
@@ -458,7 +485,7 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(btnConsegna);
                 row.addView(btnElimina);
 
-                mappaRows.put(row,((stato != 3) ? tabellaOrdini : tabellaAssegnati));
+                mappaRows.put(row, ((stato != 3) ? tabellaOrdini : tabellaAssegnati));
                 ((stato != 3) ? tabellaOrdini : tabellaAssegnati).addView(row);
             }
         } else {
