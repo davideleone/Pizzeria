@@ -14,7 +14,15 @@ public class Loading extends AsyncTask<Void, Integer, Void> {
     ProgressBar bar;
     Context context;
     RelativeLayout layoutPizze;
+    RelativeLayout layoutCaricamento;
+    Object output;
 
+
+    Loading(RelativeLayout layoutCaricamento, Context context, Object output) {
+        this.layoutCaricamento = layoutCaricamento;
+        this.context = context;
+        this.output = output;
+    }
 
     Loading(ProgressBar bar, Context context) {
         this.bar = bar;

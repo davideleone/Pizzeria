@@ -6,12 +6,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +31,9 @@ public class NuovoOrdine extends Fragment {
     private ProgressBar progressBar;
     private RelativeLayout layoutCaricamento;
     private Button btnNuovo;
+    private RelativeLayout layoutConto;
+    private TextView recyclableTextView;
+
 
     @Override
     public void onAttach(Context context) {
@@ -54,6 +62,7 @@ public class NuovoOrdine extends Fragment {
         layoutBottoni = (RelativeLayout) view.findViewById(R.id.parteBottoni);
         layoutCaricamento = (RelativeLayout) view.findViewById(R.id.layoutCaricamento);
         progressBar = (ProgressBar) view.findViewById(R.id.caricamento);
+        layoutConto = (RelativeLayout) view.findViewById(R.id.riassuntoOrdine);
 
         /*new Loading(progressBar, context) {
 
@@ -81,21 +90,44 @@ public class NuovoOrdine extends Fragment {
 
             }
         }.execute();*/
-        impostaBottoni();
+
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                creaOrdine(output);
+            }
+
+            ;
+        }, "CREA_ORDINE", new String[]{}).execute();
+
 
         return view;
     }
 
-    private void impostaBottoni() {
+    private void creaOrdine(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        HashMap<String, String> riga = itr.next();
+        final String idOrdine = riga.get("generated_id");
 
-        List<HashMap<String, Object>> risultatoQuery;
-        risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_LISTA_PIZZE.getValore());
-        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
+
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                impostaBottoni(idOrdine, output);
+            }
+        }, "GET_LISTA_PIZZE", new String[]{}).execute();
+    }
+
+    private void impostaBottoni(String idOrdine, Object param) {
+        final String ordine = idOrdine;
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
             int countElementi = 0;
             while (itr.hasNext()) {
-                HashMap<String, Object> riga = itr.next();
-                final String nomePizza = riga.get("nome").toString();
+                HashMap<String, String> riga = itr.next();
+                final String nomePizza = riga.get("nome");
 
                 RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 Button btnPizza;
@@ -120,8 +152,136 @@ public class NuovoOrdine extends Fragment {
                 btnPizza.setLayoutParams(layoutBtnDx);
                 countElementi++;
                 layoutBottoni.addView(btnPizza);
+
+                btnPizza.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new HttpManager.AsyncManager(new AsyncResponse() {
+                            @Override
+                            public void processFinish(Object output) {
+                                Toast.makeText(context, "Pizza Inserita!", Toast.LENGTH_SHORT).show();
+                                creaConto(ordine, output);
+                            }
+
+                            ;
+                        }, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomePizza, ordine}).execute();
+                    }
+                });
+
             }
         }
+    }
+
+    private void creaConto(String idOrdine, Object param) {
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                riempiConto(output);
+            }
+
+            ;
+        }, "GET_PIZZA_IN_ORDINE", new String[]{idOrdine}).execute();
+    }
+
+    private void riempiConto(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        if (itr.hasNext()) {
+            TableLayout tableOrdini = new TableLayout(context);
+            while (itr.hasNext()) {
+                HashMap<String, String> riga = itr.next();
+                final String nomePizza = riga.get("nomeprodotto");
+
+                TableLayout.LayoutParams layoutTabella = new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                tableOrdini.setLayoutParams(layoutTabella);
+
+                TableRow rowPizza = new TableRow(context);
+                TextView txtPizza;
+
+                if (nomePizza.equals("PROSCIUTTO E FUNGHI"))
+                    txtPizza = makeTableRowWithText("PROSC. E FUNGHI");
+                else
+                    txtPizza = makeTableRowWithText(nomePizza);
+
+                rowPizza.addView(txtPizza);
+
+                Button btnModifica = new Button(context);
+                btnModifica.setText("Modifica");
+                rowPizza.addView(btnModifica);
+
+
+                Button btnElimina = new Button(context);
+                btnElimina.setText("Elimina");
+                rowPizza.addView(btnElimina);
+
+                /*RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                paramTolti.addRule(RelativeLayout.BELOW, txtPizza.getId());
+                paramTolti.setMargins(40, 0, 0, 0);
+
+                TextView nomeingredientiTolti = new TextView(context);
+                nomeingredientiTolti.setText("NO ");
+                nomeingredientiTolti.setId(View.generateViewId());
+                nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
+                nomeingredientiTolti.setMaxEms(10);
+                nomeingredientiTolti.setLayoutParams(paramTolti);
+
+                if (!DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_TOLTI.getValore(), idcolonna).isEmpty()) {
+                    Iterator<HashMap<String, Object>> itrTolti = DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_TOLTI.getValore(), idcolonna).iterator();
+                    while (itrTolti.hasNext()) {
+                        HashMap<String, Object> riga2 = itrTolti.next();
+                        if (itrTolti.hasNext()) {
+                            nomeingredientiTolti.setText(nomeingredientiTolti.getText() + riga2.get("nomeextra").toString() + ", ");
+                        } else {
+                            nomeingredientiTolti.setText(nomeingredientiTolti.getText() + riga2.get("nomeextra").toString() + "");
+                        }
+                    }
+                    flag = true;
+                    layoutPizze.addView(nomeingredientiTolti);
+                }
+
+                RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                paramAggiunti.setMargins(40, 0, 0, 0);
+                TextView nomeingredientiAggiunti = new TextView(context);
+
+                paramAggiunti.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
+                if (flag)
+                    paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
+                nomeingredientiAggiunti.setText("PIU' ");
+                nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
+                nomeingredientiAggiunti.setMaxEms(10);
+                nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
+
+                if (!DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_AGGIUNTI.getValore(), idcolonna).isEmpty()) {
+                    Iterator<HashMap<String, Object>> itrAggiunti = DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_AGGIUNTI.getValore(), idcolonna).iterator();
+                    while (itrAggiunti.hasNext()) {
+                        HashMap<String, Object> riga2 = itrAggiunti.next();
+                        if (itrAggiunti.hasNext()) {
+                            nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + riga2.get("nomeextra").toString() + ", ");
+                        } else {
+                            nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + riga2.get("nomeextra").toString() + "");
+                        }
+                    }
+                    layoutPizze.addView(nomeingredientiAggiunti);
+                }*/
+
+
+                tableOrdini.addView(rowPizza);
+
+
+            }
+            layoutConto.addView(tableOrdini);
+        }
+    }
+
+
+    private TextView makeTableRowWithText(String text) {
+        recyclableTextView = new TextView(context);
+        recyclableTextView.setId(View.generateViewId());
+        recyclableTextView.setGravity(Gravity.CENTER);
+        recyclableTextView.setTextColor(getResources().getColor(R.color.giallo));
+        recyclableTextView.setText(text);
+        recyclableTextView.setTextSize(25);
+        return recyclableTextView;
     }
 
     private Button nuovoBtn(String nome) {

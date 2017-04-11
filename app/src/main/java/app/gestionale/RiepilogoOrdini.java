@@ -26,6 +26,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -244,6 +245,7 @@ public class RiepilogoOrdini extends Fragment {
         }, "MONITORA_ORDINE", new String[]{dataRicerca}).execute();
     }
 
+
     private void processaOrdini(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
@@ -334,11 +336,20 @@ public class RiepilogoOrdini extends Fragment {
                         RelativeLayout.LayoutParams paramsCaricamento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                         paramsCaricamento.addRule(RelativeLayout.CENTER_HORIZONTAL, separator.getId());
 
-                        ProgressBar progressBar = new ProgressBar(context);
+                        final ProgressBar progressBar = new ProgressBar(context);
                         progressBar.setIndeterminate(true);
                         progressBar.setVisibility(View.GONE);
                         progressBar.setLayoutParams(paramsCaricamento);
 
+
+                        new Loading(progressBar, context) {
+                            @Override
+                            protected void onPreExecute() {
+                                progressBar.setVisibility(View.VISIBLE);
+                            }
+
+
+                        }.execute();
                         layoutPizze = dettaglioPizze(idOrdine, layoutPizze);
 
                         /**
