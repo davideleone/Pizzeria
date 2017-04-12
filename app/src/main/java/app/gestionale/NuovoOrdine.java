@@ -11,6 +11,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
@@ -21,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +44,8 @@ public class NuovoOrdine extends Fragment {
     private RelativeLayout layoutContoPizze;
     private RelativeLayout layoutContoBibite;
     private RelativeLayout layoutContoGastronomia;
-
+    private ArrayAdapter<String> adapterAggiunte;
+    private AutoCompleteTextView aggiunte;
     private TextView recyclableTextView;
     private TextView totale;
 
@@ -78,6 +84,7 @@ public class NuovoOrdine extends Fragment {
         layoutContoBibite = (RelativeLayout) view.findViewById(R.id.riassuntoOrdineBibite);
         layoutContoGastronomia = (RelativeLayout) view.findViewById(R.id.riassuntoOrdineGastronomia);
         totale = (TextView) view.findViewById(R.id.totaleEuro);
+        aggiunte = new AutoCompleteTextView(context);
 
         /*new Loading(progressBar, context) {
 
@@ -402,7 +409,7 @@ public class NuovoOrdine extends Fragment {
 
 
     private void impostaCheckBox(String nomePizza, Object param) {
-        RelativeLayout layoutIngredienti = new RelativeLayout(context);
+        final RelativeLayout layoutIngredienti = new RelativeLayout(context);
         TableLayout contenitore = new TableLayout(context);
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
@@ -417,6 +424,7 @@ public class NuovoOrdine extends Fragment {
                 HashMap<String, String> riga = itr.next();
                 final String nomeIngrediente = riga.get("nomeingrediente");
                 final String idcolonna = riga.get("id_colonna");
+
                 TableRow row = new TableRow(context);
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
                 row.setLayoutParams(lp);
@@ -434,7 +442,7 @@ public class NuovoOrdine extends Fragment {
                     @Override
                     public void onClick(View v) {
                         if (!selezione.isChecked())
-                            HttpManager.execSimple("AGGIUNGI_EXTRA", null, new String[]{nomeIngrediente, idcolonna, nomeIngrediente, "2"});
+                            HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, idcolonna, nomeIngrediente, "2");
                     }
                 });
 
@@ -455,11 +463,40 @@ public class NuovoOrdine extends Fragment {
                         @Override
                         public void onClick(View v) {
                             if (!selezione2.isChecked())
-                                HttpManager.execSimple("AGGIUNGI_EXTRA", null, new String[]{nomeIngrediente2, idcolonna, nomeIngrediente2, "2"});
+                                HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente2, idcolonna, nomeIngrediente2, "2");
                         }
                     });
                 }
                 contenitore.addView(row);
+
+                aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
+                        HttpManager.execSimple("AGGIUNGI_EXTRA", null, aggiunte.getText().toString(), idcolonna, aggiunte.getText().toString(), "1");
+                        Toast.makeText(context, aggiunte.getText().toString() + " inserito", Toast.LENGTH_SHORT).show();
+
+
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(aggiunte.getWindowToken(), 0);
+
+
+                        RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        layoutSelezione.addRule(RelativeLayout.BELOW, layoutIngredienti.getChildAt(layoutIngredienti.getChildCount() - 1).getId());
+
+                        final CheckBox newIngrediente = new CheckBox(context);
+                        newIngrediente.setLayoutParams(layoutSelezione);
+                        newIngrediente.setId(View.generateViewId());
+                        newIngrediente.setPadding(5, 0, 5, 0);
+                        newIngrediente.setTextSize(25);
+                        newIngrediente.setChecked(true);
+                        newIngrediente.setText(aggiunte.getText().toString());
+
+                        layoutIngredienti.addView(newIngrediente);
+
+
+                        aggiunte.setText("");
+                    }
+                });
             }
             layoutIngredienti.addView(contenitore);
         }
@@ -468,17 +505,44 @@ public class NuovoOrdine extends Fragment {
         paramBarra.setMargins(30, 30, 30, 30);
         paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramBarra.addRule(RelativeLayout.BELOW, contenitore.getId());
+
         View barraMezzo = new View(context);
+        barraMezzo.setId(View.generateViewId());
         barraMezzo.setBackgroundColor(getResources().getColor(R.color.grigio));
         barraMezzo.setLayoutParams(paramBarra);
         layoutIngredienti.addView(barraMezzo);
 
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                riempiAggiunte(output);
+            }
+        }, null, "GET_AGGIUNTE", new String[]{}).execute();
 
+        RelativeLayout.LayoutParams paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+        paramAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
+        paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        paramAggiunte.setMargins(0, 20, 0, 0);
+        aggiunte.setLayoutParams(paramAggiunte);
+        layoutIngredienti.addView(aggiunte);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Dettaglio " + nomePizza);
         builder.setView(layoutIngredienti);
         builder.create().show();
+    }
+
+    private void riempiAggiunte(Object param) {
+        final ArrayList<String> listaAggiunte = new ArrayList<>();
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itrAgg = lista.iterator();
+        while (itrAgg.hasNext()) {
+            HashMap<String, String> riga2 = itrAgg.next();
+            listaAggiunte.add(riga2.get("nomeingrediente"));
+        }
+
+        adapterAggiunte = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listaAggiunte);
+        aggiunte.setAdapter(adapterAggiunte);
     }
 
     private TextView makeTableRowWithText(String text) {
