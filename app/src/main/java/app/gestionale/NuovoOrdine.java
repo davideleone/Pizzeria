@@ -251,14 +251,14 @@ public class NuovoOrdine extends Fragment {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
-            TableLayout tableOrdiniPizza = new TableLayout(context);
+            final TableLayout tableOrdiniPizza = new TableLayout(context);
             TableLayout.LayoutParams layoutTabella = new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             tableOrdiniPizza.setLayoutParams(layoutTabella);
             tableOrdiniPizza.setGravity(Gravity.CENTER_HORIZONTAL);
-            TableLayout tableOrdiniGastronomia = new TableLayout(context);
+            final TableLayout tableOrdiniGastronomia = new TableLayout(context);
             tableOrdiniGastronomia.setLayoutParams(layoutTabella);
             tableOrdiniGastronomia.setGravity(Gravity.CENTER_HORIZONTAL);
-            TableLayout tableOrdiniBibite = new TableLayout(context);
+            final TableLayout tableOrdiniBibite = new TableLayout(context);
             tableOrdiniBibite.setLayoutParams(layoutTabella);
             tableOrdiniBibite.setGravity(Gravity.CENTER_HORIZONTAL);
             float totaleOrdine = 0;
@@ -272,7 +272,7 @@ public class NuovoOrdine extends Fragment {
 
                 totale.setText(new DecimalFormat("#0.00 €").format(totaleOrdine));
 
-                TableRow rowPizza = new TableRow(context);
+                final TableRow rowPizza = new TableRow(context);
                 TextView txtPizza;
 
                 if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
@@ -358,7 +358,7 @@ public class NuovoOrdine extends Fragment {
                     }
                 });
 
-                /*btnElimina.setOnClickListener(new View.OnClickListener() {
+                btnElimina.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, new String[]{idColonna});
@@ -375,7 +375,7 @@ public class NuovoOrdine extends Fragment {
                         }
                         Toast.makeText(context, nomeProdotto+" eliminato!", Toast.LENGTH_SHORT).show();
                     }
-                });*/
+                });
 
                 switch (tipo) {
                     case "Pizza":
