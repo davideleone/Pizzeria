@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -113,7 +114,7 @@ public class NuovoOrdine extends Fragment {
             }
         }.execute();*/
 
-        HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context, new String[]{});
+        HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
 
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
@@ -134,7 +135,6 @@ public class NuovoOrdine extends Fragment {
         HashMap<String, String> riga = itr.next();
         final String idOrdine = riga.get("generated_id");
 
-
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
@@ -143,7 +143,7 @@ public class NuovoOrdine extends Fragment {
         }, null, "GET_LISTA_PRODOTTI", new String[]{}).execute();
     }
 
-    private void impostaBottoni(final String idOrdine, Object param) {
+    private void impostaBottoni(String idOrdine, Object param) {
         final String ordine = idOrdine;
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
@@ -419,33 +419,41 @@ public class NuovoOrdine extends Fragment {
             paramsIngredienti.setMargins(0, 20, 0, 0);
             contenitore.setId(View.generateViewId());
             contenitore.setLayoutParams(paramsIngredienti);
-
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final String nomeIngrediente = riga.get("nomeingrediente");
                 final String idcolonna = riga.get("id_colonna");
 
-                TableRow row = new TableRow(context);
+                TableRow rowTab = new TableRow(context);
                 TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-                row.setLayoutParams(lp);
+                rowTab.setLayoutParams(lp);
 
-                final CheckBox selezione = new CheckBox(context);
+                CheckBox selezione = new CheckBox(context);
                 selezione.setId(View.generateViewId());
                 selezione.setPadding(5, 0, 5, 0);
                 selezione.setTextSize(25);
                 selezione.setChecked(true);
                 selezione.setText(nomeIngrediente);
-                row.addView(selezione);
-
-
-                selezione.setOnClickListener(new View.OnClickListener() {
+                selezione.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View v) {
-                        if (!selezione.isChecked())
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (!isChecked)
                             HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, idcolonna, nomeIngrediente, "2");
                     }
                 });
+                rowTab.addView(selezione);
 
+/**
+                selezione.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+System.out.println("CHECKED = " + selezione.isChecked());
+                        if (!selezione.isChecked())
+
+                    }
+});*/
+
+/**
                 final CheckBox selezione2;
 
                 if (itr.hasNext()) {
@@ -466,8 +474,8 @@ public class NuovoOrdine extends Fragment {
                                 HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente2, idcolonna, nomeIngrediente2, "2");
                         }
                     });
-                }
-                contenitore.addView(row);
+ }*/
+                contenitore.addView(rowTab);
 
                 aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -492,8 +500,6 @@ public class NuovoOrdine extends Fragment {
                         newIngrediente.setText(aggiunte.getText().toString());
 
                         layoutIngredienti.addView(newIngrediente);
-
-
                         aggiunte.setText("");
                     }
                 });

@@ -3,6 +3,7 @@ package app.gestionale;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,7 +115,7 @@ public class HttpManager {
                                 listaRisultati.add(row);
                             }
                         }else{
-                            System.out.println("ERROR = " + jObject.getString("error"));
+                            Log.e("HttpManager", jObject.getString("error"));
                         }
                     }
                 }

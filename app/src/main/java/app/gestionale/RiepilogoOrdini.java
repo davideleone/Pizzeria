@@ -320,6 +320,16 @@ public class RiepilogoOrdini extends Fragment {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle("Scelta Fattorino");
+                        /** TODO
+                         * FARE SCELTA FATTORINI COME UNA LISTA
+                         * https://developer.android.com/images/ui/dialog_list.png
+                         *
+                         .setAdapter(arrayFattorini, new DialogInterface.OnClickListener() {
+                         public void onClick(DialogInterface dialog, int which) {
+                         // The 'which' argument contains the index position
+                         // of the selected item
+                         }
+                         });*/
                     builder.setView(layoutDialog);
                     builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
