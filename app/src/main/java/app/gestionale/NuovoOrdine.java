@@ -18,6 +18,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -191,6 +192,7 @@ public class NuovoOrdine extends Fragment {
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final String nomePizza = riga.get("nomeprodotto");
+                final String prezzoProdotto = new DecimalFormat("#0.00 €").format((double) Float.parseFloat(riga.get("prezzoprodotto")));
 
                 TableLayout.LayoutParams layoutTabella = new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 tableOrdini.setLayoutParams(layoutTabella);
@@ -204,6 +206,10 @@ public class NuovoOrdine extends Fragment {
                     txtPizza = makeTableRowWithText(nomePizza);
 
                 rowPizza.addView(txtPizza);
+
+                TextView txtPrezzo;
+                txtPrezzo = makeTableRowWithText(prezzoProdotto);
+                rowPizza.addView(txtPrezzo);
 
                 Button btnModifica = new Button(context);
                 btnModifica.setText("Modifica");
@@ -279,6 +285,7 @@ public class NuovoOrdine extends Fragment {
         recyclableTextView.setId(View.generateViewId());
         recyclableTextView.setGravity(Gravity.CENTER);
         recyclableTextView.setTextColor(getResources().getColor(R.color.giallo));
+        recyclableTextView.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_150dp));
         recyclableTextView.setText(text);
         recyclableTextView.setTextSize(25);
         return recyclableTextView;
