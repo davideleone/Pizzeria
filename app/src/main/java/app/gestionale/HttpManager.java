@@ -1,5 +1,7 @@
 package app.gestionale;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
@@ -24,11 +26,11 @@ public class HttpManager {
         return s.hasNext() ? s.next() : "";
     }
 
-    public static void execSimple(String query, String... parametri){
+    public static void execSimple(String query, Context context, String... parametri){
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {};
-        }, query, parametri).execute();
+        }, context, query, parametri).execute();
     }
 
     static class AsyncManager extends AsyncTask<String, String, List<HashMap<String, String>>> {
@@ -36,17 +38,21 @@ public class HttpManager {
         private String query;
         private String[] parametri;
         private String strPost;
+        private Context context;
         private List<JSONObject> jsonList = null;
         private List<HashMap<String, String>> listaRisultati;
+        private ProgressDialog progressDialog;
 
-        AsyncManager(AsyncResponse callback, String query, String[] parametri){
+        AsyncManager(AsyncResponse callback, Context context, String query, String[] parametri){
             this.query = query;
             this.parametri = parametri;
             this.delegate = callback;
+            this.context = context;
         }
 
         @Override
         protected void onPreExecute() {
+            if(context != null) progressDialog = ProgressDialog.show(context, "Progress Dialog Title Text","Process Description Text", true);
             listaRisultati = new ArrayList<HashMap<String, String>>();
             strPost = "exec_query=" + query;
             for (int i = 0; i < parametri.length; i++) {
@@ -125,6 +131,7 @@ public class HttpManager {
 
         @Override
         protected void onPostExecute(List<HashMap<String, String>> jsonObjects) {
+            if(progressDialog != null) progressDialog.dismiss();
             delegate.processFinish(listaRisultati);
         }
     }

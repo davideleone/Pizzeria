@@ -99,7 +99,7 @@ public class NuovoOrdine extends Fragment {
             }
 
             ;
-        }, "CREA_ORDINE", new String[]{}).execute();
+        }, null, "CREA_ORDINE", new String[]{}).execute();
 
 
         return view;
@@ -117,7 +117,7 @@ public class NuovoOrdine extends Fragment {
             public void processFinish(Object output) {
                 impostaBottoni(idOrdine, output);
             }
-        }, "GET_LISTA_PIZZE", new String[]{}).execute();
+        }, null, "GET_LISTA_PIZZE", new String[]{}).execute();
     }
 
     private void impostaBottoni(String idOrdine, Object param) {
@@ -165,7 +165,7 @@ public class NuovoOrdine extends Fragment {
                             }
 
                             ;
-                        }, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomePizza, ordine}).execute();
+                        }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomePizza, ordine}).execute();
                     }
                 });
 
@@ -181,7 +181,7 @@ public class NuovoOrdine extends Fragment {
             }
 
             ;
-        }, "GET_PIZZA_IN_ORDINE", new String[]{idOrdine}).execute();
+        }, null, "GET_PIZZA_IN_ORDINE", new String[]{idOrdine}).execute();
     }
 
     private void riempiConto(Object param) {

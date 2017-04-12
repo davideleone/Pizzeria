@@ -167,7 +167,7 @@ public class RiepilogoOrdini extends Fragment {
             public void processFinish(Object output) {
                 aggiornaFattorini( output );
             };
-        }, "GET_ELENCO_FATTORINI", new String[]{}).execute();
+        }, context, "GET_ELENCO_FATTORINI", new String[]{}).execute();
     }
 
     private void aggiornaFattorini(Object param) {
@@ -242,7 +242,7 @@ public class RiepilogoOrdini extends Fragment {
             public void processFinish(Object output) {
                 processaOrdini( output );
             };
-        }, "MONITORA_ORDINE", new String[]{dataRicerca}).execute();
+        }, context, "MONITORA_ORDINE", new String[]{dataRicerca}).execute();
     }
 
 
@@ -419,9 +419,9 @@ public class RiepilogoOrdini extends Fragment {
                                                 Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
                                                 aggiornaTabella();
                                             };
-                                        }, "MANDA_IN_CONSEGNA", new String[]{idOrdine}).execute();
+                                        }, context, "MANDA_IN_CONSEGNA", new String[]{idOrdine}).execute();
                                     };
-                                }, "ASSEGNA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
+                                }, context, "ASSEGNA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
                             } else {
                                 new HttpManager.AsyncManager(new AsyncResponse() {
                                     @Override
@@ -429,7 +429,7 @@ public class RiepilogoOrdini extends Fragment {
                                         Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
                                         aggiornaTabella();
                                     };
-                                }, "CAMBIA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
+                                }, context, "CAMBIA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
                             }
                         }
                     });
@@ -445,7 +445,7 @@ public class RiepilogoOrdini extends Fragment {
                 btnAccetta.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        HttpManager.execSimple("ACCETTA_ORDINE", idOrdine);
+                        HttpManager.execSimple("ACCETTA_ORDINE", context, idOrdine);
                     }
                 });
 
@@ -471,7 +471,7 @@ public class RiepilogoOrdini extends Fragment {
                                             aggiornaTabella();
                                             Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
                                         };
-                                    }, "ELIMINA_ORDINE", new String[]{idOrdine}).execute();
+                                    }, context, "ELIMINA_ORDINE", new String[]{idOrdine}).execute();
                                 }
                             })
                             .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
