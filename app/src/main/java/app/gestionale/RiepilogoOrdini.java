@@ -492,23 +492,24 @@ public class RiepilogoOrdini extends Fragment {
     }
 
     private RelativeLayout dettaglioPizze(SparseArray<List<HashMap<String, String>>> hashPizze, boolean isTolti, RelativeLayout layoutPizze) {
-        for(int i = 0; i < hashPizze.size(); i++) {
+        for (int i = 0; i < hashPizze.size(); i++) {
             boolean baseLayoutCreata = false;
             List<HashMap<String, String>> listaPizza = hashPizze.valueAt(i);
             Iterator<HashMap<String, String>> itrPizza = listaPizza.iterator();
 
             TextView nomeingredientiAggiunti = new TextView(context);
             TextView nomeingredientiTolti = new TextView(context);
-            while(itrPizza.hasNext()) {
+            while (itrPizza.hasNext()) {
                 HashMap<String, String> valorePizza = itrPizza.next();
                 final String nome = valorePizza.get("nomeprodotto");
                 final float prezzo = Float.parseFloat(valorePizza.get("prezzoprodotto"));
                 final int tipoExtra = Integer.parseInt(valorePizza.get("tipo"));
                 final String nomeExtra = valorePizza.get("nomeextra");
 
-                if(!baseLayoutCreata) {
+                if (!baseLayoutCreata) {
                     RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    if (i > 0) paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
+                    if (i > 0)
+                        paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
                     paramsNome.setMargins(30, 30, 0, 0);
 
                     TextView nomePizza = new TextView(context);
@@ -542,7 +543,8 @@ public class RiepilogoOrdini extends Fragment {
 
                     RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     paramAggiunti.addRule(RelativeLayout.BELOW, nomeingredientiTolti.getId());
-                    if (isTolti) paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
+                    if (isTolti)
+                        paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
                     nomeingredientiAggiunti.setText("PIU' ");
                     nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
                     nomeingredientiAggiunti.setMaxEms(20);
@@ -550,7 +552,7 @@ public class RiepilogoOrdini extends Fragment {
                     baseLayoutCreata = true;
                 }
 
-                if(tipoExtra == 1) {
+                if (tipoExtra == 1) {
                     if (itrPizza.hasNext())
                         nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + nomeExtra + ", ");
                     else
@@ -568,95 +570,6 @@ public class RiepilogoOrdini extends Fragment {
         }
         return layoutPizze;
     }
-/**
-        List<HashMap<String, Object>> risultatoQuery2;
-        risultatoQuery2 = DBmanager.selectQuery(EnumQuery.GET_PIZZA_IN_ORDINE.getValore(), idOrdine);
-        Iterator<HashMap<String, Object>> itr2 = risultatoQuery2.iterator();
-        boolean flag = false;
-        int count = 0;
-        while (itr2.hasNext()) {
-            HashMap<String, Object> riga = itr2.next();
-            final String idcolonna = riga.get("id_colonna").toString();
-            final String pizza = riga.get("nomeprodotto").toString();
-            final float prezzo = Float.parseFloat(riga.get("prezzoprodotto").toString());
-
-            RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            if (count > 0)
-                paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
-            paramsNome.setMargins(30, 30, 0, 0);
-            TextView nomePizza = new TextView(context);
-            nomePizza.setText("- " + pizza);
-            nomePizza.setId(View.generateViewId());
-            nomePizza.setTextAppearance(context, R.style.testoGrande);
-            nomePizza.setLayoutParams(paramsNome);
-
-            layoutPizze.addView(nomePizza);
-/*
-            RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            paramsPrezzo.addRule(RelativeLayout.END_OF, nomePizza.getId());
-            paramsPrezzo.setMargins(10,0,0,0);
-            TextView prezzoPizza = new TextView(context);
-            prezzoPizza.setText(""+prezzo);
-            prezzoPizza.setId(View.generateViewId());
-            prezzoPizza.setTextAppearance(context, R.style.testoGrande);
-            prezzoPizza.setLayoutParams(paramsPrezzo);
-
-            layoutPizze.addView(prezzoPizza);*//**
-
-            RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            paramTolti.addRule(RelativeLayout.BELOW, nomePizza.getId());
-            paramTolti.setMargins(40, 0, 0, 0);
-
-            TextView nomeingredientiTolti = new TextView(context);
-            nomeingredientiTolti.setText("NO ");
-            nomeingredientiTolti.setId(View.generateViewId());
-            nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
-            nomeingredientiTolti.setMaxEms(10);
-            nomeingredientiTolti.setLayoutParams(paramTolti);
-
-            if (!DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_TOLTI.getValore(), idcolonna).isEmpty()) {
-                Iterator<HashMap<String, Object>> itrTolti = DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_TOLTI.getValore(), idcolonna).iterator();
-                while (itrTolti.hasNext()) {
-                    HashMap<String, Object> riga2 = itrTolti.next();
-                    if (itrTolti.hasNext()) {
-                        nomeingredientiTolti.setText(nomeingredientiTolti.getText() + riga2.get("nomeextra").toString() + ", ");
-                    } else {
-                        nomeingredientiTolti.setText(nomeingredientiTolti.getText() + riga2.get("nomeextra").toString() + "");
-                    }
-                }
-                flag = true;
-                layoutPizze.addView(nomeingredientiTolti);
-            }
-
-            RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            paramAggiunti.setMargins(40, 0, 0, 0);
-            TextView nomeingredientiAggiunti = new TextView(context);
-
-            paramAggiunti.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
-            if (flag)
-                paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
-            nomeingredientiAggiunti.setText("PIU' ");
-            nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
-            nomeingredientiAggiunti.setMaxEms(10);
-            nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
-
-            if (!DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_AGGIUNTI.getValore(), idcolonna).isEmpty()) {
-                Iterator<HashMap<String, Object>> itrAggiunti = DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_AGGIUNTI.getValore(), idcolonna).iterator();
-                while (itrAggiunti.hasNext()) {
-                    HashMap<String, Object> riga2 = itrAggiunti.next();
-                    if (itrAggiunti.hasNext()) {
-                        nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + riga2.get("nomeextra").toString() + ", ");
-                    } else {
-                        nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + riga2.get("nomeextra").toString() + "");
-                    }
-                }
-                layoutPizze.addView(nomeingredientiAggiunti);
-            }
-            count++;
-        }
-
-        return layoutPizze;
-    }*/
 
     private TextView makeTableRowWithText(String text, int resource) {
         recyclableTextView = new TextView(context);

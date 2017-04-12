@@ -137,95 +137,12 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/layoutBottoniBibite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/intestazioniBibite"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp">
-
-            <Button
-                android:id="@+id/coca_latt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Coca (0.33)" />
-
-            <Button
-                android:id="@+id/fanta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/coca_latt"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Fanta" />
-
-            <Button
-                android:id="@+id/the_pesca"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/fanta"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="The Pesca" />
-
-            <Button
-                android:id="@+id/the_limone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/coca_latt"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="The Limone" />
-
-            <Button
-                android:id="@+id/moretti_33"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/the_limone"
-                android:layout_toEndOf="@id/coca_latt"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Moretti (0.33)" />
-
-            <Button
-                android:id="@+id/peroni_33"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/moretti_33"
-                android:layout_toEndOf="@id/coca_latt"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Peroni (0.33)" />
-
-            <Button
-                android:id="@+id/moretti_66"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/the_limone"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Moretti (0.66)" />
-
-            <Button
-                android:id="@+id/peroni_66"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/moretti_66"
-                android:layout_toEndOf="@id/the_limone"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Peroni (0.66)" />
-
-            <Button
-                android:id="@+id/coca_bott"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/peroni_66"
-                android:layout_toEndOf="@id/the_limone"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Coca (1.5)" />
         </RelativeLayout>
 
     </RelativeLayout>
@@ -301,56 +218,12 @@
 
 
         <RelativeLayout
+            android:id="@+id/layoutBottoniGastronomia"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/intestazioniGastronomia"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="15dp">
-
-            <Button
-                android:id="@+id/arancino"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Arancino" />
-
-            <Button
-                android:id="@+id/panz_prosciutto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/arancino"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Panz. Prosc." />
-
-            <Button
-                android:id="@+id/panz_no_prosciutto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/panz_prosciutto"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Panz. No Prosc." />
-
-            <Button
-                android:id="@+id/panuozzo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/panz_no_prosciutto"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Panuozzo" />
-
-            <Button
-                android:id="@+id/panuozzo_xxl"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/panuozzo"
-                android:layout_toEndOf="@id/arancino"
-                android:minHeight="75dp"
-                android:minWidth="150dp"
-                android:text="Panuozzo Xxl" />
 
 
         </RelativeLayout>
@@ -448,8 +321,36 @@
                 android:layout_marginTop="15dp"
                 android:gravity="center_horizontal">
 
+                <RelativeLayout
+                    android:id="@+id/riassuntoOrdinePizze"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/riassuntoOrdineGastronomia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/riassuntoOrdinePizze"
+                    android:gravity="center_horizontal">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/riassuntoOrdineBibite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/riassuntoOrdineGastronomia"
+                    android:gravity="center_horizontal">
+
+                </RelativeLayout>
+
 
             </RelativeLayout>
+
+
         </ScrollView>
 
 
