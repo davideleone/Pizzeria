@@ -248,17 +248,7 @@
 
     </ScrollView>
 
-
-    <!--<android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/pizza" />-->
-
-    <com.novaapps.floatingactionmenu.FloatingActionMenu
+    <terranovaproductions.newcomicreader.FloatingActionMenu
         android:id="@+id/fab_menu_circle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -272,7 +262,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/pizza"
-            fab:backgroundTint="@color/grigio"
+            fab:backgroundTint="@color/menu_primary"
             fab:fabSize="normal" />
 
         <!-- Other button as menu items-->
@@ -280,8 +270,8 @@
             android:id="@+id/fab_random_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/pizza"
-            fab:backgroundTint="@color/giallo"
+            android:src="@drawable/delete"
+            fab:backgroundTint="@color/menu_primary"
             fab:fabSize="mini" />
 
 
@@ -289,18 +279,18 @@
             android:id="@+id/fab_download_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/pizza"
-            fab:backgroundTint="@color/giallo"
+            android:src="@drawable/info"
+            fab:backgroundTint="@color/menu_primary"
             fab:fabSize="mini" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_browser_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/pizza"
-            fab:backgroundTint="@color/giallo"
+            android:src="@drawable/plus"
+            fab:backgroundTint="@color/menu_primary"
             fab:fabSize="mini" />
 
-    </com.novaapps.floatingactionmenu.FloatingActionMenu>
+    </terranovaproductions.newcomicreader.FloatingActionMenu>
 
 </RelativeLayout>
