@@ -136,7 +136,7 @@ public class NuovoOrdine extends Fragment {
         }, null, "GET_LISTA_PRODOTTI", new String[]{}).execute();
     }
 
-    private void impostaBottoni(String idOrdine, Object param) {
+    private void impostaBottoni(final String idOrdine, Object param) {
         final String ordine = idOrdine;
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
@@ -264,6 +264,7 @@ public class NuovoOrdine extends Fragment {
             float totaleOrdine = 0;
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
+                final String idColonna = riga.get("id_colonna");
                 final String tipo = riga.get("tipo");
                 final String nomeProdotto = riga.get("nomeprodotto");
                 totaleOrdine += Float.parseFloat(riga.get("prezzoprodotto"));
@@ -348,7 +349,6 @@ public class NuovoOrdine extends Fragment {
                 btnModifica.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
                             public void processFinish(Object output) {
@@ -357,6 +357,25 @@ public class NuovoOrdine extends Fragment {
                         }, null, "GET_LISTA_INGREDIENTI", new String[]{nomeProdotto}).execute();
                     }
                 });
+
+                /*btnElimina.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, new String[]{idColonna});
+                        switch (tipo) {
+                            case "Pizza":
+                                tableOrdiniPizza.removeView(rowPizza);
+                                break;
+                            case "Bibita":
+                                tableOrdiniBibite.removeView(rowPizza);
+                                break;
+                            case "Gastronomia":
+                                tableOrdiniGastronomia.removeView(rowPizza);
+                                break;
+                        }
+                        Toast.makeText(context, nomeProdotto+" eliminato!", Toast.LENGTH_SHORT).show();
+                    }
+                });*/
 
                 switch (tipo) {
                     case "Pizza":
@@ -369,8 +388,6 @@ public class NuovoOrdine extends Fragment {
                         tableOrdiniGastronomia.addView(rowPizza);
                         break;
                 }
-
-
             }
             layoutContoPizze.addView(tableOrdiniPizza);
             if (tableOrdiniPizza.getChildCount() > 0)
@@ -414,7 +431,6 @@ public class NuovoOrdine extends Fragment {
 
 
                 selezione.setOnClickListener(new View.OnClickListener() {
-
                     @Override
                     public void onClick(View v) {
                         if (!selezione.isChecked())

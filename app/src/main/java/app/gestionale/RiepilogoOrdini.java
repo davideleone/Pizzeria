@@ -3,7 +3,6 @@ package app.gestionale;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -35,6 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import terranovaproductions.newcomicreader.FloatingActionMenu;
 
 public class RiepilogoOrdini extends Fragment {
 
@@ -137,7 +138,7 @@ public class RiepilogoOrdini extends Fragment {
         caricaOrdini();
         caricaFattorini();
 
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        /*FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -147,6 +148,31 @@ public class RiepilogoOrdini extends Fragment {
                 fragmentManager.beginTransaction()
                         .replace(R.id.flContent, fragment)
                         .commit();
+            }
+        });*/
+
+
+        FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu_circle);
+        menu.setMultipleOfFB(3.2f);
+        menu.setIsCircle(true);
+
+        menu.setOnMenuItemClickListener(new FloatingActionMenu.OnMenuItemClickListener() {
+            @Override
+            public void onMenuItemClick(FloatingActionMenu fam, int index, FloatingActionButton item) {
+                String str = "";
+                switch (index) {
+                    case 0:
+                        str = "main fab is clicked!";
+                        break;
+                    case 1:
+                        str = "download fab is clicked!";
+                        break;
+                    case 2:
+                        str = "browser fab is clicked!";
+                        break;
+                    default:
+                }
+                Toast.makeText(getActivity().getApplicationContext(), str, Toast.LENGTH_SHORT).show();
             }
         });
         return view;
@@ -570,6 +596,7 @@ public class RiepilogoOrdini extends Fragment {
         }
         return layoutPizze;
     }
+
 
     private TextView makeTableRowWithText(String text, int resource) {
         recyclableTextView = new TextView(context);
