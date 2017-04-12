@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -52,7 +53,8 @@ public class HttpManager {
 
         @Override
         protected void onPreExecute() {
-            if(context != null) progressDialog = ProgressDialog.show(context, "Progress Dialog Title Text","Process Description Text", true);
+            if (context != null)
+                progressDialog = ProgressDialog.show(context, "", "Un attimo di pazienza...", true);
             listaRisultati = new ArrayList<HashMap<String, String>>();
             strPost = "exec_query=" + query;
             for (int i = 0; i < parametri.length; i++) {
