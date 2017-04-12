@@ -20,7 +20,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -519,45 +518,49 @@ public class RiepilogoOrdini extends Fragment {
                     nomePizza.setLayoutParams(paramsNome);
                     layoutPizze.addView(nomePizza);
 
-                    /** TODO
                     RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                     paramsPrezzo.addRule(RelativeLayout.END_OF, nomePizza.getId());
-                    paramsPrezzo.setMargins(10,0,0,0);
+                    paramsPrezzo.setMargins(20, 30, 0, 0);
+
                     TextView prezzoPizza = new TextView(context);
-                    prezzoPizza.setText(""+prezzo);
+                    prezzoPizza.setText(new DecimalFormat("#0.00 €").format(prezzo));
                     prezzoPizza.setId(View.generateViewId());
                     prezzoPizza.setTextAppearance(context, R.style.testoGrande);
                     prezzoPizza.setLayoutParams(paramsPrezzo);
 
                     layoutPizze.addView(prezzoPizza);
-                     */
 
                     RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                     paramTolti.addRule(RelativeLayout.BELOW, nomePizza.getId());
-                    paramTolti.setMargins(40, 0, 0, 0);
+                    paramTolti.setMargins(80, 0, 0, 0);
 
                     nomeingredientiTolti.setText("NO ");
                     nomeingredientiTolti.setId(View.generateViewId());
                     nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
-                    nomeingredientiTolti.setMaxEms(10);
+                    nomeingredientiTolti.setMaxEms(20);
                     nomeingredientiTolti.setLayoutParams(paramTolti);
 
                     RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    paramAggiunti.setMargins(40, 0, 0, 0);
-
                     paramAggiunti.addRule(RelativeLayout.BELOW, nomeingredientiTolti.getId());
                     if (isTolti) paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
                     nomeingredientiAggiunti.setText("PIU' ");
                     nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
-                    nomeingredientiAggiunti.setMaxEms(10);
+                    nomeingredientiAggiunti.setMaxEms(20);
                     nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
                     baseLayoutCreata = true;
                 }
 
                 if(tipoExtra == 1) {
-                    nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + nomeExtra + ", ");
+                    if (itrPizza.hasNext())
+                        nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + nomeExtra + ", ");
+                    else
+                        nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + nomeExtra + "");
+
                 } else {
-                    nomeingredientiTolti.setText(nomeingredientiTolti.getText() + nomeExtra + ", ");
+                    if (itrPizza.hasNext())
+                        nomeingredientiTolti.setText(nomeingredientiTolti.getText() + nomeExtra + ", ");
+                    else
+                        nomeingredientiTolti.setText(nomeingredientiTolti.getText() + nomeExtra + "");
                 }
             }
             layoutPizze.addView(nomeingredientiTolti);

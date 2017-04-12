@@ -16,27 +16,27 @@
         android:layout_toStartOf="@+id/view">
 
         <RelativeLayout
-        android:id="@+id/layoutCaricamento"
-        android:layout_width="wrap_content"
-        android:layout_height="350dp"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:id="@+id/caricamento"
-            android:layout_width="645dp"
-            android:layout_height="wrap_content"
-            android:indeterminate="true" />
-
-        <TextView
+            android:id="@+id/layoutCaricamento"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/caricamento"
-            android:layout_centerHorizontal="true"
-            android:text="Un attimo di pazienza..."
-            android:textColor="@color/colorPrimary" />
+            android:layout_height="350dp"
+            android:gravity="center"
+            android:visibility="gone">
 
-    </RelativeLayout>
+            <ProgressBar
+                android:id="@+id/caricamento"
+                android:layout_width="645dp"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/caricamento"
+                android:layout_centerHorizontal="true"
+                android:text="Un attimo di pazienza..."
+                android:textColor="@color/colorPrimary" />
+
+        </RelativeLayout>
 
 
         <RelativeLayout
@@ -81,68 +81,68 @@
             android:layout_marginBottom="45dp"
             android:layout_marginTop="15dp">
 
-        <RelativeLayout
-            android:id="@+id/parteBottoni"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
+            <RelativeLayout
+                android:id="@+id/parteBottoni"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
 
 
+            </RelativeLayout>
 
-        </RelativeLayout>
-
-    </ScrollView>
+        </ScrollView>
 
     </RelativeLayout>
 
 
+    <RelativeLayout
+        android:id="@+id/parteBibite"
+        android:layout_width="578dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_toEndOf="@+id/view">
+
         <RelativeLayout
-            android:id="@+id/parteBibite"
-            android:layout_width="578dp"
-            android:layout_height="300dp"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="30dp"
-            android:layout_toEndOf="@+id/view">
+            android:id="@+id/intestazioniBibite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/intestazioniBibite"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="30dp"
+                android:layout_toStartOf="@+id/bibite"
+                android:background="@color/giallo" />
 
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="2dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="30dp"
-                    android:layout_toStartOf="@+id/bibite"
-                    android:background="@color/giallo" />
-
-                <TextView
-                    android:id="@+id/bibite"
-                    style="@style/testoGrande"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text="Bibite"
-                    android:textColor="@color/giallo" />
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="2dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="30dp"
-                    android:layout_toEndOf="@+id/bibite"
-                    android:background="@color/giallo" />
-            </RelativeLayout>
-
-            <RelativeLayout
+            <TextView
+                android:id="@+id/bibite"
+                style="@style/testoGrande"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/intestazioniBibite"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp">
+                android:text="Bibite"
+                android:textColor="@color/giallo" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/bibite"
+                android:background="@color/giallo" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/intestazioniBibite"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp">
+
             <Button
                 android:id="@+id/coca_latt"
                 android:layout_width="wrap_content"
@@ -178,57 +178,57 @@
                 android:minWidth="150dp"
                 android:text="The Limone" />
 
-                <Button
-                    android:id="@+id/moretti_33"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/the_limone"
-                    android:layout_toEndOf="@id/coca_latt"
-                    android:minHeight="75dp"
-                    android:minWidth="150dp"
-                    android:text="Moretti (0.33)" />
+            <Button
+                android:id="@+id/moretti_33"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/the_limone"
+                android:layout_toEndOf="@id/coca_latt"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Moretti (0.33)" />
 
-                <Button
-                    android:id="@+id/peroni_33"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/moretti_33"
-                    android:layout_toEndOf="@id/coca_latt"
-                    android:minHeight="75dp"
-                    android:minWidth="150dp"
-                    android:text="Peroni (0.33)" />
+            <Button
+                android:id="@+id/peroni_33"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/moretti_33"
+                android:layout_toEndOf="@id/coca_latt"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Peroni (0.33)" />
 
-                <Button
-                    android:id="@+id/moretti_66"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/the_limone"
-                    android:minHeight="75dp"
-                    android:minWidth="150dp"
-                    android:text="Moretti (0.66)" />
+            <Button
+                android:id="@+id/moretti_66"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/the_limone"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Moretti (0.66)" />
 
-                <Button
-                    android:id="@+id/peroni_66"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/moretti_66"
-                    android:layout_toEndOf="@id/the_limone"
-                    android:minHeight="75dp"
-                    android:minWidth="150dp"
-                    android:text="Peroni (0.66)" />
+            <Button
+                android:id="@+id/peroni_66"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/moretti_66"
+                android:layout_toEndOf="@id/the_limone"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Peroni (0.66)" />
 
-                <Button
-                    android:id="@+id/coca_bott"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/peroni_66"
-                    android:layout_toEndOf="@id/the_limone"
-                    android:minHeight="75dp"
-                    android:minWidth="150dp"
-                    android:text="Coca (1.5)" />
-            </RelativeLayout>
-
+            <Button
+                android:id="@+id/coca_bott"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/peroni_66"
+                android:layout_toEndOf="@id/the_limone"
+                android:minHeight="75dp"
+                android:minWidth="150dp"
+                android:text="Coca (1.5)" />
         </RelativeLayout>
+
+    </RelativeLayout>
 
     <View
         android:id="@+id/view"
@@ -372,11 +372,13 @@
         <RelativeLayout
             android:id="@+id/intestazioneConto"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal">
 
             <View
                 android:layout_width="wrap_content"
                 android:layout_height="2dp"
+                android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="30dp"
                 android:layout_toStartOf="@+id/conto"
@@ -400,10 +402,42 @@
                 android:background="@color/giallo" />
         </RelativeLayout>
 
+
+        <RelativeLayout
+            android:id="@+id/parteTotale"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/intestazioneConto"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/totale"
+                style="@style/testoGrande"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:text="Totale: "
+                android:textColor="@color/giallo"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/totaleEuro"
+                style="@style/testoGrande"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_toEndOf="@id/totale"
+                android:text="0,00 € "
+                android:textColor="@color/giallo"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/intestazioneConto"
+            android:layout_below="@id/parteTotale"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp">
 
@@ -411,7 +445,8 @@
                 android:id="@+id/riassuntoOrdine"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="15dp"
+                android:gravity="center_horizontal">
 
 
             </RelativeLayout>
