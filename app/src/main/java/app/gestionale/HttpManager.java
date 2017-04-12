@@ -35,6 +35,8 @@ public class HttpManager {
     }
 
     static class AsyncManager extends AsyncTask<String, String, List<HashMap<String, String>>> {
+        private final String ID_CLIENTE = "PIZZERIA_ACCIPIZZA_VILLAFRANCA";
+
         public AsyncResponse delegate = null;//Call back interface
         private String query;
         private String[] parametri;
@@ -53,10 +55,9 @@ public class HttpManager {
 
         @Override
         protected void onPreExecute() {
-            if (context != null)
-                progressDialog = ProgressDialog.show(context, "", "Un attimo di pazienza...", true);
+            if (context != null) progressDialog = ProgressDialog.show(context, "", "Un attimo di pazienza...", true);
             listaRisultati = new ArrayList<HashMap<String, String>>();
-            strPost = "exec_query=" + query;
+            strPost = "id_cliente=" + ID_CLIENTE + "&exec_query=" + query;
             for (int i = 0; i < parametri.length; i++) {
                 strPost += "&param" + i + "=" + parametri[i];
             }
@@ -112,6 +113,8 @@ public class HttpManager {
                                 row.put("generated_id", generatedID);
                                 listaRisultati.add(row);
                             }
+                        }else{
+                            System.out.println("ERROR = " + jObject.getString("error"));
                         }
                     }
                 }
