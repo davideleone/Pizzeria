@@ -34,10 +34,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by Manuel on 06/04/2017.
- */
-
 public class Fattorini extends Fragment {
 
     private TableLayout tabellaOrdini;
@@ -115,15 +111,25 @@ public class Fattorini extends Fragment {
         return view;
     }
 
-    public void caricaOrdini() {
-        List<HashMap<String, Object>> risultatoQuery;
-        risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_TOTALE_FATTORINI.getValore(), Funzioni.getCurrentDate());
-        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
-        if (itr.hasNext()) {
+    private void caricaOrdini(){
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                processaOrdini( output );
+            };
+        }, context, "GET_TOTALE_FATTORINI", new String[]{Funzioni.getCurrentDate()}).execute();
+    }
+
+
+    private void processaOrdini(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        if(!lista.isEmpty()){
             while (itr.hasNext()) {
-                HashMap<String, Object> riga = itr.next();
-                final String nome = riga.get("nomefatt").toString();
-                final String totale = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("prezzotot").toString())) + " \u20ac";
+                HashMap<String, String> riga = itr.next();
+
+                final String nome = riga.get("nomefatt");
+                final String totale = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("prezzotot"))) + " \u20ac";
 
                 TableRow row = new TableRow(context);
                 row.setBackgroundResource(R.drawable.table_bottom_style);

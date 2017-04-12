@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -279,115 +280,12 @@ public class RiepilogoOrdini extends Fragment {
                 btnMostra.setOnClickListener(new View.OnClickListener() {
                     @Override
                 public void onClick(View v) {
-                        final RelativeLayout layoutContenitore = new RelativeLayout(context);
-
-                        RelativeLayout layoutDettaglio = new RelativeLayout(context);
-                        layoutDettaglio.setId(View.generateViewId());
-
-                        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        paramsStatoText.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                        paramsStatoText.setMargins(0, 15, 0, 0);
-                        TextView textStato = new TextView(context);
-                        textStato.setId(View.generateViewId());
-                        textStato.setText("Stato: ");
-                        textStato.setTextAppearance(context, R.style.testoGrande);
-                        textStato.setLayoutParams(paramsStatoText);
-
-                        RelativeLayout.LayoutParams paramsStato = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        paramsStato.addRule(RelativeLayout.END_OF, textStato.getId());
-                        paramsStato.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                        ImageView imgStato = new ImageView(context);
-                        imgStato.setId(View.generateViewId());
-                        imgStato.setLayoutParams(paramsStato);
-                        imgStato.setImageResource(R.drawable.giallo);
-
-                        RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        paramsConsegna.addRule(RelativeLayout.BELOW, textStato.getId());
-                        paramsConsegna.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                        TextView textConsegna = new TextView(context);
-                        textConsegna.setId(View.generateViewId());
-                        textConsegna.setText("Assegnato a: ");
-                        textConsegna.setTextAppearance(context, R.style.testoGrande);
-                        textConsegna.setLayoutParams(paramsConsegna);
-
-                        RelativeLayout.LayoutParams paramsTelefono = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        paramsTelefono.addRule(RelativeLayout.BELOW, textConsegna.getId());
-                        paramsTelefono.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                        TextView textTelefono = new TextView(context);
-                        textTelefono.setId(View.generateViewId());
-                        textTelefono.setText("Telefono: " + telefono);
-                        textTelefono.setTextAppearance(context, R.style.testoGrande);
-                        textTelefono.setLayoutParams(paramsTelefono);
-
-                        RelativeLayout.LayoutParams paramsLinea = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
-                        paramsLinea.addRule(RelativeLayout.BELOW, textTelefono.getId());
-                        paramsLinea.setMargins(30, 10, 30, 0);
-                        View separator = new View(context);
-                        separator.setId(View.generateViewId());
-                        separator.setBackgroundColor(getResources().getColor(R.color.grigio));
-                        separator.setLayoutParams(paramsLinea);
-
-                        RelativeLayout.LayoutParams paramsLayoutPizze = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        paramsLayoutPizze.addRule(RelativeLayout.BELOW, layoutDettaglio.getId());
-                        RelativeLayout layoutPizze = new RelativeLayout(context);
-                        layoutPizze.setGravity(Gravity.CENTER);
-                        layoutPizze.setLayoutParams(paramsLayoutPizze);
-
-                        RelativeLayout.LayoutParams paramsCaricamento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        paramsCaricamento.addRule(RelativeLayout.CENTER_HORIZONTAL, separator.getId());
-
-                        final ProgressBar progressBar = new ProgressBar(context);
-                        progressBar.setIndeterminate(true);
-                        progressBar.setVisibility(View.GONE);
-                        progressBar.setLayoutParams(paramsCaricamento);
-
-
-                        new Loading(progressBar, context) {
+                        new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
-                            protected void onPreExecute() {
-                                progressBar.setVisibility(View.VISIBLE);
-                            }
-
-
-                        }.execute();
-                        layoutPizze = dettaglioPizze(idOrdine, layoutPizze);
-
-                        /**
-                         //DA SISTEMARE
-                         new Loading(progressBar, context, layoutPizze){
-                        @Override protected void onPreExecute() {
-                        bar.setVisibility(View.VISIBLE);
-                        layoutPizze.setVisibility(View.GONE);
-                        }
-
-                        @Override protected void onProgressUpdate(Integer... values) {
-                        layoutPizze = dettaglioPizze(idOrdine, layoutPizze);
-                        super.onProgressUpdate(values);
-                        }
-
-                        @Override protected void onPostExecute(Void result) {
-                        bar.setVisibility(View.GONE);
-                        layoutPizze.setVisibility(View.VISIBLE);
-                        layoutContenitore.addView(layoutPizze);
-                        }
-                        }.execute();*/
-
-
-                        layoutDettaglio.addView(textStato);
-                        layoutDettaglio.addView(imgStato);
-                        layoutDettaglio.addView(textConsegna);
-                        layoutDettaglio.addView(textTelefono);
-                        layoutDettaglio.addView(separator);
-                        layoutDettaglio.addView(progressBar);
-                        layoutContenitore.addView(layoutDettaglio);
-                        layoutContenitore.addView(layoutPizze);
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setTitle("Dettaglio ordine di " + cognome);
-                        builder.setView(layoutContenitore);
-                        builder.create().show();
-
-                        //getPizzeOrdine(idOrdine);
+                            public void processFinish(Object output) {
+                                fixDettagliPizze( output , telefono, cognome);
+                            };
+                        }, context, "GET_PIZZE_CON_EXTRA", new String[]{idOrdine}).execute();
                     }
                 });
 
@@ -458,13 +356,6 @@ public class RiepilogoOrdini extends Fragment {
                             .setMessage("Sei sicuro di voler eliminare l'ordine di " + cognome + "?")
                             .setPositiveButton("Si, elimina", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    /** TODO
-                                     AGGIUNGERE SU DB REGOLA -> ON DELETE CASCADE COSI DA AVERE SOLO UN'UNICA QUERY
-                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE0.getValore(), false, idOrdine);
-                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE1.getValore(), false, idOrdine);
-                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE2.getValore(), false, idOrdine);
-                                    DBmanager.updateQuery(EnumQuery.ELIMINA_ORDINE3.getValore(), false, idOrdine);
-                                    */
                                     new HttpManager.AsyncManager(new AsyncResponse() {
                                         @Override
                                         public void processFinish(Object output) {
@@ -504,7 +395,177 @@ public class RiepilogoOrdini extends Fragment {
         }
     }
 
-    private RelativeLayout dettaglioPizze(String idOrdine, RelativeLayout layoutPizze) {
+    private void mostraDettaglio(SparseArray<List<HashMap<String, String>>> hashPizze, String telefono, String cognome, boolean isTolti){
+        final RelativeLayout layoutContenitore = new RelativeLayout(context);
+
+        RelativeLayout layoutDettaglio = new RelativeLayout(context);
+        layoutDettaglio.setId(View.generateViewId());
+
+        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramsStatoText.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        paramsStatoText.setMargins(0, 15, 0, 0);
+        TextView textStato = new TextView(context);
+        textStato.setId(View.generateViewId());
+        textStato.setText("Stato: ");
+        textStato.setTextAppearance(context, R.style.testoGrande);
+        textStato.setLayoutParams(paramsStatoText);
+
+        RelativeLayout.LayoutParams paramsStato = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        paramsStato.addRule(RelativeLayout.END_OF, textStato.getId());
+        paramsStato.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        ImageView imgStato = new ImageView(context);
+        imgStato.setId(View.generateViewId());
+        imgStato.setLayoutParams(paramsStato);
+        imgStato.setImageResource(R.drawable.giallo);
+
+        RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        paramsConsegna.addRule(RelativeLayout.BELOW, textStato.getId());
+        paramsConsegna.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        TextView textConsegna = new TextView(context);
+        textConsegna.setId(View.generateViewId());
+        textConsegna.setText("Assegnato a: ");
+        textConsegna.setTextAppearance(context, R.style.testoGrande);
+        textConsegna.setLayoutParams(paramsConsegna);
+
+        RelativeLayout.LayoutParams paramsTelefono = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        paramsTelefono.addRule(RelativeLayout.BELOW, textConsegna.getId());
+        paramsTelefono.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        TextView textTelefono = new TextView(context);
+        textTelefono.setId(View.generateViewId());
+        textTelefono.setText("Telefono: " + telefono);
+        textTelefono.setTextAppearance(context, R.style.testoGrande);
+        textTelefono.setLayoutParams(paramsTelefono);
+
+        RelativeLayout.LayoutParams paramsLinea = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+        paramsLinea.addRule(RelativeLayout.BELOW, textTelefono.getId());
+        paramsLinea.setMargins(30, 10, 30, 0);
+        View separator = new View(context);
+        separator.setId(View.generateViewId());
+        separator.setBackgroundColor(getResources().getColor(R.color.grigio));
+        separator.setLayoutParams(paramsLinea);
+
+        RelativeLayout.LayoutParams paramsLayoutPizze = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramsLayoutPizze.addRule(RelativeLayout.BELOW, layoutDettaglio.getId());
+        RelativeLayout layoutPizze = new RelativeLayout(context);
+        layoutPizze.setGravity(Gravity.CENTER);
+        layoutPizze.setLayoutParams(paramsLayoutPizze);
+
+        RelativeLayout.LayoutParams paramsCaricamento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramsCaricamento.addRule(RelativeLayout.CENTER_HORIZONTAL, separator.getId());
+
+        layoutPizze = dettaglioPizze(hashPizze, isTolti, layoutPizze);
+
+        layoutDettaglio.addView(textStato);
+        layoutDettaglio.addView(imgStato);
+        layoutDettaglio.addView(textConsegna);
+        layoutDettaglio.addView(textTelefono);
+        layoutDettaglio.addView(separator);
+        layoutContenitore.addView(layoutDettaglio);
+        layoutContenitore.addView(layoutPizze);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Dettaglio ordine di " + cognome);
+        builder.setView(layoutContenitore);
+        builder.create().show();
+
+        //getPizzeOrdine(idOrdine);
+    }
+
+    private void fixDettagliPizze(Object param, String telefono, String cognome){
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        SparseArray<List<HashMap<String, String>>> hashColonne = new SparseArray<List<HashMap<String, String>>>();
+        boolean isTolti = false;
+        while (itr.hasNext()) {
+            HashMap<String, String> riga = itr.next();
+            final int idcolonna = Integer.parseInt(riga.get("id_colonna"));
+            List<HashMap<String, String>> listaTemp = (hashColonne.get(idcolonna) != null) ? hashColonne.get(idcolonna) : new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> row = new HashMap<String, String>(4);
+            row.put("nomeprodotto", riga.get("nomeprodotto"));
+            row.put("prezzoprodotto", riga.get("prezzoprodotto"));
+            row.put("nomeextra", riga.get("nomeextra"));
+            row.put("tipo", riga.get("tipo"));
+            if(Integer.parseInt(riga.get("tipo")) == 2) isTolti = true;
+            listaTemp.add(row);
+            hashColonne.put(idcolonna, listaTemp);
+        }
+        mostraDettaglio(hashColonne, telefono, cognome, isTolti);
+    }
+
+    private RelativeLayout dettaglioPizze(SparseArray<List<HashMap<String, String>>> hashPizze, boolean isTolti, RelativeLayout layoutPizze) {
+        for(int i = 0; i < hashPizze.size(); i++) {
+            boolean baseLayoutCreata = false;
+            List<HashMap<String, String>> listaPizza = hashPizze.valueAt(i);
+            Iterator<HashMap<String, String>> itrPizza = listaPizza.iterator();
+
+            TextView nomeingredientiAggiunti = new TextView(context);
+            TextView nomeingredientiTolti = new TextView(context);
+            while(itrPizza.hasNext()) {
+                HashMap<String, String> valorePizza = itrPizza.next();
+                final String nome = valorePizza.get("nomeprodotto");
+                final float prezzo = Float.parseFloat(valorePizza.get("prezzoprodotto"));
+                final int tipoExtra = Integer.parseInt(valorePizza.get("tipo"));
+                final String nomeExtra = valorePizza.get("nomeextra");
+
+                if(!baseLayoutCreata) {
+                    RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    if (i > 0) paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
+                    paramsNome.setMargins(30, 30, 0, 0);
+
+                    TextView nomePizza = new TextView(context);
+                    nomePizza.setText("- " + nome);
+                    nomePizza.setId(View.generateViewId());
+                    nomePizza.setTextAppearance(context, R.style.testoGrande);
+                    nomePizza.setLayoutParams(paramsNome);
+                    layoutPizze.addView(nomePizza);
+
+                    /** TODO
+                    RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    paramsPrezzo.addRule(RelativeLayout.END_OF, nomePizza.getId());
+                    paramsPrezzo.setMargins(10,0,0,0);
+                    TextView prezzoPizza = new TextView(context);
+                    prezzoPizza.setText(""+prezzo);
+                    prezzoPizza.setId(View.generateViewId());
+                    prezzoPizza.setTextAppearance(context, R.style.testoGrande);
+                    prezzoPizza.setLayoutParams(paramsPrezzo);
+
+                    layoutPizze.addView(prezzoPizza);
+                     */
+
+                    RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    paramTolti.addRule(RelativeLayout.BELOW, nomePizza.getId());
+                    paramTolti.setMargins(40, 0, 0, 0);
+
+                    nomeingredientiTolti.setText("NO ");
+                    nomeingredientiTolti.setId(View.generateViewId());
+                    nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
+                    nomeingredientiTolti.setMaxEms(10);
+                    nomeingredientiTolti.setLayoutParams(paramTolti);
+
+                    RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    paramAggiunti.setMargins(40, 0, 0, 0);
+
+                    paramAggiunti.addRule(RelativeLayout.BELOW, nomeingredientiTolti.getId());
+                    if (isTolti) paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
+                    nomeingredientiAggiunti.setText("PIU' ");
+                    nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
+                    nomeingredientiAggiunti.setMaxEms(10);
+                    nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
+                    baseLayoutCreata = true;
+                }
+
+                if(tipoExtra == 1) {
+                    nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + nomeExtra + ", ");
+                } else {
+                    nomeingredientiTolti.setText(nomeingredientiTolti.getText() + nomeExtra + ", ");
+                }
+            }
+            layoutPizze.addView(nomeingredientiTolti);
+            layoutPizze.addView(nomeingredientiAggiunti);
+        }
+        return layoutPizze;
+    }
+/**
         List<HashMap<String, Object>> risultatoQuery2;
         risultatoQuery2 = DBmanager.selectQuery(EnumQuery.GET_PIZZA_IN_ORDINE.getValore(), idOrdine);
         Iterator<HashMap<String, Object>> itr2 = risultatoQuery2.iterator();
@@ -527,8 +588,8 @@ public class RiepilogoOrdini extends Fragment {
             nomePizza.setLayoutParams(paramsNome);
 
             layoutPizze.addView(nomePizza);
-
-            /*RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+/*
+            RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramsPrezzo.addRule(RelativeLayout.END_OF, nomePizza.getId());
             paramsPrezzo.setMargins(10,0,0,0);
             TextView prezzoPizza = new TextView(context);
@@ -537,7 +598,7 @@ public class RiepilogoOrdini extends Fragment {
             prezzoPizza.setTextAppearance(context, R.style.testoGrande);
             prezzoPizza.setLayoutParams(paramsPrezzo);
 
-            layoutPizze.addView(prezzoPizza);*/
+            layoutPizze.addView(prezzoPizza);*//**
 
             RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramTolti.addRule(RelativeLayout.BELOW, nomePizza.getId());
@@ -592,7 +653,7 @@ public class RiepilogoOrdini extends Fragment {
         }
 
         return layoutPizze;
-    }
+    }*/
 
     private TextView makeTableRowWithText(String text, int resource) {
         recyclableTextView = new TextView(context);
