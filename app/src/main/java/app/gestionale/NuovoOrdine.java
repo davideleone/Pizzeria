@@ -11,7 +11,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -49,6 +48,12 @@ public class NuovoOrdine extends Fragment {
     private AutoCompleteTextView aggiunte;
     private TextView recyclableTextView;
     private TextView totale;
+    private RelativeLayout layoutIngredienti;
+    private RelativeLayout contenitoreIngredienti;
+    private String idColonna = "";
+    private RelativeLayout layoutAggiunte;
+    private RelativeLayout.LayoutParams paramAggiunte;
+    private String nomeProdotto = "";
 
 
     @Override
@@ -274,6 +279,7 @@ public class NuovoOrdine extends Fragment {
                 final String idColonna = riga.get("id_colonna");
                 final String tipo = riga.get("tipo");
                 final String nomeProdotto = riga.get("nomeprodotto");
+                setNomeProdotto(nomeProdotto);
                 totaleOrdine += Float.parseFloat(riga.get("prezzoprodotto"));
                 final String prezzoProdotto = new DecimalFormat("#0.00 €").format((double) Float.parseFloat(riga.get("prezzoprodotto")));
 
@@ -303,59 +309,12 @@ public class NuovoOrdine extends Fragment {
                 btnElimina.setText("Elimina");
                 rowPizza.addView(btnElimina);
 
-                /*RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                paramTolti.addRule(RelativeLayout.BELOW, txtPizza.getId());
-                paramTolti.setMargins(40, 0, 0, 0);
-
-                TextView nomeingredientiTolti = new TextView(context);
-                nomeingredientiTolti.setText("NO ");
-                nomeingredientiTolti.setId(View.generateViewId());
-                nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
-                nomeingredientiTolti.setMaxEms(10);
-                nomeingredientiTolti.setLayoutParams(paramTolti);
-
-                if (!DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_TOLTI.getValore(), idcolonna).isEmpty()) {
-                    Iterator<HashMap<String, Object>> itrTolti = DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_TOLTI.getValore(), idcolonna).iterator();
-                    while (itrTolti.hasNext()) {
-                        HashMap<String, Object> riga2 = itrTolti.next();
-                        if (itrTolti.hasNext()) {
-                            nomeingredientiTolti.setText(nomeingredientiTolti.getText() + riga2.get("nomeextra").toString() + ", ");
-                        } else {
-                            nomeingredientiTolti.setText(nomeingredientiTolti.getText() + riga2.get("nomeextra").toString() + "");
-                        }
-                    }
-                    flag = true;
-                    layoutPizze.addView(nomeingredientiTolti);
-                }
-
-                RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                paramAggiunti.setMargins(40, 0, 0, 0);
-                TextView nomeingredientiAggiunti = new TextView(context);
-
-                paramAggiunti.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
-                if (flag)
-                    paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
-                nomeingredientiAggiunti.setText("PIU' ");
-                nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
-                nomeingredientiAggiunti.setMaxEms(10);
-                nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
-
-                if (!DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_AGGIUNTI.getValore(), idcolonna).isEmpty()) {
-                    Iterator<HashMap<String, Object>> itrAggiunti = DBmanager.selectQuery(EnumQuery.LISTA_EXTRA_AGGIUNTI.getValore(), idcolonna).iterator();
-                    while (itrAggiunti.hasNext()) {
-                        HashMap<String, Object> riga2 = itrAggiunti.next();
-                        if (itrAggiunti.hasNext()) {
-                            nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + riga2.get("nomeextra").toString() + ", ");
-                        } else {
-                            nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + riga2.get("nomeextra").toString() + "");
-                        }
-                    }
-                    layoutPizze.addView(nomeingredientiAggiunti);
-                }*/
 
                 btnModifica.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if (contenitoreIngredienti != null)
+                            contenitoreIngredienti.removeAllViews();
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
                             public void processFinish(Object output) {
@@ -380,7 +339,12 @@ public class NuovoOrdine extends Fragment {
                                 tableOrdiniGastronomia.removeView(rowPizza);
                                 break;
                         }
-                        Toast.makeText(context, nomeProdotto+" eliminato!", Toast.LENGTH_SHORT).show();
+
+                        if (tableOrdiniPizza.getChildCount() == 0)
+                            layoutContoPizze.setBackgroundResource(0);
+                        if (tableOrdiniGastronomia.getChildCount() == 0)
+                            layoutContoGastronomia.setBackgroundResource(0);
+                        Toast.makeText(context, nomeProdotto + " eliminato!", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -408,25 +372,28 @@ public class NuovoOrdine extends Fragment {
     }
 
 
-    private void impostaCheckBox(String nomePizza, Object param) {
-        final RelativeLayout layoutIngredienti = new RelativeLayout(context);
-        TableLayout contenitore = new TableLayout(context);
+    private void impostaCheckBox(String nomePizza, final Object param) {
+        //LAYOUT CHE CONTIENE TUTTO
+        contenitoreIngredienti = new RelativeLayout(context);
+        //LAYOUT SUPERIORE CON TABELLA CHECKBOX
+        layoutIngredienti = new RelativeLayout(context);
+        layoutIngredienti.setId(View.generateViewId());
+        RelativeLayout.LayoutParams paramLayoutIngredienti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramLayoutIngredienti.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        paramLayoutIngredienti.setMargins(0, 20, 0, 0);
+        layoutIngredienti.setLayoutParams(paramLayoutIngredienti);
+
+        //TABELLA CON CHECKBOX
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
-            RelativeLayout.LayoutParams paramsIngredienti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            paramsIngredienti.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            paramsIngredienti.setMargins(0, 20, 0, 0);
-            contenitore.setId(View.generateViewId());
-            contenitore.setLayoutParams(paramsIngredienti);
+            int countProdotti = 0;
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final String nomeIngrediente = riga.get("nomeingrediente");
                 final String idcolonna = riga.get("id_colonna");
-
-                TableRow rowTab = new TableRow(context);
-                TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-                rowTab.setLayoutParams(lp);
+                setIdColonna(idcolonna);
+                RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 CheckBox selezione = new CheckBox(context);
                 selezione.setId(View.generateViewId());
@@ -441,82 +408,48 @@ public class NuovoOrdine extends Fragment {
                             HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, idcolonna, nomeIngrediente, "2");
                     }
                 });
-                rowTab.addView(selezione);
 
-/**
-                selezione.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-System.out.println("CHECKED = " + selezione.isChecked());
-                        if (!selezione.isChecked())
-
-                    }
-});*/
-
-/**
-                final CheckBox selezione2;
-
-                if (itr.hasNext()) {
-                    riga = itr.next();
-                    final String nomeIngrediente2 = riga.get("nomeingrediente");
-                    selezione2 = new CheckBox(context);
-                    selezione2.setId(View.generateViewId());
-                    selezione2.setPadding(5, 0, 5, 0);
-                    selezione2.setTextSize(25);
-                    selezione2.setChecked(true);
-                    selezione2.setText(nomeIngrediente2);
-                    row.addView(selezione2);
-
-                    selezione2.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (!selezione2.isChecked())
-                                HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente2, idcolonna, nomeIngrediente2, "2");
+                if (layoutIngredienti.getChildCount() > 0) {
+                    if (countProdotti > 1)
+                        if (countProdotti % 2 == 0) {
+                            layoutSelezione.addRule(RelativeLayout.BELOW, layoutIngredienti.getChildAt(layoutIngredienti.getChildCount() - 2).getId());
+                        } else {
+                            layoutSelezione.addRule(RelativeLayout.BELOW, layoutIngredienti.getChildAt(layoutIngredienti.getChildCount() - 3).getId());
+                            layoutSelezione.addRule(RelativeLayout.END_OF, layoutIngredienti.getChildAt(layoutIngredienti.getChildCount() - 1).getId());
                         }
-                    });
- }*/
-                contenitore.addView(rowTab);
+                    else
+                        layoutSelezione.addRule(RelativeLayout.END_OF, layoutIngredienti.getChildAt(layoutIngredienti.getChildCount() - 1).getId());
+                }
 
-                aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
-                        HttpManager.execSimple("AGGIUNGI_EXTRA", null, aggiunte.getText().toString(), idcolonna, aggiunte.getText().toString(), "1");
-                        Toast.makeText(context, aggiunte.getText().toString() + " inserito", Toast.LENGTH_SHORT).show();
-
-
-                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(aggiunte.getWindowToken(), 0);
-
-
-                        RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        layoutSelezione.addRule(RelativeLayout.BELOW, layoutIngredienti.getChildAt(layoutIngredienti.getChildCount() - 1).getId());
-
-                        final CheckBox newIngrediente = new CheckBox(context);
-                        newIngrediente.setLayoutParams(layoutSelezione);
-                        newIngrediente.setId(View.generateViewId());
-                        newIngrediente.setPadding(5, 0, 5, 0);
-                        newIngrediente.setTextSize(25);
-                        newIngrediente.setChecked(true);
-                        newIngrediente.setText(aggiunte.getText().toString());
-
-                        layoutIngredienti.addView(newIngrediente);
-                        aggiunte.setText("");
-                    }
-                });
+                selezione.setLayoutParams(layoutSelezione);
+                countProdotti++;
+                layoutIngredienti.addView(selezione);
             }
-            layoutIngredienti.addView(contenitore);
         }
+
+        contenitoreIngredienti.addView(layoutIngredienti);
 
         RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
         paramBarra.setMargins(30, 30, 30, 30);
         paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        paramBarra.addRule(RelativeLayout.BELOW, contenitore.getId());
+        paramBarra.addRule(RelativeLayout.BELOW, layoutIngredienti.getId());
 
         View barraMezzo = new View(context);
         barraMezzo.setId(View.generateViewId());
         barraMezzo.setBackgroundColor(getResources().getColor(R.color.grigio));
         barraMezzo.setLayoutParams(paramBarra);
-        layoutIngredienti.addView(barraMezzo);
+        contenitoreIngredienti.addView(barraMezzo);
+
+
+        //LAYOUT INFERIORE CON TEXTVIEW
+        layoutAggiunte = new RelativeLayout(context);
+        RelativeLayout.LayoutParams paramLayoutAggiunte = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
+        layoutAggiunte.setLayoutParams(paramLayoutAggiunte);
+        paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+        paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        paramAggiunte.setMargins(0, 20, 0, 0);
+
 
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
@@ -525,17 +458,69 @@ System.out.println("CHECKED = " + selezione.isChecked());
             }
         }, null, "GET_AGGIUNTE", new String[]{}).execute();
 
-        RelativeLayout.LayoutParams paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
-        paramAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
-        paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        paramAggiunte.setMargins(0, 20, 0, 0);
         aggiunte.setLayoutParams(paramAggiunte);
-        layoutIngredienti.addView(aggiunte);
+        if (aggiunte.getParent() != null)
+            ((ViewGroup) aggiunte.getParent()).removeView(aggiunte);
+        layoutAggiunte.addView(aggiunte);
+
+        aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
+                new HttpManager.AsyncManager(new AsyncResponse() {
+                    @Override
+                    public void processFinish(Object output) {
+                        AggiungiExtra(nomeProdotto, output);
+                    }
+                }, null, "AGGIUNGI_EXTRA", new String[]{aggiunte.getText().toString(), idColonna, aggiunte.getText().toString(), "1"}).execute();
+            }
+        });
+
+        contenitoreIngredienti.addView(layoutAggiunte);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Dettaglio " + nomePizza);
-        builder.setView(layoutIngredienti);
+        builder.setTitle("Dettaglio " + nomeProdotto);
+        builder.setView(contenitoreIngredienti);
         builder.create().show();
+    }
+
+    private void AggiungiExtra(String nomeProdotto, Object param) {
+
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        if (itr.hasNext()) {
+            while (itr.hasNext()) {
+                HashMap<String, String> riga = itr.next();
+                final String idExtra = riga.get("generated_id");
+
+                Toast.makeText(context, aggiunte.getText().toString() + " inserito", Toast.LENGTH_SHORT).show();
+
+                RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                layoutSelezione.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
+                layoutSelezione.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                final CheckBox newIngrediente = new CheckBox(context);
+                newIngrediente.setLayoutParams(layoutSelezione);
+                newIngrediente.setId(View.generateViewId());
+                newIngrediente.setPadding(5, 0, 5, 0);
+                newIngrediente.setTextSize(25);
+                newIngrediente.setChecked(true);
+                newIngrediente.setText(aggiunte.getText().toString());
+
+                newIngrediente.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (!isChecked)
+                            HttpManager.execSimple("TOGLI_EXTRA", null, idExtra);
+                        layoutAggiunte.removeView(newIngrediente);
+                    }
+                });
+
+                layoutAggiunte.addView(newIngrediente);
+                aggiunte.setText("");
+                paramAggiunte.addRule(RelativeLayout.BELOW, newIngrediente.getId());
+                //aggiunte.setLayoutParams(paramAggiunte);
+            }
+        }
     }
 
     private void riempiAggiunte(Object param) {
@@ -569,4 +554,13 @@ System.out.println("CHECKED = " + selezione.isChecked());
         btnNuovo.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.btn_height));
         return btnNuovo;
     }
+
+    private void setIdColonna(String idcolonna) {
+        this.idColonna = idcolonna;
+    }
+
+    private void setNomeProdotto(String nomeProdotto) {
+        this.nomeProdotto = nomeProdotto;
+    }
+
 }

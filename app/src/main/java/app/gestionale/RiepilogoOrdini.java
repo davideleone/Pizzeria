@@ -61,6 +61,7 @@ public class RiepilogoOrdini extends Fragment {
 
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
+    private RelativeLayout sfondo;
 
     @Override
     public void onAttach(Context context) {
@@ -88,7 +89,7 @@ public class RiepilogoOrdini extends Fragment {
 
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_ordini);
         tabellaAssegnati = (TableLayout) view.findViewById(R.id.tabella_ordini_assegnati);
-
+        sfondo = (RelativeLayout) view.findViewById(R.id.sfondo);
         spinnerDate = (Spinner) view.findViewById(R.id.date_settimane);
 
         String[] dateSettimana;
@@ -148,10 +149,10 @@ public class RiepilogoOrdini extends Fragment {
             public void onMenuItemClick(FloatingActionMenu fam, int index, FloatingActionButton item) {
                 switch (index) {
                     case 0:
-                        // DELETE TAB
+                        sfondo.getBackground().setAlpha(70);
                         break;
                     case 1:
-                        // INFO TAB
+                        item.getBackground().setAlpha(88);
                         break;
                     case 2:
                         NuovoOrdine fragment = new NuovoOrdine();

@@ -3,36 +3,30 @@ package app.gestionale;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
-import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 public class Fattorini extends Fragment {
 
@@ -78,33 +72,57 @@ public class Fattorini extends Fragment {
         FloatingActionButton btn_add = (FloatingActionButton) view.findViewById(R.id.btn_Aggiungi);
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {/**
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("Title");
-                // I'm using fragment here so I'm using getView() to provide ViewGroup
-                // but you can provide here any other instance of ViewGroup from your Fragment / Activity
-                View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.text_inpu_password, (ViewGroup) getView(), false);
-                // Set up the input
-                final EditText input = (EditText) viewInflated.findViewById(R.id.input);
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                builder.setView(viewInflated);
+            public void onClick(View view) {
+
+                RelativeLayout inserimentoLayout = new RelativeLayout(context);
+                RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                paramInserimento.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                paramInserimento.setMargins(0, 20, 0, 0);
+                inserimentoLayout.setLayoutParams(paramInserimento);
+
+                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                TextInputLayout nomeInput = new TextInputLayout(context);
+                editTextParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                nomeInput.setLayoutParams(editTextParams);
+                nomeInput.setId(View.generateViewId());
+                EditText nome = new EditText(context);
+                //nome.setLayoutParams(editTextParams);
+                nome.setTextSize(25);
+                nome.setHint("Nome Fattorino");
+                nomeInput.addView(nome);
+
+                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                TextInputLayout cognomeInput = new TextInputLayout(context);
+                EditText cognome = new EditText(context);
+                editTextCognomeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
+                cognomeInput.setLayoutParams(editTextCognomeParams);
+                cognome.setTextSize(25);
+                cognome.setHint("Cognome Fattorino");
+                cognomeInput.addView(cognome);
+
+                inserimentoLayout.addView(nomeInput);
+                inserimentoLayout.addView(cognomeInput);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Inserisci Nuovo Fattorino");
+                builder.setView(inserimentoLayout);
 
                 // Set up the buttons
-                builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Inserisci", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        m_Text = input.getText().toString();
                     }
                 });
-                builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
                     }
                 });
 
-                builder.show();*/
+                builder.show();
             }
         });
 

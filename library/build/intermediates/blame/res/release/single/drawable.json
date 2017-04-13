@@ -1,110 +1,110 @@
 [
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_borderless_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_btn_borderless_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_default_mtrl_shape.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_btn_default_mtrl_shape.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_dialog_material_background_light.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_dialog_material_background_light.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_holo_dark.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_list_selector_holo_dark.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_check_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_btn_check_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_cab_background_internal_bg.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_cab_background_internal_bg.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_default_mtrl_shape.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_btn_default_mtrl_shape.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_colored_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_btn_colored_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_radio_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_btn_radio_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_background_transition_holo_light.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_list_selector_background_transition_holo_light.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_snackbar_background.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\7a3fce0be7f212445de5fbce63cf7857251887f5\\output\\res\\drawable\\design_snackbar_background.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_text_cursor_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_text_cursor_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_cab_background_internal_bg.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_cab_background_internal_bg.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_holo_light.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_list_selector_holo_light.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\rounded_corners.xml",
-        "source": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\src\\main\\res\\drawable\\rounded_corners.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_dialog_material_background_light.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_dialog_material_background_light.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_holo_light.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_list_selector_holo_light.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ratingbar_full_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_ratingbar_full_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_seekbar_track_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_seekbar_track_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_borderless_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_btn_borderless_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_background_transition_holo_light.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_list_selector_background_transition_holo_light.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_dialog_material_background_dark.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_dialog_material_background_dark.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_colored_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_btn_colored_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_textfield_search_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_textfield_search_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_edit_text_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_edit_text_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_seekbar_track_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_seekbar_track_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_textfield_search_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_textfield_search_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_switch_thumb_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_switch_thumb_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_dialog_material_background_dark.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_dialog_material_background_dark.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_fab_background.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\7ac944b6d1e9f2fafa394b9f56e7020285aa7306\\output\\res\\drawable\\design_fab_background.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_holo_dark.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_list_selector_holo_dark.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_check_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_btn_check_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_cab_background_top_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_cab_background_top_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_tab_indicator_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_tab_indicator_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_item_background_holo_dark.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_item_background_holo_dark.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_edit_text_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_edit_text_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_background_transition_holo_dark.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_list_selector_background_transition_holo_dark.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_spinner_textfield_background_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_spinner_textfield_background_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_fab_background.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\7a3fce0be7f212445de5fbce63cf7857251887f5\\output\\res\\drawable\\design_fab_background.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_item_background_holo_dark.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_item_background_holo_dark.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_text_cursor_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_text_cursor_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_item_background_holo_light.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_item_background_holo_light.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_seekbar_thumb_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_seekbar_thumb_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_cab_background_top_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_cab_background_top_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_item_background_holo_light.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_item_background_holo_light.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_list_selector_background_transition_holo_dark.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_list_selector_background_transition_holo_dark.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_spinner_textfield_background_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_spinner_textfield_background_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_btn_radio_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_btn_radio_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_switch_thumb_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_switch_thumb_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_seekbar_thumb_material.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\drawable\\abc_seekbar_thumb_material.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_tab_indicator_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_tab_indicator_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\rounded_corners.xml",
+        "source": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\src\\main\\res\\drawable\\rounded_corners.xml"
     },
     {
-        "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ratingbar_full_material.xml",
-        "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\drawable\\abc_ratingbar_full_material.xml"
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\drawable\\design_snackbar_background.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\7ac944b6d1e9f2fafa394b9f56e7020285aa7306\\output\\res\\drawable\\design_snackbar_background.xml"
     }
 ]
