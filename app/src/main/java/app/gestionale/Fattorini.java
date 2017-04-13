@@ -77,12 +77,14 @@ public class Fattorini extends Fragment {
                 RelativeLayout inserimentoLayout = new RelativeLayout(context);
                 RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 paramInserimento.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                paramInserimento.setMargins(0, 20, 0, 0);
+                paramInserimento.addRule(RelativeLayout.CENTER_VERTICAL);
+                paramInserimento.setMargins(0, 30, 0, 0);
                 inserimentoLayout.setLayoutParams(paramInserimento);
 
-                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 TextInputLayout nomeInput = new TextInputLayout(context);
                 editTextParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextParams.setMargins(40, 0, 0, 40);
                 nomeInput.setLayoutParams(editTextParams);
                 nomeInput.setId(View.generateViewId());
                 EditText nome = new EditText(context);
@@ -91,12 +93,13 @@ public class Fattorini extends Fragment {
                 nome.setHint("Nome Fattorino");
                 nomeInput.addView(nome);
 
-                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout cognomeInput = new TextInputLayout(context);
                 EditText cognome = new EditText(context);
                 editTextCognomeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
+                editTextCognomeParams.setMargins(40, 0, 0, 40);
                 cognomeInput.setLayoutParams(editTextCognomeParams);
                 cognome.setTextSize(25);
                 cognome.setHint("Cognome Fattorino");

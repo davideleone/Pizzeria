@@ -149,10 +149,170 @@ public class RiepilogoOrdini extends Fragment {
             public void onMenuItemClick(FloatingActionMenu fam, int index, FloatingActionButton item) {
                 switch (index) {
                     case 0:
-                        sfondo.getBackground().setAlpha(70);
+                        RelativeLayout.LayoutParams paramContenitore = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                        RelativeLayout layoutInterno = new RelativeLayout(context);
+                        layoutInterno.setLayoutParams(paramContenitore);
+
+                        RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                        paramBarra.setMargins(30, 10, 30, 10);
+                        paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        View view = new View(context);
+                        view.setId(View.generateViewId());
+                        view.setBackgroundColor(getResources().getColor(R.color.celeste));
+                        view.setLayoutParams(paramBarra);
+                        layoutInterno.addView(view);
+
+                        RelativeLayout.LayoutParams paramMessaggio = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramMessaggio.addRule(RelativeLayout.BELOW, view.getId());
+                        paramMessaggio.setMargins(50, 50, 0, 0);
+                        paramMessaggio.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        TextView messaggio = new TextView(context);
+                        messaggio.setText("Con quest'azione tutti i dati relativi agli ordini saranno eliminati definitavamente!");
+                        messaggio.setTextSize(25);
+                        messaggio.setLayoutParams(paramMessaggio);
+                        messaggio.setTextColor(getResources().getColor(R.color.nero));
+                        //messaggio.setTypeface(null, Typeface.BOLD);
+                        layoutInterno.addView(messaggio);
+
+
+                        AlertDialog dialog = new AlertDialog.Builder(context)
+                                .setTitle("Sei sicuro di voler eliminare tutti gli ordini?")
+                                .setView(layoutInterno)
+                                .setPositiveButton("Elimina", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        //  QUERY PER RESETTARE ORDINI DA DB
+
+                                        Toast.makeText(context, "Reset completato!", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                })
+                                .setIcon(R.mipmap.alert)
+                                .show();
                         break;
                     case 1:
-                        item.getBackground().setAlpha(88);
+                        RelativeLayout.LayoutParams paramContenitoreInformazioni = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                        RelativeLayout layoutInformazioni = new RelativeLayout(context);
+                        layoutInformazioni.setLayoutParams(paramContenitoreInformazioni);
+
+                        RelativeLayout.LayoutParams paramBarra2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                        paramBarra2.setMargins(30, 10, 30, 10);
+                        paramBarra2.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        View view2 = new View(context);
+                        view2.setId(View.generateViewId());
+                        view2.setBackgroundColor(getResources().getColor(R.color.celeste));
+                        view2.setLayoutParams(paramBarra2);
+                        layoutInformazioni.addView(view2);
+
+                        RelativeLayout.LayoutParams paramtotale = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramtotale.addRule(RelativeLayout.BELOW, view2.getId());
+                        paramtotale.setMargins(0, 20, 0, 0);
+                        paramtotale.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        TextView totaleSerata = new TextView(context);
+                        totaleSerata.setText("Totale serata: ");
+                        totaleSerata.setId(View.generateViewId());
+                        totaleSerata.setTextSize(25);
+                        totaleSerata.setLayoutParams(paramtotale);
+                        totaleSerata.setTextColor(getResources().getColor(R.color.nero));
+                        layoutInformazioni.addView(totaleSerata);
+
+                        RelativeLayout.LayoutParams paramTotaleConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramTotaleConsegna.addRule(RelativeLayout.BELOW, totaleSerata.getId());
+                        paramTotaleConsegna.setMargins(0, 10, 0, 0);
+                        paramTotaleConsegna.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        TextView totaleSerataConsegna = new TextView(context);
+                        totaleSerataConsegna.setText("Totale consegne: ");
+                        totaleSerataConsegna.setId(View.generateViewId());
+                        totaleSerataConsegna.setTextSize(25);
+                        totaleSerataConsegna.setLayoutParams(paramTotaleConsegna);
+                        totaleSerataConsegna.setTextColor(getResources().getColor(R.color.nero));
+                        layoutInformazioni.addView(totaleSerataConsegna);
+
+                        RelativeLayout.LayoutParams paramTotaleAsporto = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramTotaleAsporto.addRule(RelativeLayout.BELOW, totaleSerataConsegna.getId());
+                        paramTotaleAsporto.setMargins(0, 20, 0, 0);
+                        paramTotaleAsporto.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        TextView totaleSerataAsporto = new TextView(context);
+                        totaleSerataAsporto.setText("Totale asporto: ");
+                        totaleSerataAsporto.setId(View.generateViewId());
+                        totaleSerataAsporto.setTextSize(25);
+                        totaleSerataAsporto.setLayoutParams(paramTotaleAsporto);
+                        totaleSerataAsporto.setTextColor(getResources().getColor(R.color.nero));
+                        layoutInformazioni.addView(totaleSerataAsporto);
+
+                        RelativeLayout.LayoutParams paramBarra3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                        paramBarra3.setMargins(30, 10, 30, 10);
+                        paramBarra3.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        paramBarra3.addRule(RelativeLayout.BELOW, totaleSerataAsporto.getId());
+
+                        View view3 = new View(context);
+                        view3.setId(View.generateViewId());
+                        view3.setBackgroundColor(getResources().getColor(R.color.grigio));
+                        view3.setLayoutParams(paramBarra3);
+                        layoutInformazioni.addView(view3);
+
+                        RelativeLayout.LayoutParams paramCountPizze = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramCountPizze.addRule(RelativeLayout.BELOW, view3.getId());
+                        paramCountPizze.setMargins(0, 20, 0, 0);
+                        paramCountPizze.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        TextView countPizze = new TextView(context);
+                        countPizze.setText("Pizze servite: ");
+                        countPizze.setId(View.generateViewId());
+                        countPizze.setTextSize(25);
+                        countPizze.setLayoutParams(paramCountPizze);
+                        countPizze.setTextColor(getResources().getColor(R.color.nero));
+                        layoutInformazioni.addView(countPizze);
+
+                        RelativeLayout.LayoutParams paramCountBibite = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramCountBibite.addRule(RelativeLayout.BELOW, countPizze.getId());
+                        paramCountBibite.setMargins(0, 20, 0, 0);
+                        paramCountBibite.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        TextView countBibite = new TextView(context);
+                        countBibite.setText("Bibite servite: ");
+                        countBibite.setId(View.generateViewId());
+                        countBibite.setTextSize(25);
+                        countBibite.setLayoutParams(paramCountBibite);
+                        countBibite.setTextColor(getResources().getColor(R.color.nero));
+                        layoutInformazioni.addView(countBibite);
+
+                        RelativeLayout.LayoutParams paramCountGastro = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramCountGastro.addRule(RelativeLayout.BELOW, countBibite.getId());
+                        paramCountGastro.setMargins(0, 20, 0, 0);
+                        paramCountGastro.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                        TextView countGastro = new TextView(context);
+                        countGastro.setText("Gastronomia servita: ");
+                        countGastro.setId(View.generateViewId());
+                        countGastro.setTextSize(25);
+                        countGastro.setLayoutParams(paramCountGastro);
+                        countGastro.setTextColor(getResources().getColor(R.color.nero));
+                        layoutInformazioni.addView(countGastro);
+
+
+                        AlertDialog dialog2 = new AlertDialog.Builder(context)
+                                .setTitle("Riepilogo Serata")
+                                .setView(layoutInformazioni)
+                                .setPositiveButton("Stampa", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        //STAMPA
+                                    }
+                                })
+                                .setIcon(R.drawable.pizza)
+                                .show();
+
                         break;
                     case 2:
                         NuovoOrdine fragment = new NuovoOrdine();

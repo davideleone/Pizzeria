@@ -5,5 +5,7 @@
     <color name="colorAccent">#EF634D</color>
     <color name="grigio">#C1C0C0</color>
     <color name="giallo">#EFDD3B</color>
+    <color name="celeste">#64b5f6</color>
     <color name="menu_primary">#FF8A65</color>
+    <color name="nero">#000000</color>
 </resources>

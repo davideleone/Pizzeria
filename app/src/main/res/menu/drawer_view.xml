@@ -27,7 +27,7 @@
 
             android:icon="@drawable/ic_menu_manage"
 
-            android:title="Contatti" />
+            android:title="Clienti" />
 
     </group>
 
