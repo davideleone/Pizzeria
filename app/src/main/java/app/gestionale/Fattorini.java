@@ -4,18 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -34,10 +33,8 @@ public class Fattorini extends Fragment {
     private FragmentActivity listener;
     private Bundle bundle;
     private Context context;
-
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
-    private String m_Text = "";
 
     @Override
     public void onAttach(Context context) {
@@ -65,11 +62,10 @@ public class Fattorini extends Fragment {
 
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_fattorini);
 
-
-        caricaOrdini();
-     //   aggiornaFattorini();
+        caricaFattorini();
 
         FloatingActionButton btn_add = (FloatingActionButton) view.findViewById(R.id.btn_Aggiungi);
+
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,8 +83,11 @@ public class Fattorini extends Fragment {
                 editTextParams.setMargins(40, 0, 0, 40);
                 nomeInput.setLayoutParams(editTextParams);
                 nomeInput.setId(View.generateViewId());
-                EditText nome = new EditText(context);
                 //nome.setLayoutParams(editTextParams);
+
+                final TextInputEditText nome = new TextInputEditText(context);
+                final TextInputEditText cognome = new TextInputEditText(context);
+
                 nome.setTextSize(25);
                 nome.setHint("Nome Fattorino");
                 nomeInput.addView(nome);
@@ -96,7 +95,6 @@ public class Fattorini extends Fragment {
                 RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout cognomeInput = new TextInputLayout(context);
-                EditText cognome = new EditText(context);
                 editTextCognomeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
                 editTextCognomeParams.setMargins(40, 0, 0, 40);
@@ -108,41 +106,60 @@ public class Fattorini extends Fragment {
                 inserimentoLayout.addView(nomeInput);
                 inserimentoLayout.addView(cognomeInput);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Inserisci Nuovo Fattorino");
-                builder.setView(inserimentoLayout);
 
-                // Set up the buttons
-                builder.setPositiveButton("Inserisci", new DialogInterface.OnClickListener() {
+                final AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setView(inserimentoLayout)
+                        .setTitle("Inserisci Nuovo Fattorino")
+                        .setPositiveButton("Conferma", null)
+                        .setNegativeButton("Annulla", null)
+                        .create();
+
+                dialog.show();
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(View v) {
+                        Boolean toClose = true;
+                        String strNome = nome.getText().toString();
+                        String strCognome = cognome.getText().toString();
+
+                        if (strNome.isEmpty()) {
+                            toClose = false;
+                            nome.setError("Inserisci nome");
+                        }
+                        if (strCognome.isEmpty()) {
+                            toClose = false;
+                            cognome.setError("Inserisci cognome");
+                        }
+
+                        if (toClose) {
+                            new HttpManager.AsyncManager(new AsyncResponse() {
+                                @Override
+                                public void processFinish(Object output) {
+                                    Toast.makeText(context, "Fattorino inserito correttamente", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            }, context, "CREA_FATTORINO", new String[]{strNome, strCognome}).execute();
+                        }
                     }
                 });
-                builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
             }
         });
 
         return view;
     }
 
-    private void caricaOrdini(){
+    private void caricaFattorini() {
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
-                processaOrdini( output );
-            };
+                caricaFattorini(output);
+            }
         }, context, "GET_TOTALE_FATTORINI", new String[]{Funzioni.getCurrentDate()}).execute();
     }
 
 
-    private void processaOrdini(Object param) {
+    private void caricaFattorini(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if(!lista.isEmpty()){

@@ -176,16 +176,18 @@ public class RiepilogoOrdini extends Fragment {
                         //messaggio.setTypeface(null, Typeface.BOLD);
                         layoutInterno.addView(messaggio);
 
-
                         AlertDialog dialog = new AlertDialog.Builder(context)
                                 .setTitle("Sei sicuro di voler eliminare tutti gli ordini?")
                                 .setView(layoutInterno)
                                 .setPositiveButton("Elimina", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-
-                                        //  QUERY PER RESETTARE ORDINI DA DB
-
-                                        Toast.makeText(context, "Reset completato!", Toast.LENGTH_SHORT).show();
+                                        new HttpManager.AsyncManager(new AsyncResponse() {
+                                            @Override
+                                            public void processFinish(Object output) {
+                                                aggiornaTabella();
+                                                Toast.makeText(context, "Reset completato!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }, context, "ELIMINA_ORDINI_COMPLETI", new String[]{}).execute();
                                     }
                                 })
                                 .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
@@ -344,7 +346,7 @@ public class RiepilogoOrdini extends Fragment {
             @Override
             public void processFinish(Object output) {
                 aggiornaFattorini( output );
-            };
+            }
         }, context, "GET_ELENCO_FATTORINI", new String[]{}).execute();
     }
 
@@ -419,7 +421,7 @@ public class RiepilogoOrdini extends Fragment {
             @Override
             public void processFinish(Object output) {
                 processaOrdini( output );
-            };
+            }
         }, context, "MONITORA_ORDINE", new String[]{dataRicerca}).execute();
     }
 
@@ -461,7 +463,7 @@ public class RiepilogoOrdini extends Fragment {
                             @Override
                             public void processFinish(Object output) {
                                 fixDettagliPizze( output , telefono, cognome);
-                            };
+                            }
                         }, context, "GET_PIZZE_CON_EXTRA", new String[]{idOrdine}).execute();
                     }
                 });
@@ -503,7 +505,7 @@ public class RiepilogoOrdini extends Fragment {
                                             public void processFinish(Object output) {
                                                 Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
                                                 aggiornaTabella();
-                                            };
+                                            }
                                         }, context, "MANDA_IN_CONSEGNA", new String[]{idOrdine}).execute();
                                     };
                                 }, context, "ASSEGNA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
@@ -513,7 +515,7 @@ public class RiepilogoOrdini extends Fragment {
                                     public void processFinish(Object output) {
                                         Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
                                         aggiornaTabella();
-                                    };
+                                    }
                                 }, context, "CAMBIA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
                             }
                         }
@@ -548,7 +550,7 @@ public class RiepilogoOrdini extends Fragment {
                                         public void processFinish(Object output) {
                                             aggiornaTabella();
                                             Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
-                                        };
+                                        }
                                     }, context, "ELIMINA_ORDINE", new String[]{idOrdine}).execute();
                                 }
                             })
