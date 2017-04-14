@@ -10,13 +10,32 @@
     app:popupTheme="@style/AppTheme.PopupOverlay"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <Button
-        android:id="@+id/inserisciOrdine"
+    <RelativeLayout
+        android:id="@+id/layoutInserimentoToolbar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="right"
-        android:background="#ffffff"
-        android:text="Inserisci"
-        android:textColor="@color/colorPrimaryDark"
-        android:visibility="gone" />
+        android:layout_marginEnd="30dp"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/testoInserisci"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Inserisci"
+            android:textColor="#ffffff" />
+
+        <ImageButton
+            android:id="@+id/inserisciOrdine"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/testoInserisci"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_arrow_dx" />
+    </RelativeLayout>
 </android.support.v7.widget.Toolbar>

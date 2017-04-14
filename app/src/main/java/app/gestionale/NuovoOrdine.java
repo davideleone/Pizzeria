@@ -6,6 +6,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -18,6 +20,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -84,8 +87,9 @@ public class NuovoOrdine extends Fragment {
 
         View view = inflater.inflate(R.layout.activity_nuovo_ordine, container, false);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        Button btnInserisci = (Button) toolbar.findViewById(R.id.inserisciOrdine);
-        btnInserisci.setVisibility(View.VISIBLE);
+        RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
+        ImageButton btnInserisci = (ImageButton) toolbar.findViewById(R.id.inserisciOrdine);
+        layoutInserimentoToolbar.setVisibility(View.VISIBLE);
         context = view.getContext();
         super.onCreate(savedInstanceState);
 
@@ -137,6 +141,149 @@ public class NuovoOrdine extends Fragment {
             }
         }, null, "CREA_ORDINE", new String[]{}).execute();
 
+
+        btnInserisci.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RelativeLayout inserimentoLayout = new RelativeLayout(context);
+                RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                paramInserimento.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                paramInserimento.addRule(RelativeLayout.CENTER_VERTICAL);
+                paramInserimento.setMargins(0, 30, 0, 0);
+                inserimentoLayout.setLayoutParams(paramInserimento);
+
+                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                TextInputLayout nomeInput = new TextInputLayout(context);
+                editTextParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextParams.setMargins(40, 0, 0, 40);
+                nomeInput.setLayoutParams(editTextParams);
+                nomeInput.setId(View.generateViewId());
+                //nome.setLayoutParams(editTextParams);
+
+                final TextInputEditText nome = new TextInputEditText(context);
+                final TextInputEditText cognome = new TextInputEditText(context);
+                final TextInputEditText telefono = new TextInputEditText(context);
+                final CheckBox consegna = new CheckBox(context);
+                final TextInputEditText via = new TextInputEditText(context);
+                final TextInputEditText civico = new TextInputEditText(context);
+
+
+                nome.setTextSize(25);
+                nome.setHint("Nome");
+                nomeInput.addView(nome);
+
+                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                TextInputLayout cognomeInput = new TextInputLayout(context);
+                editTextCognomeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
+                editTextCognomeParams.setMargins(40, 0, 0, 40);
+                cognomeInput.setLayoutParams(editTextCognomeParams);
+                cognome.setTextSize(25);
+                cognome.setHint("Cognome");
+                cognomeInput.setId(View.generateViewId());
+                cognomeInput.addView(cognome);
+
+                RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                TextInputLayout telefonoInput = new TextInputLayout(context);
+                editTextTelefonoParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextTelefonoParams.addRule(RelativeLayout.BELOW, cognomeInput.getId());
+                editTextTelefonoParams.setMargins(40, 0, 0, 40);
+                telefonoInput.setLayoutParams(editTextTelefonoParams);
+                telefono.setTextSize(25);
+                telefono.setHint("Telefono");
+                telefonoInput.setId(View.generateViewId());
+                telefonoInput.addView(telefono);
+
+                RelativeLayout.LayoutParams chechboxConsegnaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                chechboxConsegnaParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                chechboxConsegnaParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
+                chechboxConsegnaParams.setMargins(40, 0, 0, 40);
+                consegna.setText("Consegna");
+                consegna.setTextSize(25);
+                consegna.setLayoutParams(chechboxConsegnaParams);
+                consegna.setId(View.generateViewId());
+
+                RelativeLayout layoutConsegna = new RelativeLayout(context);
+                RelativeLayout.LayoutParams layoutConsegnaParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                layoutConsegnaParams.addRule(RelativeLayout.BELOW, consegna.getId());
+                layoutConsegnaParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                layoutConsegna.setLayoutParams(layoutConsegnaParams);
+                layoutConsegna.setVisibility(View.GONE);
+
+                RelativeLayout.LayoutParams editTextViaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                TextInputLayout viaInput = new TextInputLayout(context);
+                editTextViaParams.setMargins(40, 0, 0, 40);
+                viaInput.setLayoutParams(editTextViaParams);
+                via.setTextSize(25);
+                via.setHint("Via/P.zza/Loc.");
+                viaInput.addView(via);
+                viaInput.setId(View.generateViewId());
+
+
+                RelativeLayout.LayoutParams editTextCivicoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                TextInputLayout civicoInput = new TextInputLayout(context);
+                editTextCivicoParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextCivicoParams.addRule(RelativeLayout.END_OF, viaInput.getId());
+                editTextCivicoParams.setMargins(40, 0, 0, 40);
+                civicoInput.setLayoutParams(editTextCivicoParams);
+                civico.setTextSize(25);
+                civico.setHint("Civico");
+                civicoInput.addView(civico);
+
+                layoutConsegna.addView(viaInput);
+                layoutConsegna.addView(civicoInput);
+
+                inserimentoLayout.addView(nomeInput);
+                inserimentoLayout.addView(cognomeInput);
+                inserimentoLayout.addView(telefonoInput);
+                inserimentoLayout.addView(consegna);
+                inserimentoLayout.addView(layoutConsegna);
+
+
+                final AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setView(inserimentoLayout)
+                        .setTitle("Inserisci Nuovo Ordine")
+                        .setPositiveButton("Inserisci", null)
+                        .setNegativeButton("Annulla", null)
+                        .create();
+
+                dialog.show();
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Boolean toClose = true;
+                        String strNome = nome.getText().toString();
+                        String strCognome = cognome.getText().toString();
+
+                        if (strNome.isEmpty()) {
+                            toClose = false;
+                            nome.setError("Inserisci nome");
+                        }
+                        if (strCognome.isEmpty()) {
+                            toClose = false;
+                            cognome.setError("Inserisci cognome");
+                        }
+
+                        if (toClose) {
+                            new HttpManager.AsyncManager(new AsyncResponse() {
+                                @Override
+                                public void processFinish(Object output) {
+                                    Toast.makeText(context, "Ordine completato!", Toast.LENGTH_SHORT).show();
+                                    dialog.dismiss();
+                                }
+                            }, context, "CREA_FATTORINO", new String[]{strNome, strCognome}).execute();
+                        }
+                    }
+                });
+            }
+
+        });
 
         return view;
     }
