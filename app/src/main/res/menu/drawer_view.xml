@@ -9,7 +9,7 @@
 
             android:id="@+id/nav_first_fragment"
 
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_menu_ordinazione"
 
             android:title="Ordinazione" />
 
@@ -17,7 +17,7 @@
 
             android:id="@+id/nav_second_fragment"
 
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_menu_fattorini"
 
             android:title="Fattorini" />
 
@@ -25,17 +25,9 @@
 
             android:id="@+id/nav_third_fragment"
 
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_menu_clienti"
 
             android:title="Clienti" />
-
-    </group>
-
-    <group>
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_menu_send"
-            android:title="Logout" />
 
     </group>
 

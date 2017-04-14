@@ -588,7 +588,7 @@ public class RiepilogoOrdini extends Fragment {
         RelativeLayout layoutDettaglio = new RelativeLayout(context);
         layoutDettaglio.setId(View.generateViewId());
 
-        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramsStatoText.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramsStatoText.setMargins(0, 15, 0, 0);
         TextView textStato = new TextView(context);
@@ -597,7 +597,7 @@ public class RiepilogoOrdini extends Fragment {
         textStato.setTextAppearance(context, R.style.testoGrande);
         textStato.setLayoutParams(paramsStatoText);
 
-        RelativeLayout.LayoutParams paramsStato = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramsStato = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
         paramsStato.addRule(RelativeLayout.END_OF, textStato.getId());
         paramsStato.addRule(RelativeLayout.CENTER_HORIZONTAL);
         ImageView imgStato = new ImageView(context);
@@ -605,7 +605,7 @@ public class RiepilogoOrdini extends Fragment {
         imgStato.setLayoutParams(paramsStato);
         imgStato.setImageResource(R.drawable.giallo);
 
-        RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
         paramsConsegna.addRule(RelativeLayout.BELOW, textStato.getId());
         paramsConsegna.addRule(RelativeLayout.CENTER_HORIZONTAL);
         TextView textConsegna = new TextView(context);
@@ -614,7 +614,7 @@ public class RiepilogoOrdini extends Fragment {
         textConsegna.setTextAppearance(context, R.style.testoGrande);
         textConsegna.setLayoutParams(paramsConsegna);
 
-        RelativeLayout.LayoutParams paramsTelefono = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramsTelefono = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
         paramsTelefono.addRule(RelativeLayout.BELOW, textConsegna.getId());
         paramsTelefono.addRule(RelativeLayout.CENTER_HORIZONTAL);
         TextView textTelefono = new TextView(context);
