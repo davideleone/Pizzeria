@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="right"
         android:layout_marginEnd="30dp"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/testoInserisci"

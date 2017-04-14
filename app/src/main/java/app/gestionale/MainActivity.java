@@ -1,9 +1,6 @@
 package app.gestionale;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -19,8 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,6 +23,9 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
+    ArrayList<String> listaPizze;
+    ArrayList<String> listaIngredienti;
+    ArrayList<String> listaPrezzi;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private NavigationView nvDrawer;
@@ -41,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private int hour = c.get(Calendar.HOUR_OF_DAY);
     private int day = c.get(Calendar.DAY_OF_WEEK);
     private TextView nomeAct;
-    ArrayList<String> listaPizze;
-    ArrayList<String> listaIngredienti;
-    ArrayList<String> listaPrezzi;
     private String idOrdine = "";
     private String modifica = "";
 
@@ -71,7 +66,36 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
 
+
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                riempiClienti(output);
+            }
+        }, this, "GET_LISTA_UTENTI", new String[]{}).execute();
+
+
         //logo = (ImageView) findViewById(R.id.logo_accipizza);
+    }
+
+    private void riempiClienti(Object param) {
+        /*List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        SparseArray<List<String>> hashColonne = new SparseArray<List<String>>();
+        while (itr.hasNext()) {
+            HashMap<String, String> riga = itr.next();
+            final int idcliente = Integer.parseInt(riga.get("id"));
+            List<String> listaTemp = (hashColonne.get(idcliente) != null) ? hashColonne.get(idcliente) : new ArrayList<HashMap<String, String>>();
+            HashMap<String, String> row = new HashMap<String, String>(4);
+            row.put("cognome", riga.get("cognome"));
+            row.put("nome", riga.get("nome"));
+            row.put("prefisso", riga.get("prefisso"));
+            row.put("telefono", riga.get("telefono"));
+            row.put("via", riga.get("via"));
+            row.put("citta", riga.get("citta"));
+            listaTemp.add(row);
+            hashColonne.put(idcliente, listaTemp);
+        }*/
     }
 
 
@@ -105,12 +129,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.nav_second_fragment:
                 fragmentClass = Fattorini.class;
-                break;/**
-            case R.id.nav_third_fragment:
-                //fragmentClass = Contatti.class;
                 break;
-            case R.id.nav_logout:
-                break;*/
+            case R.id.nav_third_fragment:
+                fragmentClass = Clienti.class;
+                break;
             default:
                 fragmentClass = MainActivity.class;
         }

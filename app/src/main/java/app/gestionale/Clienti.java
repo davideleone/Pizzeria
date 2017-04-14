@@ -45,13 +45,14 @@ public class Clienti extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.activity_fattorini, container, false);
+        View view = inflater.inflate(R.layout.activity_clienti, container, false);
         context = view.getContext();
         super.onCreate(savedInstanceState);
 
 
         return view;
     }
+
 
     private TextView makeTableRowWithText(String text, int resource) {
         recyclableTextView = new TextView(context);
