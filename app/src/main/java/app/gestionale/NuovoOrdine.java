@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,9 +73,9 @@ public class NuovoOrdine extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         bundle = this.getArguments();
     }
+
 
     @Nullable
     @Override
@@ -82,6 +83,9 @@ public class NuovoOrdine extends Fragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.activity_nuovo_ordine, container, false);
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        Button btnInserisci = (Button) toolbar.findViewById(R.id.inserisciOrdine);
+        btnInserisci.setVisibility(View.VISIBLE);
         context = view.getContext();
         super.onCreate(savedInstanceState);
 
