@@ -450,15 +450,10 @@ public class NuovoOrdine extends Fragment {
 
         //LAYOUT INFERIORE CON TEXTVIEW
         RelativeLayout.LayoutParams paramLayoutAggiunte = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        if (layoutAggiunte.getChildCount() > 0) {
-            paramLayoutAggiunte.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
-        } else {
-            paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
-        }
+        paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
         layoutAggiunte.setLayoutParams(paramLayoutAggiunte);
         paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
         paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        //paramAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
         paramAggiunte.setMargins(0, 20, 0, 0);
         aggiunte.setLayoutParams(paramAggiunte);
         aggiunte.setAdapter(adapterAggiunte);
