@@ -302,7 +302,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@id/totale"
-                android:text="0,00 € "
+                android:text="0.00 € "
                 android:textColor="@color/giallo"
                 android:textStyle="bold" />
         </RelativeLayout>

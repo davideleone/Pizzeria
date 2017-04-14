@@ -52,9 +52,14 @@ public class NuovoOrdine extends Fragment {
     private RelativeLayout contenitoreIngredienti;
     private String idColonna = "";
     private RelativeLayout layoutAggiunte;
+    private View barraMezzo;
     private RelativeLayout.LayoutParams paramAggiunte;
-    private String nomeProdotto = "";
 
+    private HashMap<String, Float> hashExtra;
+
+    private TableLayout tableOrdiniPizza;
+    private TableLayout tableOrdiniGastronomia;
+    private TableLayout tableOrdiniBibite;
 
     @Override
     public void onAttach(Context context) {
@@ -126,8 +131,6 @@ public class NuovoOrdine extends Fragment {
             public void processFinish(Object output) {
                 creaOrdine(output);
             }
-
-            ;
         }, null, "CREA_ORDINE", new String[]{}).execute();
 
 
@@ -239,8 +242,6 @@ public class NuovoOrdine extends Fragment {
                                 Toast.makeText(context, "Prodotto Inserito!", Toast.LENGTH_SHORT).show();
                                 creaConto(ordine, output);
                             }
-
-                            ;
                         }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, ordine}).execute();
                     }
                 });
@@ -249,41 +250,78 @@ public class NuovoOrdine extends Fragment {
     }
 
     private void creaConto(String idOrdine, Object param) {
-        new HttpManager.AsyncManager(new AsyncResponse() {
-            @Override
-            public void processFinish(Object output) {
-                riempiConto(output);
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        if (itr.hasNext()) {
+            while (itr.hasNext()) {
+                HashMap<String, String> riga = itr.next();
+                final String valColonna = riga.get("generated_id");
+                new HttpManager.AsyncManager(new AsyncResponse() {
+                    @Override
+                    public void processFinish(Object output) {
+                        inizializzaTabelle();
+                        riempiConto(output);
+                    }
+                }, null, "GET_PRODOTTO_IN_ORDINE", new String[]{valColonna}).execute();
             }
+        }
+    }
 
-            ;
-        }, null, "GET_PRODOTTO_IN_ORDINE", new String[]{idOrdine}).execute();
+    private void inizializzaTabelle() {
+        TableLayout.LayoutParams layoutTabella = new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        if (tableOrdiniPizza == null) {
+            tableOrdiniPizza = new TableLayout(context);
+            tableOrdiniPizza.setLayoutParams(layoutTabella);
+            tableOrdiniPizza.setGravity(Gravity.CENTER_HORIZONTAL);
+
+            tableOrdiniGastronomia = new TableLayout(context);
+            tableOrdiniGastronomia.setLayoutParams(layoutTabella);
+            tableOrdiniGastronomia.setGravity(Gravity.CENTER_HORIZONTAL);
+
+            tableOrdiniBibite = new TableLayout(context);
+            tableOrdiniBibite.setLayoutParams(layoutTabella);
+            tableOrdiniBibite.setGravity(Gravity.CENTER_HORIZONTAL);
+
+            layoutContoPizze.addView(tableOrdiniPizza);
+            layoutContoBibite.addView(tableOrdiniBibite);
+            layoutContoGastronomia.addView(tableOrdiniGastronomia);
+        }
+    }
+
+    private void rimuoviElemento(String tipo, TableRow toRemove) {
+        switch (tipo) {
+            case "Pizza":
+                tableOrdiniPizza.removeView(toRemove);
+                break;
+            case "Bibita":
+                tableOrdiniBibite.removeView(toRemove);
+                break;
+            case "Gastronomia":
+                tableOrdiniGastronomia.removeView(toRemove);
+                break;
+        }
+    }
+
+    private void aggiornaTotale(float prezzo, boolean isSomma) {
+        float current = Float.parseFloat((totale.getText().toString()).substring(0, totale.getText().toString().length() - 2));
+        current = (isSomma) ? current + prezzo : current - prezzo;
+        totale.setText(new DecimalFormat("#0.00 €").format(current));
     }
 
     private void riempiConto(final Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
-            final TableLayout tableOrdiniPizza = new TableLayout(context);
-            TableLayout.LayoutParams layoutTabella = new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            tableOrdiniPizza.setLayoutParams(layoutTabella);
-            tableOrdiniPizza.setGravity(Gravity.CENTER_HORIZONTAL);
-            final TableLayout tableOrdiniGastronomia = new TableLayout(context);
-            tableOrdiniGastronomia.setLayoutParams(layoutTabella);
-            tableOrdiniGastronomia.setGravity(Gravity.CENTER_HORIZONTAL);
-            final TableLayout tableOrdiniBibite = new TableLayout(context);
-            tableOrdiniBibite.setLayoutParams(layoutTabella);
-            tableOrdiniBibite.setGravity(Gravity.CENTER_HORIZONTAL);
-            float totaleOrdine = 0;
+
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
-                final String idColonna = riga.get("id_colonna");
+                final String valColonna = riga.get("id_colonna");
                 final String tipo = riga.get("tipo");
                 final String nomeProdotto = riga.get("nomeprodotto");
-                setNomeProdotto(nomeProdotto);
-                totaleOrdine += Float.parseFloat(riga.get("prezzoprodotto"));
-                final String prezzoProdotto = new DecimalFormat("#0.00 €").format((double) Float.parseFloat(riga.get("prezzoprodotto")));
+                final float prezzoFloat = Float.parseFloat(riga.get("prezzoprodotto"));
+                final String prezzoString = new DecimalFormat("#0.00 €").format(prezzoFloat);
 
-                totale.setText(new DecimalFormat("#0.00 €").format(totaleOrdine));
+                aggiornaTotale(prezzoFloat, true);
 
                 final TableRow rowPizza = new TableRow(context);
                 TextView txtPizza;
@@ -296,7 +334,7 @@ public class NuovoOrdine extends Fragment {
                 rowPizza.addView(txtPizza);
 
                 TextView txtPrezzo;
-                txtPrezzo = makeTableRowWithText(prezzoProdotto);
+                txtPrezzo = makeTableRowWithText(prezzoString);
                 txtPrezzo.setGravity(Gravity.CENTER);
                 rowPizza.addView(txtPrezzo);
 
@@ -327,7 +365,8 @@ public class NuovoOrdine extends Fragment {
                 btnElimina.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, new String[]{idColonna});
+                        HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, new String[]{valColonna});
+                        /**
                         switch (tipo) {
                             case "Pizza":
                                 tableOrdiniPizza.removeView(rowPizza);
@@ -338,12 +377,14 @@ public class NuovoOrdine extends Fragment {
                             case "Gastronomia":
                                 tableOrdiniGastronomia.removeView(rowPizza);
                                 break;
-                        }
-
+                         }*/
+                        //rowPizza.setVisibility(View.GONE);
+                        rimuoviElemento(tipo, rowPizza);
                         if (tableOrdiniPizza.getChildCount() == 0)
                             layoutContoPizze.setBackgroundResource(0);
                         if (tableOrdiniGastronomia.getChildCount() == 0)
                             layoutContoGastronomia.setBackgroundResource(0);
+                        aggiornaTotale(prezzoFloat, false);
                         Toast.makeText(context, nomeProdotto + " eliminato!", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -360,17 +401,75 @@ public class NuovoOrdine extends Fragment {
                         break;
                 }
             }
-            layoutContoPizze.addView(tableOrdiniPizza);
             if (tableOrdiniPizza.getChildCount() > 0)
                 layoutContoPizze.setBackgroundResource(R.drawable.table_bottom_style);
-            layoutContoBibite.addView(tableOrdiniBibite);
-            layoutContoGastronomia.addView(tableOrdiniGastronomia);
             if (tableOrdiniGastronomia.getChildCount() > 0)
                 layoutContoGastronomia.setBackgroundResource(R.drawable.table_bottom_style);
-
         }
     }
 
+    private void inizializzaAggiunte(Object param, RelativeLayout baseLayout) {
+        if (layoutAggiunte == null) {
+            List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+            Iterator<HashMap<String, String>> itrAgg = lista.iterator();
+            hashExtra = new HashMap<String, Float>(lista.size());
+            while (itrAgg.hasNext()) {
+                HashMap<String, String> riga = itrAgg.next();
+                final String nome = riga.get("nomeingrediente");
+                final float prezzo = Float.parseFloat(riga.get("prezzo"));
+                hashExtra.put(nome, prezzo);
+            }
+            adapterAggiunte = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(hashExtra.keySet()));
+
+            barraMezzo = new View(context);
+            layoutAggiunte = new RelativeLayout(context);
+            layoutAggiunte.addView(aggiunte);
+
+            aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
+                    new HttpManager.AsyncManager(new AsyncResponse() {
+                        @Override
+                        public void processFinish(Object output) {
+                            aggiungiExtra(output, hashExtra.get(aggiunte.getText().toString()));
+                        }
+                    }, null, "AGGIUNGI_EXTRA", new String[]{aggiunte.getText().toString(), idColonna, aggiunte.getText().toString(), "1"}).execute();
+                }
+            });
+
+        }
+
+        RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+        paramBarra.setMargins(30, 30, 30, 30);
+        paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        paramBarra.addRule(RelativeLayout.BELOW, layoutIngredienti.getId());
+
+        barraMezzo.setId(View.generateViewId());
+        barraMezzo.setBackgroundColor(getResources().getColor(R.color.grigio));
+        barraMezzo.setLayoutParams(paramBarra);
+
+        //LAYOUT INFERIORE CON TEXTVIEW
+        RelativeLayout.LayoutParams paramLayoutAggiunte = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        if (layoutAggiunte.getChildCount() > 0) {
+            paramLayoutAggiunte.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
+        } else {
+            paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
+        }
+        layoutAggiunte.setLayoutParams(paramLayoutAggiunte);
+        paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+        paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        //paramAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
+        paramAggiunte.setMargins(0, 20, 0, 0);
+        aggiunte.setLayoutParams(paramAggiunte);
+        aggiunte.setAdapter(adapterAggiunte);
+
+        if (barraMezzo.getParent() != null)
+            ((ViewGroup) barraMezzo.getParent()).removeView(barraMezzo);
+        baseLayout.addView(barraMezzo);
+        if (layoutAggiunte.getParent() != null)
+            ((ViewGroup) layoutAggiunte.getParent()).removeView(layoutAggiunte);
+        baseLayout.addView(layoutAggiunte);
+    }
 
     private void impostaCheckBox(String nomePizza, final Object param) {
         //LAYOUT CHE CONTIENE TUTTO
@@ -382,6 +481,7 @@ public class NuovoOrdine extends Fragment {
         paramLayoutIngredienti.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramLayoutIngredienti.setMargins(0, 20, 0, 0);
         layoutIngredienti.setLayoutParams(paramLayoutIngredienti);
+        final String nomeProdotto = nomePizza;
 
         //TABELLA CON CHECKBOX
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
@@ -391,8 +491,8 @@ public class NuovoOrdine extends Fragment {
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final String nomeIngrediente = riga.get("nomeingrediente");
-                final String idcolonna = riga.get("id_colonna");
-                setIdColonna(idcolonna);
+                final String valColonna = riga.get("id_colonna");
+                setIdColonna(valColonna);
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 CheckBox selezione = new CheckBox(context);
@@ -405,7 +505,7 @@ public class NuovoOrdine extends Fragment {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (!isChecked)
-                            HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, idcolonna, nomeIngrediente, "2");
+                            HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, valColonna, nomeIngrediente, "2");
                     }
                 });
 
@@ -429,62 +529,19 @@ public class NuovoOrdine extends Fragment {
 
         contenitoreIngredienti.addView(layoutIngredienti);
 
-        RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
-        paramBarra.setMargins(30, 30, 30, 30);
-        paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        paramBarra.addRule(RelativeLayout.BELOW, layoutIngredienti.getId());
-
-        View barraMezzo = new View(context);
-        barraMezzo.setId(View.generateViewId());
-        barraMezzo.setBackgroundColor(getResources().getColor(R.color.grigio));
-        barraMezzo.setLayoutParams(paramBarra);
-        contenitoreIngredienti.addView(barraMezzo);
-
-
-        //LAYOUT INFERIORE CON TEXTVIEW
-        layoutAggiunte = new RelativeLayout(context);
-        RelativeLayout.LayoutParams paramLayoutAggiunte = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
-        layoutAggiunte.setLayoutParams(paramLayoutAggiunte);
-        paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
-        paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        paramAggiunte.setMargins(0, 20, 0, 0);
-
-
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
-                riempiAggiunte(output);
+                inizializzaAggiunte(output, contenitoreIngredienti);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Dettaglio " + nomeProdotto);
+                builder.setView(contenitoreIngredienti);
+                builder.create().show();
             }
         }, null, "GET_AGGIUNTE", new String[]{}).execute();
-
-        aggiunte.setLayoutParams(paramAggiunte);
-        if (aggiunte.getParent() != null)
-            ((ViewGroup) aggiunte.getParent()).removeView(aggiunte);
-        layoutAggiunte.addView(aggiunte);
-
-        aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
-                new HttpManager.AsyncManager(new AsyncResponse() {
-                    @Override
-                    public void processFinish(Object output) {
-                        AggiungiExtra(nomeProdotto, output);
-                    }
-                }, null, "AGGIUNGI_EXTRA", new String[]{aggiunte.getText().toString(), idColonna, aggiunte.getText().toString(), "1"}).execute();
-            }
-        });
-
-        contenitoreIngredienti.addView(layoutAggiunte);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Dettaglio " + nomeProdotto);
-        builder.setView(contenitoreIngredienti);
-        builder.create().show();
     }
 
-    private void AggiungiExtra(String nomeProdotto, Object param) {
-
+    private void aggiungiExtra(Object param, final float prezzoIngrediente) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
@@ -493,6 +550,7 @@ public class NuovoOrdine extends Fragment {
                 final String idExtra = riga.get("generated_id");
 
                 Toast.makeText(context, aggiunte.getText().toString() + " inserito", Toast.LENGTH_SHORT).show();
+                aggiornaTotale(prezzoIngrediente, true);
 
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 layoutSelezione.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
@@ -509,9 +567,11 @@ public class NuovoOrdine extends Fragment {
                 newIngrediente.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (!isChecked)
+                        if (!isChecked) {
                             HttpManager.execSimple("TOGLI_EXTRA", null, idExtra);
-                        layoutAggiunte.removeView(newIngrediente);
+                            aggiornaTotale(prezzoIngrediente, false);
+                            layoutAggiunte.removeView(newIngrediente);
+                        }
                     }
                 });
 
@@ -521,19 +581,6 @@ public class NuovoOrdine extends Fragment {
                 //aggiunte.setLayoutParams(paramAggiunte);
             }
         }
-    }
-
-    private void riempiAggiunte(Object param) {
-        final ArrayList<String> listaAggiunte = new ArrayList<>();
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itrAgg = lista.iterator();
-        while (itrAgg.hasNext()) {
-            HashMap<String, String> riga2 = itrAgg.next();
-            listaAggiunte.add(riga2.get("nomeingrediente"));
-        }
-
-        adapterAggiunte = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listaAggiunte);
-        aggiunte.setAdapter(adapterAggiunte);
     }
 
     private TextView makeTableRowWithText(String text) {
@@ -555,12 +602,8 @@ public class NuovoOrdine extends Fragment {
         return btnNuovo;
     }
 
-    private void setIdColonna(String idcolonna) {
-        this.idColonna = idcolonna;
-    }
-
-    private void setNomeProdotto(String nomeProdotto) {
-        this.nomeProdotto = nomeProdotto;
+    private void setIdColonna(String val) {
+        this.idColonna = val;
     }
 
 }
