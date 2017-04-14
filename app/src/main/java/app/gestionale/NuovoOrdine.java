@@ -412,8 +412,31 @@ public class NuovoOrdine extends Fragment {
         }
     }
 
+    /**
+     * private void fixIngredientiExtra(Object param){
+     * List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+     * Iterator<HashMap<String, String>> itr = lista.iterator();
+     * SparseArray<List<HashMap<String, String>>> hashColonne = new SparseArray<List<HashMap<String, String>>>();
+     * boolean isTolti = false;
+     * while (itr.hasNext()) {
+     * HashMap<String, String> riga = itr.next();
+     * final int idcolonna = Integer.parseInt(riga.get("id_colonna"));
+     * List<HashMap<String, String>> listaTemp = (hashColonne.get(idcolonna) != null) ? hashColonne.get(idcolonna) : new ArrayList<HashMap<String, String>>();
+     * HashMap<String, String> row = new HashMap<String, String>(4);
+     * row.put("nomeprodotto", riga.get("nomeprodotto"));
+     * row.put("prezzoprodotto", riga.get("prezzoprodotto"));
+     * row.put("nomeextra", riga.get("nomeextra"));
+     * row.put("tipo", riga.get("tipo"));
+     * if(Integer.parseInt(riga.get("tipo")) == 2) isTolti = true;
+     * listaTemp.add(row);
+     * hashColonne.put(idcolonna, listaTemp);
+     * }
+     * mostraDettaglio(hashColonne, telefono, cognome, isTolti);
+     * }
+     */
+
     private void inizializzaAggiunte(Object param, RelativeLayout baseLayout) {
-        if (layoutAggiunte == null) {
+        if (layoutAggiunte == null && param != null) {
             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
             Iterator<HashMap<String, String>> itrAgg = lista.iterator();
             hashExtra = new HashMap<String, Float>(lista.size());
@@ -503,8 +526,7 @@ public class NuovoOrdine extends Fragment {
                 selezione.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (!isChecked)
-                            HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, valColonna, nomeIngrediente, "2");
+                        if (!isChecked) HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, valColonna, nomeIngrediente, "2");
                     }
                 });
 
@@ -528,16 +550,24 @@ public class NuovoOrdine extends Fragment {
 
         contenitoreIngredienti.addView(layoutIngredienti);
 
-        new HttpManager.AsyncManager(new AsyncResponse() {
-            @Override
-            public void processFinish(Object output) {
-                inizializzaAggiunte(output, contenitoreIngredienti);
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Dettaglio " + nomeProdotto);
-                builder.setView(contenitoreIngredienti);
-                builder.create().show();
-            }
-        }, null, "GET_AGGIUNTE", new String[]{}).execute();
+        if (layoutAggiunte == null) {
+            new HttpManager.AsyncManager(new AsyncResponse() {
+                @Override
+                public void processFinish(Object output) {
+                    inizializzaAggiunte(output, contenitoreIngredienti);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Dettaglio " + nomeProdotto);
+                    builder.setView(contenitoreIngredienti);
+                    builder.create().show();
+                }
+            }, null, "GET_AGGIUNTE", new String[]{}).execute();
+        } else {
+            inizializzaAggiunte(null, contenitoreIngredienti);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Dettaglio " + nomeProdotto);
+            builder.setView(contenitoreIngredienti);
+            builder.create().show();
+        }
     }
 
     private void aggiungiExtra(Object param, final float prezzoIngrediente) {

@@ -22,5 +22,29 @@
                 }
             }
         ]
+    },
+    {
+        "outputFile": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values-h320dp-v13\\values-h320dp-v13.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 57,
+                    "endOffset": 108
+                },
+                "from": {
+                    "file": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\values-h320dp\\values-h320dp.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 289,
+                        "endColumn": 57,
+                        "endOffset": 342
+                    }
+                }
+            }
+        ]
     }
 ]
