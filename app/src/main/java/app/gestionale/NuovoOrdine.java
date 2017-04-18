@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class NuovoOrdine extends Fragment {
 
@@ -54,12 +57,13 @@ public class NuovoOrdine extends Fragment {
     private TextView totale;
     private RelativeLayout layoutIngredienti;
     private RelativeLayout contenitoreIngredienti;
-    private String idColonna = "";
     private RelativeLayout layoutAggiunte;
     private View barraMezzo;
     private RelativeLayout.LayoutParams paramAggiunte;
 
     private HashMap<String, Float> hashExtra;
+    private List<String> tempExtraAgg = new ArrayList<String>();
+    private SparseArray<TextView> sparsePrezziPizze = new SparseArray<TextView>();
 
     private TableLayout tableOrdiniPizza;
     private TableLayout tableOrdiniGastronomia;
@@ -391,7 +395,7 @@ public class NuovoOrdine extends Fragment {
                             @Override
                             public void processFinish(Object output) {
                                 Toast.makeText(context, "Prodotto Inserito!", Toast.LENGTH_SHORT).show();
-                                creaConto(ordine, output);
+                                creaConto(output);
                             }
                         }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, ordine}).execute();
                     }
@@ -400,7 +404,7 @@ public class NuovoOrdine extends Fragment {
         }
     }
 
-    private void creaConto(String idOrdine, Object param) {
+    private void creaConto(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
@@ -493,11 +497,9 @@ public class NuovoOrdine extends Fragment {
                 btnModifica.setText("Modifica");
                 rowPizza.addView(btnModifica);
 
-
                 Button btnElimina = new Button(context);
                 btnElimina.setText("Elimina");
                 rowPizza.addView(btnElimina);
-
 
                 btnModifica.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -507,9 +509,9 @@ public class NuovoOrdine extends Fragment {
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
                             public void processFinish(Object output) {
-                                impostaCheckBox(nomeProdotto, output);
+                                fixIngredientiExtra(output, Integer.parseInt(valColonna), nomeProdotto);
                             }
-                        }, null, "GET_LISTA_INGREDIENTI", new String[]{nomeProdotto}).execute();
+                        }, null, "GET_LISTA_BASE_CON_EXTRA", new String[]{valColonna, valColonna}).execute();
                     }
                 });
 
@@ -535,7 +537,7 @@ public class NuovoOrdine extends Fragment {
                             layoutContoPizze.setBackgroundResource(0);
                         if (tableOrdiniGastronomia.getChildCount() == 0)
                             layoutContoGastronomia.setBackgroundResource(0);
-                        aggiornaTotale(prezzoFloat, false);
+                        aggiornaTotale(Float.parseFloat((sparsePrezziPizze.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziPizze.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)), false);
                         Toast.makeText(context, nomeProdotto + " eliminato!", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -543,6 +545,7 @@ public class NuovoOrdine extends Fragment {
                 switch (tipo) {
                     case "Pizza":
                         tableOrdiniPizza.addView(rowPizza);
+                        sparsePrezziPizze.put(Integer.parseInt(valColonna), txtPrezzo);
                         break;
                     case "Bibita":
                         tableOrdiniBibite.addView(rowPizza);
@@ -559,31 +562,9 @@ public class NuovoOrdine extends Fragment {
         }
     }
 
-    /**
-     * private void fixIngredientiExtra(Object param){
-     * List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-     * Iterator<HashMap<String, String>> itr = lista.iterator();
-     * SparseArray<List<HashMap<String, String>>> hashColonne = new SparseArray<List<HashMap<String, String>>>();
-     * boolean isTolti = false;
-     * while (itr.hasNext()) {
-     * HashMap<String, String> riga = itr.next();
-     * final int idcolonna = Integer.parseInt(riga.get("id_colonna"));
-     * List<HashMap<String, String>> listaTemp = (hashColonne.get(idcolonna) != null) ? hashColonne.get(idcolonna) : new ArrayList<HashMap<String, String>>();
-     * HashMap<String, String> row = new HashMap<String, String>(4);
-     * row.put("nomeprodotto", riga.get("nomeprodotto"));
-     * row.put("prezzoprodotto", riga.get("prezzoprodotto"));
-     * row.put("nomeextra", riga.get("nomeextra"));
-     * row.put("tipo", riga.get("tipo"));
-     * if(Integer.parseInt(riga.get("tipo")) == 2) isTolti = true;
-     * listaTemp.add(row);
-     * hashColonne.put(idcolonna, listaTemp);
-     * }
-     * mostraDettaglio(hashColonne, telefono, cognome, isTolti);
-     * }
-     */
-
-    private void inizializzaAggiunte(Object param, RelativeLayout baseLayout) {
-        if (layoutAggiunte == null && param != null) {
+    private void inizializzaAggiunte(Object param, String valColonna, RelativeLayout baseLayout, final List<String> ingrBaseRimossi) {
+        if (param != null) {
+            final String idColonna = valColonna;
             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
             Iterator<HashMap<String, String>> itrAgg = lista.iterator();
             hashExtra = new HashMap<String, Float>(lista.size());
@@ -596,21 +577,26 @@ public class NuovoOrdine extends Fragment {
             adapterAggiunte = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(hashExtra.keySet()));
 
             barraMezzo = new View(context);
-            layoutAggiunte = new RelativeLayout(context);
-            layoutAggiunte.addView(aggiunte);
-
             aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
-                    new HttpManager.AsyncManager(new AsyncResponse() {
-                        @Override
-                        public void processFinish(Object output) {
-                            aggiungiExtra(output, hashExtra.get(aggiunte.getText().toString()));
-                        }
-                    }, null, "AGGIUNGI_EXTRA", new String[]{aggiunte.getText().toString(), idColonna, aggiunte.getText().toString(), "1"}).execute();
+                    if (ingrBaseRimossi.contains(aggiunte.getText().toString())) {
+                        Toast.makeText(context, "Impossibile aggiungere l'ingrediente", Toast.LENGTH_SHORT).show();
+                    } else {
+                        tempExtraAgg.add(aggiunte.getText().toString());
+                        new HttpManager.AsyncManager(new AsyncResponse() {
+                            @Override
+                            public void processFinish(Object output) {
+                                aggiungiExtra(output);
+                            }
+                        }, null, "AGGIUNGI_EXTRA", new String[]{aggiunte.getText().toString(), idColonna, aggiunte.getText().toString(), "1"}).execute();
+                    }
                 }
             });
-
+            if (aggiunte.getParent() != null)
+                ((ViewGroup) aggiunte.getParent()).removeView(aggiunte);
+            layoutAggiunte.addView(aggiunte);
+            aggiunte.setText("");
         }
 
         RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
@@ -629,6 +615,7 @@ public class NuovoOrdine extends Fragment {
         paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
         paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramAggiunte.setMargins(0, 20, 0, 0);
+        paramAggiunte.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
         aggiunte.setLayoutParams(paramAggiunte);
         aggiunte.setAdapter(adapterAggiunte);
 
@@ -640,7 +627,44 @@ public class NuovoOrdine extends Fragment {
         baseLayout.addView(layoutAggiunte);
     }
 
-    private void impostaCheckBox(String nomePizza, final Object param) {
+    private void fixIngredientiExtra(Object param, int idColonna, String nomePizza) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        HashMap<String, Integer> hashExtra = new HashMap<String, Integer>();
+        /**
+         *
+         * nomeingrediente        tipo
+         Mozzarella               479
+         Basilico                 479
+         Olio E.v.o.              479
+         Pomodoro                 479
+         Grana                    1
+         Pomodoro                 2
+         Pomodoro                 1
+         Basilico                 2
+         */
+        while (itr.hasNext()) {
+            HashMap<String, String> riga = itr.next();
+            final String nomeIngrediente = riga.get("nomeingrediente");
+            final int tipoIngrediente = Integer.parseInt(riga.get("tipo"));
+            if (hashExtra.get(nomeIngrediente) != null) {
+                if (tipoIngrediente == 2) {
+                    hashExtra.put(nomeIngrediente, 2); // TOGLI INGREDIENTE BASE
+                } else if (hashExtra.get(nomeIngrediente) == idColonna || tipoIngrediente == idColonna) {
+                    hashExtra.put(nomeIngrediente, 3); // DOPPIO INGREDIENTE BASE
+                } else {
+                    hashExtra.put(nomeIngrediente, 4); // DOPPIO EXTRA
+                }
+            } else {
+                hashExtra.put(nomeIngrediente, tipoIngrediente);
+            }
+        }
+
+        impostaExtra(nomePizza, idColonna, hashExtra);
+    }
+
+
+    private void impostaExtra(String nomePizza, final int valColonna, HashMap<String, Integer> hashExtra) {
         //LAYOUT CHE CONTIENE TUTTO
         contenitoreIngredienti = new RelativeLayout(context);
         //LAYOUT SUPERIORE CON TABELLA CHECKBOX
@@ -650,30 +674,51 @@ public class NuovoOrdine extends Fragment {
         paramLayoutIngredienti.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramLayoutIngredienti.setMargins(0, 20, 0, 0);
         layoutIngredienti.setLayoutParams(paramLayoutIngredienti);
+
+        layoutAggiunte = new RelativeLayout(context);
+        layoutAggiunte.setId(View.generateViewId());
+
+        tempExtraAgg.clear();
+        final List<String> ingrBaseRimossi = new ArrayList<String>();
+
         final String nomeProdotto = nomePizza;
+        final String idColonna = Integer.toString(valColonna);
 
         //TABELLA CON CHECKBOX
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itr = lista.iterator();
-        if (itr.hasNext()) {
-            int countProdotti = 0;
-            while (itr.hasNext()) {
-                HashMap<String, String> riga = itr.next();
-                final String nomeIngrediente = riga.get("nomeingrediente");
-                final String valColonna = riga.get("id_colonna");
-                setIdColonna(valColonna);
+        int countProdotti = 0;
+        Iterator itr = hashExtra.entrySet().iterator();
+        while (itr.hasNext()) {
+            Map.Entry riga = (Map.Entry) itr.next();
+            final String nomeIngrediente = riga.getKey().toString();
+            final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
+            if (tipoIngrediente == 2 || tipoIngrediente == 3 || tipoIngrediente == valColonna) {
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                CheckBox selezione = new CheckBox(context);
+                final CheckBox selezione = new CheckBox(context);
                 selezione.setId(View.generateViewId());
                 selezione.setPadding(5, 0, 5, 0);
                 selezione.setTextSize(25);
-                selezione.setChecked(true);
-                selezione.setText(nomeIngrediente);
+                selezione.setChecked(tipoIngrediente != 2);
+                if (tipoIngrediente == 2) ingrBaseRimossi.add(nomeIngrediente);
+                selezione.setText((tipoIngrediente == 3) ? "2 x " + nomeIngrediente : nomeIngrediente);
                 selezione.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (!isChecked) HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, valColonna, nomeIngrediente, "2");
+                        if (!isChecked) {
+                            if (selezione.getText().toString().contains("2 x")) {
+                                HttpManager.execSimple("ELIMINA_EXTRA_PER_NOME", null, idColonna, nomeIngrediente);
+                                selezione.setChecked(true);
+                                selezione.setText(nomeIngrediente);
+                            } else if (!tempExtraAgg.contains(nomeIngrediente)) {
+                                HttpManager.execSimple("AGGIUNGI_EXTRA", null, nomeIngrediente, idColonna, nomeIngrediente, "2");
+                                ingrBaseRimossi.add(nomeIngrediente);
+                            } else {
+                                Toast.makeText(context, "Impossibile rimuovere l'ingrediente", Toast.LENGTH_SHORT).show();
+                                selezione.setChecked(true);
+                            }
+                        } else {
+                            HttpManager.execSimple("ELIMINA_EXTRA_PER_NOME", null, idColonna, nomeIngrediente);
+                            ingrBaseRimossi.remove(nomeIngrediente);
+                        }
                     }
                 });
 
@@ -688,45 +733,92 @@ public class NuovoOrdine extends Fragment {
                     else
                         layoutSelezione.addRule(RelativeLayout.END_OF, layoutIngredienti.getChildAt(layoutIngredienti.getChildCount() - 1).getId());
                 }
-
                 selezione.setLayoutParams(layoutSelezione);
                 countProdotti++;
                 layoutIngredienti.addView(selezione);
+            } else {
+                RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                if (layoutAggiunte.getChildCount() > 0)
+                    layoutSelezione.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
+                layoutSelezione.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                final CheckBox newIngrediente = new CheckBox(context);
+                newIngrediente.setLayoutParams(layoutSelezione);
+                newIngrediente.setId(View.generateViewId());
+                newIngrediente.setPadding(5, 0, 5, 0);
+                newIngrediente.setTextSize(25);
+                newIngrediente.setChecked(true);
+                newIngrediente.setText((tipoIngrediente == 4) ? "2 x " + nomeIngrediente : nomeIngrediente);
+
+                newIngrediente.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        /**
+                         if (!isChecked) {
+                         HttpManager.execSimple("TOGLI_EXTRA", null, idExtra);
+                         aggiornaTotale(prezzoIngrediente, false);
+                         layoutAggiunte.removeView(newIngrediente);
+                         }*/
+                        if (!isChecked) {
+                            if (newIngrediente.getText().toString().contains("2 x")) {
+                                newIngrediente.setChecked(true);
+                                newIngrediente.setText(nomeIngrediente);
+                            }
+                            HttpManager.execSimple("ELIMINA_EXTRA_PER_NOME", null, idColonna, nomeIngrediente);
+                        }
+                    }
+                });
+
+                layoutAggiunte.addView(newIngrediente);
             }
+            itr.remove(); // avoids a ConcurrentModificationException
         }
 
         contenitoreIngredienti.addView(layoutIngredienti);
 
-        if (layoutAggiunte == null) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Dettaglio " + nomeProdotto);
+        builder.setView(contenitoreIngredienti);
+        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            public void onCancel(DialogInterface dialog) {
+                new HttpManager.AsyncManager(new AsyncResponse() {
+                    @Override
+                    public void processFinish(Object output) {
+                        aggiornaTotale(Float.parseFloat((sparsePrezziPizze.get(valColonna).getText().toString()).substring(0, sparsePrezziPizze.get(valColonna).getText().toString().length() - 2)), false);
+                        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
+                        Float prezzoFinale = Float.parseFloat(lista.get(0).get("prezzo_finale"));
+                        sparsePrezziPizze.get(valColonna).setText(new DecimalFormat("#0.00 €").format(prezzoFinale));
+                        aggiornaTotale(prezzoFinale, true);
+                    }
+                }, context, "GET_PREZZO_PIZZA_FINALE", new String[]{idColonna}).execute();
+            }
+        });
+
+        if (hashExtra.isEmpty()) {
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
-                    inizializzaAggiunte(output, contenitoreIngredienti);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle("Dettaglio " + nomeProdotto);
-                    builder.setView(contenitoreIngredienti);
+                    inizializzaAggiunte(output, idColonna, contenitoreIngredienti, ingrBaseRimossi);
                     builder.create().show();
                 }
             }, null, "GET_AGGIUNTE", new String[]{}).execute();
         } else {
-            inizializzaAggiunte(null, contenitoreIngredienti);
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Dettaglio " + nomeProdotto);
-            builder.setView(contenitoreIngredienti);
+            inizializzaAggiunte(null, idColonna, contenitoreIngredienti, ingrBaseRimossi);
             builder.create().show();
         }
     }
 
-    private void aggiungiExtra(Object param, final float prezzoIngrediente) {
+    private void aggiungiExtra(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final String idExtra = riga.get("generated_id");
+                final String nomeExtra = aggiunte.getText().toString();
 
-                Toast.makeText(context, aggiunte.getText().toString() + " inserito", Toast.LENGTH_SHORT).show();
-                aggiornaTotale(prezzoIngrediente, true);
+                Toast.makeText(context, nomeExtra + " inserito", Toast.LENGTH_SHORT).show();
+                //aggiornaTotale(prezzoIngrediente, true);
 
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 layoutSelezione.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
@@ -744,8 +836,8 @@ public class NuovoOrdine extends Fragment {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (!isChecked) {
-                            HttpManager.execSimple("TOGLI_EXTRA", null, idExtra);
-                            aggiornaTotale(prezzoIngrediente, false);
+                            HttpManager.execSimple("ELIMINA_EXTRA_PER_ID", null, idExtra);
+                            tempExtraAgg.remove(nomeExtra);
                             layoutAggiunte.removeView(newIngrediente);
                         }
                     }
@@ -776,10 +868,6 @@ public class NuovoOrdine extends Fragment {
         btnNuovo.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.btn_width));
         btnNuovo.setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.btn_height));
         return btnNuovo;
-    }
-
-    private void setIdColonna(String val) {
-        this.idColonna = val;
     }
 
 }
