@@ -11,6 +11,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,9 +23,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -32,9 +34,11 @@ import android.widget.Toast;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class NuovoOrdine extends Fragment {
@@ -68,6 +72,20 @@ public class NuovoOrdine extends Fragment {
     private TableLayout tableOrdiniPizza;
     private TableLayout tableOrdiniGastronomia;
     private TableLayout tableOrdiniBibite;
+    private ArrayList<String> listaCitta;
+    private ArrayAdapter<String> adapterCitta;
+    private Spinner spinnerCitta;
+    private ArrayAdapter<String> arrayDate;
+    private Spinner spinnerDate;
+    private ArrayList<String> listaOre;
+    private ArrayAdapter<String> adapterOre;
+    private Spinner spinnerOre;
+    private String strVia = "";
+    private String strCivico = "";
+    private String strCitta = "";
+    private String idOrdine = "";
+/*    final int contOrdini[] = new int[listaOre.size()];
+    final int[] nPizze = new int[listaOre.size()];*/
 
     @Override
     public void onAttach(Context context) {
@@ -92,7 +110,7 @@ public class NuovoOrdine extends Fragment {
         View view = inflater.inflate(R.layout.activity_nuovo_ordine, container, false);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
-        ImageButton btnInserisci = (ImageButton) toolbar.findViewById(R.id.inserisciOrdine);
+        Button btnInserisci = (Button) toolbar.findViewById(R.id.inserisciOrdine);
         layoutInserimentoToolbar.setVisibility(View.VISIBLE);
         context = view.getContext();
         super.onCreate(savedInstanceState);
@@ -109,33 +127,6 @@ public class NuovoOrdine extends Fragment {
         totale = (TextView) view.findViewById(R.id.totaleEuro);
         aggiunte = new AutoCompleteTextView(context);
 
-        /*new Loading(progressBar, context) {
-
-            @Override
-            protected void onPreExecute() {
-                layoutCaricamento.setVisibility(View.VISIBLE);
-                layoutBottoni.setVisibility(View.GONE);
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        impostaBottoni();
-                    }
-                });
-                return super.doInBackground(voids);
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                layoutCaricamento.setVisibility(View.GONE);
-                layoutBottoni.setVisibility(View.VISIBLE);
-
-            }
-        }.execute();*/
-
         HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
 
         new HttpManager.AsyncManager(new AsyncResponse() {
@@ -149,6 +140,24 @@ public class NuovoOrdine extends Fragment {
         btnInserisci.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                new HttpManager.AsyncManager(new AsyncResponse() {
+                    @Override
+                    public void processFinish(Object output) {
+                        inizializzaCitta(output);
+                    }
+                }, context, "GET_CITTA", new String[]{}).execute();
+
+
+                /*new HttpManager.AsyncManager(new AsyncResponse() {
+                    @Override
+                    public void processFinish(Object output) {
+                        checkOrario(output);
+                    }
+                }, context, "CHECK_ORARIO", new String[]{}).execute();*/
+
+                ScrollView scrollView = new ScrollView(context);
+
                 RelativeLayout inserimentoLayout = new RelativeLayout(context);
                 RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 paramInserimento.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -156,20 +165,29 @@ public class NuovoOrdine extends Fragment {
                 paramInserimento.setMargins(0, 30, 0, 0);
                 inserimentoLayout.setLayoutParams(paramInserimento);
 
+                RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                paramBarra.setMargins(30, 20, 30, 10);
+                paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                View view = new View(context);
+                view.setId(View.generateViewId());
+                view.setBackgroundColor(getResources().getColor(R.color.celeste));
+                view.setLayoutParams(paramBarra);
+                inserimentoLayout.addView(view);
+
                 RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                editTextParams.addRule(RelativeLayout.BELOW, view.getId());
                 TextInputLayout nomeInput = new TextInputLayout(context);
-                editTextParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                editTextParams.setMargins(40, 0, 0, 40);
+                editTextParams.setMargins(40, 15, 0, 40);
                 nomeInput.setLayoutParams(editTextParams);
                 nomeInput.setId(View.generateViewId());
-                //nome.setLayoutParams(editTextParams);
 
                 final TextInputEditText nome = new TextInputEditText(context);
                 final TextInputEditText cognome = new TextInputEditText(context);
                 final TextInputEditText telefono = new TextInputEditText(context);
-                final CheckBox consegna = new CheckBox(context);
                 final TextInputEditText via = new TextInputEditText(context);
                 final TextInputEditText civico = new TextInputEditText(context);
+                final TextInputEditText citta = new TextInputEditText(context);
 
 
                 nome.setTextSize(25);
@@ -179,59 +197,70 @@ public class NuovoOrdine extends Fragment {
                 RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout cognomeInput = new TextInputLayout(context);
-                editTextCognomeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                cognomeInput.setId(View.generateViewId());
                 editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
                 editTextCognomeParams.setMargins(40, 0, 0, 40);
                 cognomeInput.setLayoutParams(editTextCognomeParams);
                 cognome.setTextSize(25);
                 cognome.setHint("Cognome");
-                cognomeInput.setId(View.generateViewId());
                 cognomeInput.addView(cognome);
 
                 RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout telefonoInput = new TextInputLayout(context);
-                editTextTelefonoParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                telefonoInput.setId(View.generateViewId());
                 editTextTelefonoParams.addRule(RelativeLayout.BELOW, cognomeInput.getId());
                 editTextTelefonoParams.setMargins(40, 0, 0, 40);
                 telefonoInput.setLayoutParams(editTextTelefonoParams);
                 telefono.setTextSize(25);
                 telefono.setHint("Telefono");
-                telefonoInput.setId(View.generateViewId());
+                telefono.setInputType(InputType.TYPE_CLASS_PHONE);
                 telefonoInput.addView(telefono);
 
-                RelativeLayout.LayoutParams chechboxConsegnaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextChechboxParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-                chechboxConsegnaParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                chechboxConsegnaParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
-                chechboxConsegnaParams.setMargins(40, 0, 0, 40);
-                consegna.setText("Consegna");
-                consegna.setTextSize(25);
-                consegna.setLayoutParams(chechboxConsegnaParams);
+                final CheckBox consegna = new CheckBox(context);
                 consegna.setId(View.generateViewId());
+                editTextChechboxParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
+                editTextChechboxParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextChechboxParams.setMargins(40, 0, 0, 40);
+                consegna.setLayoutParams(editTextChechboxParams);
+                consegna.setTextSize(25);
+                consegna.setText("Consegna");
 
-                RelativeLayout layoutConsegna = new RelativeLayout(context);
-                RelativeLayout.LayoutParams layoutConsegnaParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                layoutConsegnaParams.addRule(RelativeLayout.BELOW, consegna.getId());
-                layoutConsegnaParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                layoutConsegna.setLayoutParams(layoutConsegnaParams);
+                RelativeLayout.LayoutParams editLayoutConsegnaParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                final RelativeLayout layoutConsegna = new RelativeLayout(context);
+                editLayoutConsegnaParams.addRule(RelativeLayout.BELOW, consegna.getId());
+                layoutConsegna.setId(View.generateViewId());
+                layoutConsegna.setLayoutParams(editLayoutConsegnaParams);
                 layoutConsegna.setVisibility(View.GONE);
 
-                RelativeLayout.LayoutParams editTextViaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                consegna.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (!isChecked) {
+                            layoutConsegna.setVisibility(View.GONE);
+                        } else {
+                            layoutConsegna.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+
+                RelativeLayout.LayoutParams editTextViaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout viaInput = new TextInputLayout(context);
+                viaInput.setId(View.generateViewId());
                 editTextViaParams.setMargins(40, 0, 0, 40);
                 viaInput.setLayoutParams(editTextViaParams);
                 via.setTextSize(25);
                 via.setHint("Via/P.zza/Loc.");
                 viaInput.addView(via);
-                viaInput.setId(View.generateViewId());
 
-
-                RelativeLayout.LayoutParams editTextCivicoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextCivicoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_80dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout civicoInput = new TextInputLayout(context);
-                editTextCivicoParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                civicoInput.setId(View.generateViewId());
+                editTextCivicoParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
                 editTextCivicoParams.addRule(RelativeLayout.END_OF, viaInput.getId());
                 editTextCivicoParams.setMargins(40, 0, 0, 40);
                 civicoInput.setLayoutParams(editTextCivicoParams);
@@ -239,18 +268,122 @@ public class NuovoOrdine extends Fragment {
                 civico.setHint("Civico");
                 civicoInput.addView(civico);
 
-                layoutConsegna.addView(viaInput);
-                layoutConsegna.addView(civicoInput);
+                RelativeLayout.LayoutParams editTextCittaTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_100dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                editTextCittaTxtParams.addRule(RelativeLayout.BELOW, viaInput.getId());
+                editTextCittaTxtParams.setMargins(40, 0, 0, 40);
+
+                TextView txtCitta = new TextView(context);
+                txtCitta.setTextSize(25);
+                txtCitta.setText("Citta'");
+                txtCitta.setId(View.generateViewId());
+                txtCitta.setLayoutParams(editTextCittaTxtParams);
+
+                RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                editTextCittaSpinnerParams.addRule(RelativeLayout.BELOW, viaInput.getId());
+                editTextCittaSpinnerParams.addRule(RelativeLayout.END_OF, txtCitta.getId());
+                editTextCittaSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtCitta.getId());
+
+                editTextCittaSpinnerParams.setMargins(40, 0, 0, 40);
+
+                spinnerCitta = new Spinner(context);
+                spinnerCitta.setLayoutParams(editTextCittaSpinnerParams);
+
+                RelativeLayout.LayoutParams editTextDataTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_100dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                editTextDataTxtParams.addRule(RelativeLayout.BELOW, layoutConsegna.getId());
+                editTextDataTxtParams.setMargins(40, 0, 0, 40);
+
+                TextView txtData = new TextView(context);
+                txtData.setTextSize(25);
+                txtData.setText("Data");
+                txtData.setId(View.generateViewId());
+                txtData.setLayoutParams(editTextDataTxtParams);
+
+                RelativeLayout.LayoutParams editTextDataSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                editTextDataSpinnerParams.addRule(RelativeLayout.BELOW, layoutConsegna.getId());
+                editTextDataSpinnerParams.addRule(RelativeLayout.END_OF, txtData.getId());
+                editTextDataSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtData.getId());
+                editTextDataSpinnerParams.setMargins(40, 0, 0, 40);
+
+                spinnerDate = new Spinner(context);
+                spinnerDate.setLayoutParams(editTextDataSpinnerParams);
+
+                String[] dateSettimana;
+                Calendar c = Calendar.getInstance(Locale.ITALY);
+                Calendar c_copia = Calendar.getInstance(Locale.ITALY);
+
+                dateSettimana = new String[8 - (c.get(Calendar.DAY_OF_WEEK) - 1)];
+                int count = 0;
+                String giorno = "";
+                String mese = "";
+                String anno = "";
+                for (int i = c.get(Calendar.DAY_OF_WEEK) - 1; i < 7; i++) {
+                    giorno = (c_copia.get(Calendar.DAY_OF_MONTH) < 10) ? "0" + (c_copia.get(Calendar.DAY_OF_MONTH)) : "" + (c_copia.get(Calendar.DAY_OF_MONTH));
+                    mese = (c_copia.get(Calendar.MONTH) + 1 < 10) ? "0" + (c_copia.get(Calendar.MONTH) + 1) : "" + (c_copia.get(Calendar.MONTH) + 1);
+                    anno = "" + (c_copia.get(Calendar.YEAR));
+                    dateSettimana[count] = giorno + "-" + mese + "-" + anno;
+                    c_copia.add(Calendar.DATE, 1);
+                    count++;
+                }
+                giorno = (c_copia.get(Calendar.DAY_OF_MONTH) < 10) ? "0" + (c_copia.get(Calendar.DAY_OF_MONTH)) : "" + (c_copia.get(Calendar.DAY_OF_MONTH));
+                mese = (c_copia.get(Calendar.MONTH) + 1 < 10) ? "0" + (c_copia.get(Calendar.MONTH) + 1) : "" + (c_copia.get(Calendar.MONTH) + 1);
+                anno = "" + (c_copia.get(Calendar.YEAR));
+
+                dateSettimana[dateSettimana.length - 1] = giorno + "-" + mese + "-" + anno;
+
+                arrayDate = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, dateSettimana); //selected item will look like a spinner set from XML
+                arrayDate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerDate.setAdapter(arrayDate);
+
+                RelativeLayout.LayoutParams editTextOraTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_100dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                editTextOraTxtParams.addRule(RelativeLayout.BELOW, txtData.getId());
+                editTextOraTxtParams.setMargins(40, 0, 0, 40);
+
+                TextView txtOra = new TextView(context);
+                txtOra.setTextSize(25);
+                txtOra.setText("Ora");
+                txtOra.setId(View.generateViewId());
+                txtOra.setLayoutParams(editTextOraTxtParams);
+
+                RelativeLayout.LayoutParams editTextOraSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                editTextOraSpinnerParams.addRule(RelativeLayout.BELOW, txtData.getId());
+                editTextOraSpinnerParams.addRule(RelativeLayout.END_OF, txtOra.getId());
+                editTextOraSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtOra.getId());
+                editTextOraSpinnerParams.setMargins(40, 0, 0, 40);
+
+                listaOre = new ArrayList<String>();
+
+                listaOre.add("18:00");
+                listaOre.add("18:30");
+                listaOre.add("19:00");
+                listaOre.add("19:30");
+                listaOre.add("20:00");
+                listaOre.add("20:30");
+                listaOre.add("21:00");
+                listaOre.add("21:30");
+
+                adapterOre = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaOre); //selected item will look like a spinner set from XML
+                spinnerOre = new Spinner(context);
+                spinnerOre.setAdapter(adapterOre);
+                spinnerOre.setLayoutParams(editTextOraSpinnerParams);
+
 
                 inserimentoLayout.addView(nomeInput);
                 inserimentoLayout.addView(cognomeInput);
                 inserimentoLayout.addView(telefonoInput);
                 inserimentoLayout.addView(consegna);
+                layoutConsegna.addView(viaInput);
+                layoutConsegna.addView(civicoInput);
+                layoutConsegna.addView(txtCitta);
+                layoutConsegna.addView(spinnerCitta);
                 inserimentoLayout.addView(layoutConsegna);
-
+                inserimentoLayout.addView(txtData);
+                inserimentoLayout.addView(spinnerDate);
+                inserimentoLayout.addView(txtOra);
+                inserimentoLayout.addView(spinnerOre);
+                scrollView.addView(inserimentoLayout);
 
                 final AlertDialog dialog = new AlertDialog.Builder(context)
-                        .setView(inserimentoLayout)
+                        .setView(scrollView)
                         .setTitle("Inserisci Nuovo Ordine")
                         .setPositiveButton("Inserisci", null)
                         .setNegativeButton("Annulla", null)
@@ -264,6 +397,9 @@ public class NuovoOrdine extends Fragment {
                         Boolean toClose = true;
                         String strNome = nome.getText().toString();
                         String strCognome = cognome.getText().toString();
+                        String strTelefono = telefono.getText().toString();
+                        String strData = spinnerDate.getSelectedItem().toString();
+                        String strOra = spinnerOre.getSelectedItem().toString();
 
                         if (strNome.isEmpty()) {
                             toClose = false;
@@ -273,15 +409,36 @@ public class NuovoOrdine extends Fragment {
                             toClose = false;
                             cognome.setError("Inserisci cognome");
                         }
+                        if (strTelefono.isEmpty() || strTelefono.length() != 10) {
+                            toClose = false;
+                            telefono.setError("Inserisci telefono");
+                        }
+                        if (consegna.isChecked()) {
+                            strVia = via.getText().toString();
+                            strCivico = civico.getText().toString();
+                            strCitta = spinnerCitta.getSelectedItem().toString();
+                            if (strVia.isEmpty()) {
+                                toClose = false;
+                                via.setError("Inserisci via");
+                            }
+                            if (strCivico.isEmpty()) {
+                                toClose = false;
+                                civico.setError("Inserisci civico");
+                            }
+                        }
 
                         if (toClose) {
-                            new HttpManager.AsyncManager(new AsyncResponse() {
-                                @Override
-                                public void processFinish(Object output) {
-                                    Toast.makeText(context, "Ordine completato!", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                }
-                            }, context, "CREA_FATTORINO", new String[]{strNome, strCognome}).execute();
+                            HttpManager.execSimple("INSERISCI_CLIENTE", null, new String[]{strCognome, strNome, strTelefono, strVia, strCitta});
+
+                            if (consegna.isChecked())
+                                HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, new String[]{strCitta, strOra, strData, strVia, strTelefono, idOrdine});
+                            else
+                                HttpManager.execSimple("AGGIORNA_ORDINE_ASPORTO", null, new String[]{strOra, strData, strTelefono, idOrdine});
+                            /*TODO
+                                   if (!checkUtentePresente(idcliente))
+                            DBmanager.updateQuery(EnumQuery.INSERISCI_CLIENTE.getValore(), false, idcliente, cognomeString, nomeString, telefonoString.substring(0, 4), telefonoString.substring(4, 10));
+                            */
+                            HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, new String[]{idOrdine, "Pizzeria_bla_bla", strData, strNome, strCognome, "Pizzeria"});
                         }
                     }
                 });
@@ -297,13 +454,17 @@ public class NuovoOrdine extends Fragment {
         Iterator<HashMap<String, String>> itr = lista.iterator();
         HashMap<String, String> riga = itr.next();
         final String idOrdine = riga.get("generated_id");
-
+        setIdOrdine(idOrdine);
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
                 impostaBottoni(idOrdine, output);
             }
         }, null, "GET_LISTA_PRODOTTI", new String[]{}).execute();
+    }
+
+    private void setIdOrdine(String idOrdine) {
+        this.idOrdine = idOrdine;
     }
 
     private void impostaBottoni(String idOrdine, Object param) {
@@ -850,6 +1011,54 @@ public class NuovoOrdine extends Fragment {
             }
         }
     }
+
+    private void inizializzaCitta(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itrAgg = lista.iterator();
+        listaCitta = new ArrayList<>();
+        while (itrAgg.hasNext()) {
+            HashMap<String, String> riga = itrAgg.next();
+            final String nomeCitta = riga.get("nome");
+            listaCitta.add(nomeCitta);
+        }
+        adapterCitta = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaCitta);
+        spinnerCitta.setAdapter(adapterCitta);
+    }
+
+    /*public void checkOrario(Object param) {
+
+        for (int i = 0; i < listaOre.size(); i++) {
+            List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+            Iterator<HashMap<String, String>> itrAgg = lista.iterator();
+            HashMap<String, String> riga = itrAgg.next();
+            nPizze[i] = Integer.parseInt(riga.get("npizze"));
+        }
+
+        adapterOre = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaOre) {
+            // Disable click item < month current
+            @Override
+            public boolean isEnabled(int position) {
+                return !(nPizze[position] + tableOrdiniPizza.getChildCount() >= 15 && contOrdini[position] > 1);
+            }
+
+            // Change color item
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View mView = super.getDropDownView(position, convertView, parent);
+                TextView mTextView = (TextView) mView;
+                if (nPizze[position] + tableOrdiniPizza.getChildCount() >= 15 && contOrdini[position] > 1) {
+                    mTextView.setTextColor(Color.GRAY);
+                } else {
+                    mTextView.setTextColor(Color.BLACK);
+                }
+                return mView;
+            }
+        };
+
+        adapterOre.setDropDownViewResource(R.layout.date_spinner_new_orders);
+        spinnerOre.setAdapter(adapterOre);
+    }*/
 
     private TextView makeTableRowWithText(String text) {
         recyclableTextView = new TextView(context);

@@ -93,7 +93,6 @@ public class Fattorini extends Fragment {
                 editTextParams.setMargins(40, 20, 0, 40);
                 nomeInput.setLayoutParams(editTextParams);
                 nomeInput.setId(View.generateViewId());
-                //nome.setLayoutParams(editTextParams);
 
                 final TextInputEditText nome = new TextInputEditText(context);
                 final TextInputEditText cognome = new TextInputEditText(context);

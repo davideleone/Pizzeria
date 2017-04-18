@@ -18,24 +18,15 @@
         android:layout_marginEnd="30dp"
         android:visibility="gone">
 
-        <TextView
-            android:id="@+id/testoInserisci"
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:text="Inserisci"
-            android:textColor="#ffffff" />
-
-        <ImageButton
+        <Button
             android:id="@+id/inserisciOrdine"
             style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
-            android:layout_toEndOf="@+id/testoInserisci"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_arrow_dx" />
+            android:drawableRight="@drawable/ic_arrow_dx"
+            android:text="Inserisci   " />
     </RelativeLayout>
 </android.support.v7.widget.Toolbar>
