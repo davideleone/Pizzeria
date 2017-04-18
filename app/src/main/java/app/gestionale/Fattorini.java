@@ -77,9 +77,19 @@ public class Fattorini extends Fragment {
                 paramInserimento.setMargins(0, 30, 0, 0);
                 inserimentoLayout.setLayoutParams(paramInserimento);
 
+                RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                paramBarra.setMargins(30, 20, 30, 10);
+                paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+                View viewBarra = new View(context);
+                viewBarra.setId(View.generateViewId());
+                viewBarra.setBackgroundColor(getResources().getColor(R.color.celeste));
+                viewBarra.setLayoutParams(paramBarra);
+                inserimentoLayout.addView(viewBarra);
+
                 RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 TextInputLayout nomeInput = new TextInputLayout(context);
-                editTextParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
                 editTextParams.setMargins(40, 0, 0, 40);
                 nomeInput.setLayoutParams(editTextParams);
                 nomeInput.setId(View.generateViewId());
@@ -95,7 +105,6 @@ public class Fattorini extends Fragment {
                 RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout cognomeInput = new TextInputLayout(context);
-                editTextCognomeParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
                 editTextCognomeParams.setMargins(40, 0, 0, 40);
                 cognomeInput.setLayoutParams(editTextCognomeParams);
