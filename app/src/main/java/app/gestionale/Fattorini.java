@@ -89,8 +89,8 @@ public class Fattorini extends Fragment {
 
                 RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 TextInputLayout nomeInput = new TextInputLayout(context);
-
-                editTextParams.setMargins(40, 0, 0, 40);
+                editTextParams.addRule(RelativeLayout.BELOW, viewBarra.getId());
+                editTextParams.setMargins(40, 20, 0, 40);
                 nomeInput.setLayoutParams(editTextParams);
                 nomeInput.setId(View.generateViewId());
                 //nome.setLayoutParams(editTextParams);

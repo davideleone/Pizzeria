@@ -147,6 +147,8 @@ public class RiepilogoOrdini extends Fragment {
         menu.setOnMenuItemClickListener(new FloatingActionMenu.OnMenuItemClickListener() {
             @Override
             public void onMenuItemClick(FloatingActionMenu fam, int index, FloatingActionButton item) {
+
+
                 switch (index) {
                     case 0:
                         RelativeLayout.LayoutParams paramContenitore = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -205,7 +207,6 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramBarra2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
                         paramBarra2.setMargins(30, 10, 30, 10);
-                        paramBarra2.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
                         View view2 = new View(context);
                         view2.setId(View.generateViewId());
@@ -215,8 +216,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramtotale = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                         paramtotale.addRule(RelativeLayout.BELOW, view2.getId());
-                        paramtotale.setMargins(0, 20, 0, 0);
-                        paramtotale.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        paramtotale.setMargins(20, 20, 0, 0);
 
                         TextView totaleSerata = new TextView(context);
                         totaleSerata.setText("Totale serata: ");
@@ -228,8 +228,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramTotaleConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                         paramTotaleConsegna.addRule(RelativeLayout.BELOW, totaleSerata.getId());
-                        paramTotaleConsegna.setMargins(0, 10, 0, 0);
-                        paramTotaleConsegna.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        paramTotaleConsegna.setMargins(20, 10, 0, 0);
 
                         TextView totaleSerataConsegna = new TextView(context);
                         totaleSerataConsegna.setText("Totale consegne: ");
@@ -241,8 +240,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramTotaleAsporto = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                         paramTotaleAsporto.addRule(RelativeLayout.BELOW, totaleSerataConsegna.getId());
-                        paramTotaleAsporto.setMargins(0, 20, 0, 0);
-                        paramTotaleAsporto.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        paramTotaleAsporto.setMargins(20, 20, 0, 0);
 
                         TextView totaleSerataAsporto = new TextView(context);
                         totaleSerataAsporto.setText("Totale asporto: ");
@@ -254,7 +252,6 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramBarra3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
                         paramBarra3.setMargins(30, 10, 30, 10);
-                        paramBarra3.addRule(RelativeLayout.CENTER_HORIZONTAL);
                         paramBarra3.addRule(RelativeLayout.BELOW, totaleSerataAsporto.getId());
 
                         View view3 = new View(context);
@@ -265,8 +262,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramCountPizze = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                         paramCountPizze.addRule(RelativeLayout.BELOW, view3.getId());
-                        paramCountPizze.setMargins(0, 20, 0, 0);
-                        paramCountPizze.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        paramCountPizze.setMargins(20, 20, 0, 0);
 
                         TextView countPizze = new TextView(context);
                         countPizze.setText("Pizze servite: ");
@@ -278,8 +274,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramCountBibite = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                         paramCountBibite.addRule(RelativeLayout.BELOW, countPizze.getId());
-                        paramCountBibite.setMargins(0, 20, 0, 0);
-                        paramCountBibite.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        paramCountBibite.setMargins(20, 20, 0, 0);
 
                         TextView countBibite = new TextView(context);
                         countBibite.setText("Bibite servite: ");
@@ -291,8 +286,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         RelativeLayout.LayoutParams paramCountGastro = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                         paramCountGastro.addRule(RelativeLayout.BELOW, countBibite.getId());
-                        paramCountGastro.setMargins(0, 20, 0, 0);
-                        paramCountGastro.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                        paramCountGastro.setMargins(20, 20, 0, 0);
 
                         TextView countGastro = new TextView(context);
                         countGastro.setText("Gastronomia servita: ");
@@ -312,7 +306,7 @@ public class RiepilogoOrdini extends Fragment {
                                         //STAMPA
                                     }
                                 })
-                                .setIcon(R.drawable.pizza)
+                                .setIcon(R.drawable.pizza_logo)
                                 .show();
 
                         break;
