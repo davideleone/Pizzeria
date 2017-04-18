@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView nomeAct;
     private String idOrdine = "";
     private String modifica = "";
+    private SparseArray<HashMap<String, String>> hashColonne;
 
 
     @Override
@@ -67,35 +72,28 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.addDrawerListener(drawerToggle);
 
 
-        new HttpManager.AsyncManager(new AsyncResponse() {
-            @Override
-            public void processFinish(Object output) {
-                riempiClienti(output);
-            }
-        }, this, "GET_LISTA_UTENTI", new String[]{}).execute();
+
 
 
         //logo = (ImageView) findViewById(R.id.logo_accipizza);
     }
 
     private void riempiClienti(Object param) {
-        /*List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
-        SparseArray<List<String>> hashColonne = new SparseArray<List<String>>();
+        hashColonne = new SparseArray<HashMap<String, String>>();
         while (itr.hasNext()) {
             HashMap<String, String> riga = itr.next();
             final int idcliente = Integer.parseInt(riga.get("id"));
-            List<String> listaTemp = (hashColonne.get(idcliente) != null) ? hashColonne.get(idcliente) : new ArrayList<HashMap<String, String>>();
-            HashMap<String, String> row = new HashMap<String, String>(4);
+            HashMap<String, String> row = new HashMap<String, String>(6);
             row.put("cognome", riga.get("cognome"));
             row.put("nome", riga.get("nome"));
             row.put("prefisso", riga.get("prefisso"));
             row.put("telefono", riga.get("telefono"));
             row.put("via", riga.get("via"));
             row.put("citta", riga.get("citta"));
-            listaTemp.add(row);
-            hashColonne.put(idcliente, listaTemp);
-        }*/
+            hashColonne.put(idcliente, row);
+        }
     }
 
 
@@ -123,6 +121,8 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment fragment = null;
         Class fragmentClass;
+        Bundle bundle = null;
+
         switch (menuItem.getItemId()) {
             case R.id.nav_first_fragment:
                 fragmentClass = RiepilogoOrdini.class;
