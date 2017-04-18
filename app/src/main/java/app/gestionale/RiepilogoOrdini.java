@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -86,6 +88,10 @@ public class RiepilogoOrdini extends Fragment {
         View view = inflater.inflate(R.layout.activity_riepilogo_ordini, container, false);
         context = view.getContext();
         super.onCreate(savedInstanceState);
+
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
+        layoutInserimentoToolbar.setVisibility(View.GONE);
 
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_ordini);
         tabellaAssegnati = (TableLayout) view.findViewById(R.id.tabella_ordini_assegnati);
@@ -442,7 +448,7 @@ public class RiepilogoOrdini extends Fragment {
                 final String consegna = riga.get("consegna");
                 final String totale = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("totale"))) + " \u20ac";
                 final String social = riga.get("social");
-                final String telefono = riga.get("prefisso") + riga.get("telefono");
+                final String telefono = riga.get("telefono");
 
                 TableRow row = new TableRow(context);
                 row.setBackgroundResource(R.drawable.table_bottom_style);

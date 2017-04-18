@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -72,6 +73,10 @@ public class Clienti extends Fragment {
         context = view.getContext();
         super.onCreate(savedInstanceState);
         tableClienti = (TableLayout) view.findViewById(R.id.tabell_clienti);
+
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
+        layoutInserimentoToolbar.setVisibility(View.GONE);
 
         spinnerCitta = new Spinner(context);
 

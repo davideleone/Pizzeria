@@ -8,12 +8,12 @@
         "source": "C:\\Users\\dalla\\.android\\build-cache\\7a3fce0be7f212445de5fbce63cf7857251887f5\\output\\res\\layout\\design_navigation_menu_item.xml"
     },
     {
-        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\abc_screen_content_include.xml",
-        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\layout\\abc_screen_content_include.xml"
-    },
-    {
         "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\design_layout_snackbar.xml",
         "source": "C:\\Users\\dalla\\.android\\build-cache\\7a3fce0be7f212445de5fbce63cf7857251887f5\\output\\res\\layout\\design_layout_snackbar.xml"
+    },
+    {
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\abc_screen_content_include.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\layout\\abc_screen_content_include.xml"
     },
     {
         "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\notification_template_part_chronometer.xml",
@@ -76,12 +76,12 @@
         "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\layout\\abc_screen_simple_overlay_action_mode.xml"
     },
     {
-        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\abc_action_bar_title_item.xml",
-        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\layout\\abc_action_bar_title_item.xml"
-    },
-    {
         "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\abc_action_menu_layout.xml",
         "source": "C:\\Users\\dalla\\.android\\build-cache\\77e85993172ddf06016e0c8d76af303b5fc97e57\\output\\res\\layout\\abc_action_menu_layout.xml"
+    },
+    {
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\abc_action_bar_title_item.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\layout\\abc_action_bar_title_item.xml"
     },
     {
         "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\release\\layout\\select_dialog_item_material.xml",

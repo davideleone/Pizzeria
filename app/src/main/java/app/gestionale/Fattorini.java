@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +60,10 @@ public class Fattorini extends Fragment {
         View view = inflater.inflate(R.layout.activity_fattorini, container, false);
         context = view.getContext();
         super.onCreate(savedInstanceState);
+
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
+        layoutInserimentoToolbar.setVisibility(View.GONE);
 
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_fattorini);
 

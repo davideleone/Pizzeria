@@ -3,6 +3,7 @@ package app.gestionale;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -84,6 +85,8 @@ public class NuovoOrdine extends Fragment {
     private String strCivico = "";
     private String strCitta = "";
     private String idOrdine = "";
+    private String idCliente = "";
+    private AutoCompleteTextView cognomeProva;
 /*    final int contOrdini[] = new int[listaOre.size()];
     final int[] nPizze = new int[listaOre.size()];*/
 
@@ -126,6 +129,7 @@ public class NuovoOrdine extends Fragment {
         layoutContoGastronomia = (RelativeLayout) view.findViewById(R.id.riassuntoOrdineGastronomia);
         totale = (TextView) view.findViewById(R.id.totaleEuro);
         aggiunte = new AutoCompleteTextView(context);
+        cognomeProva = new AutoCompleteTextView(context);
 
         HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
 
@@ -398,7 +402,7 @@ public class NuovoOrdine extends Fragment {
                         String strNome = nome.getText().toString();
                         String strCognome = cognome.getText().toString();
                         String strTelefono = telefono.getText().toString();
-                        String strData = spinnerDate.getSelectedItem().toString();
+                        String strData = Funzioni.formattaData(spinnerDate.getSelectedItem().toString());
                         String strOra = spinnerOre.getSelectedItem().toString();
 
                         if (strNome.isEmpty()) {
@@ -428,7 +432,15 @@ public class NuovoOrdine extends Fragment {
                         }
 
                         if (toClose) {
-                            HttpManager.execSimple("INSERISCI_CLIENTE", null, new String[]{strCognome, strNome, strTelefono, strVia, strCitta});
+
+                            new HttpManager.AsyncManager(new AsyncResponse() {
+                                @Override
+                                public void processFinish(Object output) {
+                                    creaCliente(output);
+                                }
+                            }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
+
+                            Toast.makeText(context, idCliente, Toast.LENGTH_SHORT).show();
 
                             if (consegna.isChecked())
                                 HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, new String[]{strCitta, strOra, strData, strVia, strTelefono, idOrdine});
@@ -438,7 +450,18 @@ public class NuovoOrdine extends Fragment {
                                    if (!checkUtentePresente(idcliente))
                             DBmanager.updateQuery(EnumQuery.INSERISCI_CLIENTE.getValore(), false, idcliente, cognomeString, nomeString, telefonoString.substring(0, 4), telefonoString.substring(4, 10));
                             */
-                            HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, new String[]{idOrdine, "Pizzeria_bla_bla", strData, strNome, strCognome, "Pizzeria"});
+                            HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, new String[]{idOrdine, idCliente, strData, strNome, strCognome, "Pizzeria"});
+
+
+                            RiepilogoOrdini fragment = new RiepilogoOrdini();
+                            fragment.setArguments(bundle);
+                            FragmentManager fragmentManager = getFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.flContent, fragment)
+                                    .commit();
+
+                            dialog.dismiss();
+                            
                         }
                     }
                 });
@@ -447,6 +470,14 @@ public class NuovoOrdine extends Fragment {
         });
 
         return view;
+    }
+
+    private void creaCliente(Object param){
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        HashMap<String, String> riga = itr.next();
+        final String idClienteCreato = riga.get("generated_id");
+        setIdCliente(idClienteCreato);
     }
 
     private void creaOrdine(Object param) {
@@ -461,6 +492,10 @@ public class NuovoOrdine extends Fragment {
                 impostaBottoni(idOrdine, output);
             }
         }, null, "GET_LISTA_PRODOTTI", new String[]{}).execute();
+    }
+
+    private void setIdCliente(String idCliente) {
+        this.idCliente = idCliente;
     }
 
     private void setIdOrdine(String idOrdine) {

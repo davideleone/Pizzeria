@@ -71,12 +71,44 @@
         </RelativeLayout>
 
 
+        <RelativeLayout
+            android:id="@+id/sceltaTipo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/intestazioniPizze"
+            android:layout_marginTop="10dp">
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/testoGrande"
+                    android:textColor="@color/giallo"
+                    android:layout_marginEnd="20dp"
+                    android:text="Pizza"
+                    android:checked="true"/>
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/testoGrande"
+                    android:textColor="@color/giallo"
+                    android:text="1/2 Metro"
+                    />
+            </RadioGroup>
+
+        </RelativeLayout>
+
         <ScrollView
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/intestazioniPizze"
+            android:layout_below="@id/sceltaTipo"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="45dp"
             android:layout_marginTop="15dp">
