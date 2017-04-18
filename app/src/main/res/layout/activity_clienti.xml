@@ -28,8 +28,9 @@
 
                 <RelativeLayout
                     android:id="@+id/header"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_marginEnd="30dp"
                     android:background="#EF634D">
 
                     <TextView
@@ -78,6 +79,16 @@
                         android:layout_toEndOf="@id/col_Via"
                         android:gravity="center"
                         android:text="Città"
+                        android:textColor="#ffffff"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/col_Gestione"
+                        android:layout_width="200dp"
+                        android:layout_height="60dp"
+                        android:layout_toEndOf="@id/col_Citta"
+                        android:gravity="center"
+                        android:text="Gestione"
                         android:textColor="#ffffff"
                         android:textSize="25sp" />
 

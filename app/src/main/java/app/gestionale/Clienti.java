@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -72,200 +73,212 @@ public class Clienti extends Fragment {
         super.onCreate(savedInstanceState);
         tableClienti = (TableLayout) view.findViewById(R.id.tabell_clienti);
 
+        spinnerCitta = new Spinner(context);
+
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                inizializzaCitta(output);
+            }
+        }, context, "GET_CITTA", new String[]{}).execute();
+
+        aggiornaClienti();
+
+        FloatingActionButton btnNuovoCliente = (FloatingActionButton) view.findViewById(R.id.btn_Aggiungi);
+        btnNuovoCliente.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mostraDialog(null);
+            }
+        });
+        return view;
+    }
+
+    private void mostraDialog(Object param) {
+        RelativeLayout inserimentoLayout = new RelativeLayout(context);
+        RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramInserimento.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        paramInserimento.addRule(RelativeLayout.CENTER_VERTICAL);
+        paramInserimento.setMargins(0, 30, 0, 0);
+        inserimentoLayout.setLayoutParams(paramInserimento);
+
+        RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+        paramBarra.setMargins(30, 20, 30, 10);
+        paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+        View view = new View(context);
+        view.setId(View.generateViewId());
+        view.setBackgroundColor(getResources().getColor(R.color.celeste));
+        view.setLayoutParams(paramBarra);
+        inserimentoLayout.addView(view);
+
+        RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        editTextParams.addRule(RelativeLayout.BELOW, view.getId());
+        TextInputLayout nomeInput = new TextInputLayout(context);
+        editTextParams.setMargins(40, 15, 0, 40);
+        nomeInput.setLayoutParams(editTextParams);
+        nomeInput.setId(View.generateViewId());
+
+        final TextInputEditText nome = new TextInputEditText(context);
+        final TextInputEditText cognome = new TextInputEditText(context);
+        final TextInputEditText telefono = new TextInputEditText(context);
+        final TextInputEditText via = new TextInputEditText(context);
+
+        nome.setTextSize(25);
+        nome.setHint("Nome");
+        nomeInput.addView(nome);
+
+        RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        TextInputLayout cognomeInput = new TextInputLayout(context);
+        cognomeInput.setId(View.generateViewId());
+        editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
+        editTextCognomeParams.setMargins(40, 0, 0, 40);
+        cognomeInput.setLayoutParams(editTextCognomeParams);
+        cognome.setTextSize(25);
+        cognome.setHint("Cognome");
+        cognomeInput.addView(cognome);
+
+        RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        TextInputLayout telefonoInput = new TextInputLayout(context);
+        telefonoInput.setId(View.generateViewId());
+        editTextTelefonoParams.addRule(RelativeLayout.BELOW, cognomeInput.getId());
+        editTextTelefonoParams.setMargins(40, 0, 0, 40);
+        telefonoInput.setLayoutParams(editTextTelefonoParams);
+        telefono.setTextSize(25);
+        telefono.setHint("Telefono");
+        telefono.setInputType(InputType.TYPE_CLASS_PHONE);
+        telefonoInput.addView(telefono);
+
+        RelativeLayout.LayoutParams editTextViaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        TextInputLayout viaInput = new TextInputLayout(context);
+        viaInput.setId(View.generateViewId());
+        editTextViaParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
+        editTextViaParams.setMargins(40, 0, 0, 40);
+        viaInput.setLayoutParams(editTextViaParams);
+        via.setTextSize(25);
+        via.setHint("Via/P.zza/Loc.");
+        viaInput.addView(via);
+
+        RelativeLayout.LayoutParams editTextCittaTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_100dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        editTextCittaTxtParams.addRule(RelativeLayout.BELOW, viaInput.getId());
+        editTextCittaTxtParams.setMargins(40, 0, 0, 40);
+
+        TextView txtCitta = new TextView(context);
+        txtCitta.setTextSize(25);
+        txtCitta.setText("Citta'");
+        txtCitta.setId(View.generateViewId());
+        txtCitta.setLayoutParams(editTextCittaTxtParams);
+
+        RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        editTextCittaSpinnerParams.addRule(RelativeLayout.BELOW, viaInput.getId());
+        editTextCittaSpinnerParams.addRule(RelativeLayout.END_OF, txtCitta.getId());
+        editTextCittaSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtCitta.getId());
+
+        editTextCittaSpinnerParams.setMargins(40, 0, 0, 40);
+
+
+        spinnerCitta.setLayoutParams(editTextCittaSpinnerParams);
+
+        inserimentoLayout.addView(nomeInput);
+        inserimentoLayout.addView(cognomeInput);
+        inserimentoLayout.addView(telefonoInput);
+        inserimentoLayout.addView(viaInput);
+        inserimentoLayout.addView(txtCitta);
+        if (spinnerCitta.getParent() != null)
+            ((ViewGroup) spinnerCitta.getParent()).removeView(spinnerCitta);
+        inserimentoLayout.addView(spinnerCitta);
+
+        String idTemp = "";
+        if (param != null) {
+            HashMap<String, String> hashDati = (HashMap<String, String>) param;
+            final String idCliente = hashDati.get("id");
+            final String strNome = hashDati.get("nome");
+            final String strCognome = hashDati.get("cognome");
+            final String strTelefono = hashDati.get("telefono");
+            final String strVia = hashDati.get("via");
+            final String strCitta = hashDati.get("citta");
+
+
+            idTemp = idCliente;
+            nome.setText(strNome);
+            cognome.setText(strCognome);
+            telefono.setText(strTelefono);
+            via.setText(strVia);
+            spinnerCitta.setSelection(listaCitta.indexOf(strCitta));
+        }
+
+        final String ID_CLIENTE = idTemp;
+
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(inserimentoLayout)
+                .setTitle("Inserisci Nuovo Cliente")
+                .setPositiveButton("Inserisci", null)
+                .setNegativeButton("Annulla", null)
+                .create();
+
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Boolean toClose = true;
+                String strNome = nome.getText().toString();
+                String strCognome = cognome.getText().toString();
+                String strTelefono = telefono.getText().toString();
+                String strVia = via.getText().toString();
+                String strCitta = spinnerCitta.getSelectedItem().toString();
+
+                if (strNome.isEmpty()) {
+                    toClose = false;
+                    nome.setError("Inserisci nome");
+                }
+                if (strCognome.isEmpty()) {
+                    toClose = false;
+                    cognome.setError("Inserisci cognome");
+                }
+                if (strTelefono.isEmpty() || strTelefono.length() != 10) {
+                    toClose = false;
+                    telefono.setError("Inserisci telefono");
+                }
+                if (strVia.isEmpty()) {
+                    toClose = false;
+                    via.setError("Inserisci via");
+                }
+
+                if (toClose) {
+                    if (ID_CLIENTE.isEmpty()) {
+                        new HttpManager.AsyncManager(new AsyncResponse() {
+                            @Override
+                            public void processFinish(Object output) {
+                                Toast.makeText(context, "Cliente inserito correttamente", Toast.LENGTH_SHORT).show();
+                            }
+                        }, context, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
+                    } else {
+                        new HttpManager.AsyncManager(new AsyncResponse() {
+                            @Override
+                            public void processFinish(Object output) {
+                                Toast.makeText(context, "Cliente aggiornato correttamente", Toast.LENGTH_SHORT).show();
+                            }
+                        }, context, "AGGIORNA_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta, ID_CLIENTE}).execute();
+                    }
+
+                    aggiornaClienti();
+                    dialog.dismiss();
+                }
+            }
+        });
+    }
+
+    private void aggiornaClienti() {
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
                 fixClienti(output);
             }
         }, context, "GET_LISTA_UTENTI", new String[]{}).execute();
-
-
-        FloatingActionButton btnNuovoCliente = (FloatingActionButton) view.findViewById(R.id.btn_Aggiungi);
-        btnNuovoCliente.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                new HttpManager.AsyncManager(new AsyncResponse() {
-                    @Override
-                    public void processFinish(Object output) {
-                        inizializzaCitta(output);
-                    }
-                }, context, "GET_CITTA", new String[]{}).execute();
-
-
-                RelativeLayout inserimentoLayout = new RelativeLayout(context);
-                RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                paramInserimento.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                paramInserimento.addRule(RelativeLayout.CENTER_VERTICAL);
-                paramInserimento.setMargins(0, 30, 0, 0);
-                inserimentoLayout.setLayoutParams(paramInserimento);
-
-                RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
-                paramBarra.setMargins(30, 20, 30, 10);
-                paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
-
-                View view = new View(context);
-                view.setId(View.generateViewId());
-                view.setBackgroundColor(getResources().getColor(R.color.celeste));
-                view.setLayoutParams(paramBarra);
-                inserimentoLayout.addView(view);
-
-                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-                editTextParams.addRule(RelativeLayout.BELOW, view.getId());
-                TextInputLayout nomeInput = new TextInputLayout(context);
-                editTextParams.setMargins(40, 15, 0, 40);
-                nomeInput.setLayoutParams(editTextParams);
-                nomeInput.setId(View.generateViewId());
-
-                final TextInputEditText nome = new TextInputEditText(context);
-                final TextInputEditText cognome = new TextInputEditText(context);
-                final TextInputEditText telefono = new TextInputEditText(context);
-                final TextInputEditText via = new TextInputEditText(context);
-                final TextInputEditText civico = new TextInputEditText(context);
-                final TextInputEditText citta = new TextInputEditText(context);
-
-
-                nome.setTextSize(25);
-                nome.setHint("Nome");
-                nomeInput.addView(nome);
-
-                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                TextInputLayout cognomeInput = new TextInputLayout(context);
-                cognomeInput.setId(View.generateViewId());
-                editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
-                editTextCognomeParams.setMargins(40, 0, 0, 40);
-                cognomeInput.setLayoutParams(editTextCognomeParams);
-                cognome.setTextSize(25);
-                cognome.setHint("Cognome");
-                cognomeInput.addView(cognome);
-
-                RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                TextInputLayout telefonoInput = new TextInputLayout(context);
-                telefonoInput.setId(View.generateViewId());
-                editTextTelefonoParams.addRule(RelativeLayout.BELOW, cognomeInput.getId());
-                editTextTelefonoParams.setMargins(40, 0, 0, 40);
-                telefonoInput.setLayoutParams(editTextTelefonoParams);
-                telefono.setTextSize(25);
-                telefono.setHint("Telefono");
-                telefono.setInputType(InputType.TYPE_CLASS_PHONE);
-                telefonoInput.addView(telefono);
-
-                RelativeLayout.LayoutParams editTextViaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                TextInputLayout viaInput = new TextInputLayout(context);
-                viaInput.setId(View.generateViewId());
-                editTextViaParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
-                editTextViaParams.setMargins(40, 0, 0, 40);
-                viaInput.setLayoutParams(editTextViaParams);
-                via.setTextSize(25);
-                via.setHint("Via/P.zza/Loc.");
-                viaInput.addView(via);
-
-                RelativeLayout.LayoutParams editTextCivicoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_80dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                TextInputLayout civicoInput = new TextInputLayout(context);
-                civicoInput.setId(View.generateViewId());
-                editTextCivicoParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
-                editTextCivicoParams.addRule(RelativeLayout.END_OF, viaInput.getId());
-                editTextCivicoParams.setMargins(40, 0, 0, 40);
-                civicoInput.setLayoutParams(editTextCivicoParams);
-                civico.setTextSize(25);
-                civico.setHint("Civico");
-                civicoInput.addView(civico);
-
-                RelativeLayout.LayoutParams editTextCittaTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_100dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-                editTextCittaTxtParams.addRule(RelativeLayout.BELOW, viaInput.getId());
-                editTextCittaTxtParams.setMargins(40, 0, 0, 40);
-
-                TextView txtCitta = new TextView(context);
-                txtCitta.setTextSize(25);
-                txtCitta.setText("Citta'");
-                txtCitta.setId(View.generateViewId());
-                txtCitta.setLayoutParams(editTextCittaTxtParams);
-
-                RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-                editTextCittaSpinnerParams.addRule(RelativeLayout.BELOW, viaInput.getId());
-                editTextCittaSpinnerParams.addRule(RelativeLayout.END_OF, txtCitta.getId());
-                editTextCittaSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtCitta.getId());
-
-                editTextCittaSpinnerParams.setMargins(40, 0, 0, 40);
-
-                spinnerCitta = new Spinner(context);
-                spinnerCitta.setLayoutParams(editTextCittaSpinnerParams);
-
-                inserimentoLayout.addView(nomeInput);
-                inserimentoLayout.addView(cognomeInput);
-                inserimentoLayout.addView(telefonoInput);
-                inserimentoLayout.addView(viaInput);
-                inserimentoLayout.addView(civicoInput);
-                inserimentoLayout.addView(txtCitta);
-                inserimentoLayout.addView(spinnerCitta);
-
-
-                final AlertDialog dialog = new AlertDialog.Builder(context)
-                        .setView(inserimentoLayout)
-                        .setTitle("Inserisci Nuovo Cliente")
-                        .setPositiveButton("Inserisci", null)
-                        .setNegativeButton("Annulla", null)
-                        .create();
-
-                dialog.show();
-
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Boolean toClose = true;
-                        String strNome = nome.getText().toString();
-                        String strCognome = cognome.getText().toString();
-                        String strTelefono = telefono.getText().toString();
-                        String strVia = via.getText().toString();
-                        String strCivico = civico.getText().toString();
-                        String strCitta = spinnerCitta.getSelectedItem().toString();
-
-                        if (strNome.isEmpty()) {
-                            toClose = false;
-                            nome.setError("Inserisci nome");
-                        }
-                        if (strCognome.isEmpty()) {
-                            toClose = false;
-                            cognome.setError("Inserisci cognome");
-                        }
-                        if (strTelefono.isEmpty() || strTelefono.length() != 10) {
-                            toClose = false;
-                            telefono.setError("Inserisci telefono");
-                        }
-                        if (strVia.isEmpty()) {
-                            toClose = false;
-                            via.setError("Inserisci via");
-                        }
-                        if (strCivico.isEmpty()) {
-                            toClose = false;
-                            civico.setError("Inserisci civico");
-                        }
-
-                        if (toClose) {
-                            new HttpManager.AsyncManager(new AsyncResponse() {
-                                @Override
-                                public void processFinish(Object output) {
-                                    Toast.makeText(context, "Cliente inserito correttamente", Toast.LENGTH_SHORT).show();
-                                }
-                            }, context, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia + " " + strCivico, strCitta}).execute();
-
-                            new HttpManager.AsyncManager(new AsyncResponse() {
-                                @Override
-                                public void processFinish(Object output) {
-                                    dialog.dismiss();
-                                    fixClienti(output);
-                                }
-                            }, context, "GET_LISTA_UTENTI", new String[]{}).execute();
-                        }
-                    }
-                });
-            }
-        });
-        return view;
     }
 
     private void fixClienti(Object param) {
@@ -284,19 +297,22 @@ public class Clienti extends Fragment {
             hashColonne.put(idcliente, row);
         }
 
-        riempiTabellaClienti(hashColonne);
+        riempiTabellaClienti();
     }
 
-    private void riempiTabellaClienti(SparseArray<HashMap<String, String>> hashclienti) {
+    private void riempiTabellaClienti() {
         tableClienti.removeViews(1, tableClienti.getChildCount() - 1);
-        for (int i = 0; i < hashclienti.size(); i++) {
-            HashMap<String, String> listaCliente = hashclienti.valueAt(i);
+        for (int i = 0; i < hashColonne.size(); i++) {
+            final HashMap<String, String> listaCliente = hashColonne.valueAt(i);
 
+            final int idcliente = hashColonne.keyAt(i);
             final String nome = listaCliente.get("nome");
             final String cognome = listaCliente.get("cognome");
             final String telefono = listaCliente.get("telefono");
             final String via = listaCliente.get("via");
             final String citta = listaCliente.get("citta");
+
+            listaCliente.put("id", Integer.toString(idcliente));
 
             TableRow row = new TableRow(context);
             row.setBackgroundResource(R.drawable.table_bottom_style);
@@ -306,12 +322,50 @@ public class Clienti extends Fragment {
             TextView txtTelefono = makeTableRowWithText(telefono, R.dimen.dim_200dp);
             TextView txtVia = makeTableRowWithText(via, R.dimen.dim_200dp);
             TextView txtCitta = makeTableRowWithText(citta, R.dimen.dim_200dp);
+            ImageButton btnModifica = makeTableRowWithImageButton(R.drawable.modifica);
+            ImageButton btnElimina = makeTableRowWithImageButton(R.drawable.elimina);
+
+            btnModifica.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mostraDialog(listaCliente);
+                }
+            });
+
+            btnElimina.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AlertDialog.Builder(context)
+                            .setTitle("Elimina cliente")
+                            .setMessage("Sei sicuro di voler eliminare il cliente " + cognome + "?")
+                            .setPositiveButton("Si, elimina", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new HttpManager.AsyncManager(new AsyncResponse() {
+                                        @Override
+                                        public void processFinish(Object output) {
+                                            aggiornaClienti();
+                                            Toast.makeText(context, "Cliente Eliminato!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }, context, "ELIMINA_CLIENTE", new String[]{Integer.toString(idcliente)}).execute();
+                                }
+                            })
+                            .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .setIcon(R.drawable.logo)
+                            .show();
+                }
+            });
 
             row.addView(txtNome);
             row.addView(txtCognome);
             row.addView(txtTelefono);
             row.addView(txtVia);
             row.addView(txtCitta);
+            row.addView(btnModifica);
+            row.addView(btnElimina);
             tableClienti.addView(row);
         }
     }
