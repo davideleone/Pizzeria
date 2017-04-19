@@ -327,7 +327,7 @@ public class RiepilogoOrdini extends Fragment {
 
 
             new AlertDialog.Builder(context)
-                    .setTitle("Riepilogo Serata")
+                    .setTitle("Riepilogo Serata del " + dataRicerca)
                     .setView(layoutInformazioni)
                     .setPositiveButton("Stampa", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -457,8 +457,8 @@ public class RiepilogoOrdini extends Fragment {
                 TextView nomeCliente = makeTableRowWithText((riga.get("nome")), R.dimen.dim_150dp);
                 TextView cognomeCliente = makeTableRowWithText(cognome, R.dimen.dim_150dp);
                 TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_100dp);
-                TextView viaOrdine = makeTableRowWithText(riga.get("via"), R.dimen.dim_200dp);
-                TextView cittaOrdine = makeTableRowWithText(riga.get("citta"), R.dimen.dim_150dp);
+                TextView viaOrdine = makeTableRowWithText((riga.get("via").equals("null") ? " ----- " : riga.get("via")), R.dimen.dim_200dp);
+                TextView cittaOrdine = makeTableRowWithText(riga.get("citta").equals("null") ? " ----- " : riga.get("citta"), R.dimen.dim_150dp);
 
                 ImageButton btnMostra = makeTableRowWithImageButton(R.drawable.mostra);
                 ImageButton btnAccetta = makeTableRowWithImageButton(R.drawable.accetta);

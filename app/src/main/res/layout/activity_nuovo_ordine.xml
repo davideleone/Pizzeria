@@ -81,23 +81,26 @@
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:checkedButton="@+id/pizza"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
                 <RadioButton
+                    android:id="@+id/pizza"
+                    style="@style/testoGrande"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/testoGrande"
-                    android:textColor="@color/giallo"
                     android:layout_marginEnd="20dp"
+                    android:checked="true"
                     android:text="Pizza"
-                    android:checked="true"/>
+                    android:textColor="@color/giallo" />
 
                 <RadioButton
+                    android:id="@+id/mezzoMetro"
+                    style="@style/testoGrande"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/testoGrande"
-                    android:textColor="@color/giallo"
                     android:text="1/2 Metro"
+                    android:textColor="@color/giallo"
                     />
             </RadioGroup>
 

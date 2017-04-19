@@ -297,8 +297,8 @@ public class Clienti extends Fragment {
             row.put("cognome", riga.get("cognome"));
             row.put("nome", riga.get("nome"));
             row.put("telefono", riga.get("telefono"));
-            row.put("via", (riga.get("via")));
-            row.put("citta", (riga.get("citta")));
+            row.put("via", (riga.get("via").equals("null") ? "----- " : riga.get("via")));
+            row.put("citta", (riga.get("citta").equals("null") ? "----- " : riga.get("citta")));
             hashColonne.put(idcliente, row);
         }
 
