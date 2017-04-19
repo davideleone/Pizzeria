@@ -273,7 +273,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/delete"
             fab:backgroundTint="@color/menu_primary"
-            fab:fabSize="mini" />
+            fab:fabSize="normal" />
 
 
         <android.support.design.widget.FloatingActionButton
@@ -282,7 +282,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/info"
             fab:backgroundTint="@color/menu_primary"
-            fab:fabSize="mini" />
+            fab:fabSize="normal" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_browser_circle"
@@ -290,7 +290,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/plus"
             fab:backgroundTint="@color/menu_primary"
-            fab:fabSize="mini" />
+            fab:fabSize="normal" />
 
     </terranovaproductions.newcomicreader.FloatingActionMenu>
 

@@ -469,6 +469,7 @@ public class NuovoOrdine extends Fragment {
                             */
         HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, idOrdine, idClienteCreato, strNome, strCognome, "Pizzeria");
 
+        Toast.makeText(listener, "Ordine completato con successo!", Toast.LENGTH_SHORT).show();
 
         RiepilogoOrdini fragment = new RiepilogoOrdini();
         fragment.setArguments(bundle);

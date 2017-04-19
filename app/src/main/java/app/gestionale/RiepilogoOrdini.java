@@ -248,7 +248,7 @@ public class RiepilogoOrdini extends Fragment {
             paramtotale.setMargins(20, 20, 0, 0);
 
             TextView totaleSerata = new TextView(context);
-            totaleSerata.setText("Totale serata: " + lista.get(0).get("totale_serata"));
+            totaleSerata.setText("Totale serata: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_serata"))));
             totaleSerata.setId(View.generateViewId());
             totaleSerata.setTextSize(25);
             totaleSerata.setLayoutParams(paramtotale);
@@ -260,7 +260,7 @@ public class RiepilogoOrdini extends Fragment {
             paramTotaleConsegna.setMargins(20, 10, 0, 0);
 
             TextView totaleSerataConsegna = new TextView(context);
-            totaleSerataConsegna.setText("Totale consegne: " + lista.get(0).get("totale_domicilio"));
+            totaleSerataConsegna.setText("Totale consegne: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_domicilio"))));
             totaleSerataConsegna.setId(View.generateViewId());
             totaleSerataConsegna.setTextSize(25);
             totaleSerataConsegna.setLayoutParams(paramTotaleConsegna);
@@ -272,7 +272,7 @@ public class RiepilogoOrdini extends Fragment {
             paramTotaleAsporto.setMargins(20, 20, 0, 0);
 
             TextView totaleSerataAsporto = new TextView(context);
-            totaleSerataAsporto.setText("Totale asporto: " + lista.get(0).get("totale_asporto"));
+            totaleSerataAsporto.setText("Totale asporto: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_asporto"))));
             totaleSerataAsporto.setId(View.generateViewId());
             totaleSerataAsporto.setTextSize(25);
             totaleSerataAsporto.setLayoutParams(paramTotaleAsporto);
