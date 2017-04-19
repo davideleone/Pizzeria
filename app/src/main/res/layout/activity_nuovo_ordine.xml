@@ -76,10 +76,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/intestazioniPizze"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:gravity="center_horizontal">
 
             <RadioGroup
-                android:layout_width="match_parent"
+                android:id="@+id/gruppoRadioButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checkedButton="@+id/pizza"
                 android:gravity="center_horizontal"
@@ -104,6 +106,17 @@
                     android:textColor="@color/giallo"
                     />
             </RadioGroup>
+
+            <ImageButton
+                android:id="@+id/spezzaPizze"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:layout_toEndOf="@id/gruppoRadioButton"
+                android:background="@android:color/transparent"
+                android:src="@drawable/plus"
+                android:visibility="gone" />
 
         </RelativeLayout>
 

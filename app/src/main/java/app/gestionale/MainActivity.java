@@ -71,29 +71,37 @@ public class MainActivity extends AppCompatActivity {
         drawerToggle = setupDrawerToggle();
         mDrawer.addDrawerListener(drawerToggle);
 
-
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                fixClienti(output);
+            }
+        }, this, "GET_LISTA_UTENTI", new String[]{}).execute();
 
 
 
         //logo = (ImageView) findViewById(R.id.logo_accipizza);
     }
 
-    private void riempiClienti(Object param) {
+    private void fixClienti(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         hashColonne = new SparseArray<HashMap<String, String>>();
         while (itr.hasNext()) {
             HashMap<String, String> riga = itr.next();
             final int idcliente = Integer.parseInt(riga.get("id"));
-            HashMap<String, String> row = new HashMap<String, String>(6);
+            HashMap<String, String> row = new HashMap<String, String>(5);
             row.put("cognome", riga.get("cognome"));
             row.put("nome", riga.get("nome"));
-            row.put("prefisso", riga.get("prefisso"));
             row.put("telefono", riga.get("telefono"));
-            row.put("via", riga.get("via"));
-            row.put("citta", riga.get("citta"));
+            row.put("via", (riga.get("via").equals("null") ? "----- " : riga.get("via")));
+            row.put("citta", (riga.get("citta").equals("null") ? "----- " : riga.get("citta")));
             hashColonne.put(idcliente, row);
         }
+
+        //List<SparseArray<HashMap<String,String>>> clienti = new List<SparseArray<HashMap<String, String>>>();
+
+        //clienti.add(hashColonne);
     }
 
 
