@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -784,6 +783,8 @@ public class RiepilogoOrdini extends Fragment {
     private ImageButton makeTableRowWithImageButton(int img) {
         recyclableImageButton = new ImageButton(context);
         recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+        recyclableImageButton.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.dim_26dp));
+        recyclableImageButton.setPadding(40, 0, 0, 0);
         recyclableImageButton.setImageResource(img);
         recyclableImageButton.setBackgroundColor(Color.TRANSPARENT);
         return recyclableImageButton;

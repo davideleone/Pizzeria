@@ -22,15 +22,15 @@
 
             <TableLayout
                 android:id="@+id/tabell_clienti"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
                 android:background="#FDB55D">
 
                 <RelativeLayout
                     android:id="@+id/header"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="30dp"
+                    android:layout_height="wrap_content"
                     android:background="#EF634D">
 
                     <TextView

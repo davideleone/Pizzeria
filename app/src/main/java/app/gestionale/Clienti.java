@@ -400,7 +400,9 @@ public class Clienti extends Fragment {
 
     private ImageButton makeTableRowWithImageButton(int img) {
         recyclableImageButton = new ImageButton(context);
-        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_80dp));
+        recyclableImageButton.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.dim_26dp));
+        recyclableImageButton.setPadding(40, 0, 0, 0);
         recyclableImageButton.setImageResource(img);
         recyclableImageButton.setBackgroundColor(Color.TRANSPARENT);
         return recyclableImageButton;

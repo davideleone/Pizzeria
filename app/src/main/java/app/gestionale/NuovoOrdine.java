@@ -87,6 +87,7 @@ public class NuovoOrdine extends Fragment {
     private String idOrdine = "";
     private String idCliente = "";
     private AutoCompleteTextView cognomeProva;
+    private CheckBox consegna;
 /*    final int contOrdini[] = new int[listaOre.size()];
     final int[] nPizze = new int[listaOre.size()];*/
 
@@ -223,7 +224,7 @@ public class NuovoOrdine extends Fragment {
 
                 RelativeLayout.LayoutParams editTextChechboxParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-                final CheckBox consegna = new CheckBox(context);
+                consegna = new CheckBox(context);
                 consegna.setId(View.generateViewId());
                 editTextChechboxParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
                 editTextChechboxParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -399,11 +400,11 @@ public class NuovoOrdine extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Boolean toClose = true;
-                        String strNome = nome.getText().toString();
-                        String strCognome = cognome.getText().toString();
-                        String strTelefono = telefono.getText().toString();
-                        String strData = Funzioni.formattaData(spinnerDate.getSelectedItem().toString());
-                        String strOra = spinnerOre.getSelectedItem().toString();
+                        final String strNome = nome.getText().toString();
+                        final String strCognome = cognome.getText().toString();
+                        final String strTelefono = telefono.getText().toString();
+                        final String strData = Funzioni.formattaData(spinnerDate.getSelectedItem().toString());
+                        final String strOra = spinnerOre.getSelectedItem().toString();
 
                         if (strNome.isEmpty()) {
                             toClose = false;
@@ -432,26 +433,12 @@ public class NuovoOrdine extends Fragment {
                         }
 
                         if (toClose) {
-
                             new HttpManager.AsyncManager(new AsyncResponse() {
                                 @Override
                                 public void processFinish(Object output) {
-                                    creaCliente(output);
+                                    completaOrdine(strData, strOra, strNome, strCognome, strTelefono, output);
                                 }
                             }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
-
-                            Toast.makeText(context, idCliente, Toast.LENGTH_SHORT).show();
-
-                            if (consegna.isChecked())
-                                HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, new String[]{strCitta, strOra, strData, strVia, strTelefono, idOrdine});
-                            else
-                                HttpManager.execSimple("AGGIORNA_ORDINE_ASPORTO", null, new String[]{strOra, strData, strTelefono, idOrdine});
-                            /*TODO
-                                   if (!checkUtentePresente(idcliente))
-                            DBmanager.updateQuery(EnumQuery.INSERISCI_CLIENTE.getValore(), false, idcliente, cognomeString, nomeString, telefonoString.substring(0, 4), telefonoString.substring(4, 10));
-                            */
-                            HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, new String[]{idOrdine, idCliente, strData, strNome, strCognome, "Pizzeria"});
-
 
                             RiepilogoOrdini fragment = new RiepilogoOrdini();
                             fragment.setArguments(bundle);
@@ -472,12 +459,22 @@ public class NuovoOrdine extends Fragment {
         return view;
     }
 
-    private void creaCliente(Object param){
+    private void completaOrdine(String strData, String strOra, String strNome, String strCognome, String strTelefono, Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         HashMap<String, String> riga = itr.next();
         final String idClienteCreato = riga.get("generated_id");
-        setIdCliente(idClienteCreato);
+
+        if (consegna.isChecked())
+            HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, (totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString(), strCitta, strOra, strData, strVia, strTelefono, idOrdine);
+        else
+            HttpManager.execSimple("AGGIORNA_ORDINE_ASPORTO", null, (totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString(), strOra, strData, strTelefono, idOrdine);
+                            /*TODO
+                                   if (!checkUtentePresente(idcliente))
+                            DBmanager.updateQuery(EnumQuery.INSERISCI_CLIENTE.getValore(), false, idcliente, cognomeString, nomeString, telefonoString.substring(0, 4), telefonoString.substring(4, 10));
+                            */
+        HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, idOrdine, idClienteCreato, strNome, strCognome, "Pizzeria");
+
     }
 
     private void creaOrdine(Object param) {
