@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -88,6 +89,9 @@ public class NuovoOrdine extends Fragment {
     private String idCliente = "";
     private AutoCompleteTextView cognomeProva;
     private CheckBox consegna;
+    private RadioButton isMetro;
+
+    private SparseArray<TableLayout> sparseMetri = new SparseArray<TableLayout>();
 /*    final int contOrdini[] = new int[listaOre.size()];
     final int[] nPizze = new int[listaOre.size()];*/
 
@@ -119,6 +123,8 @@ public class NuovoOrdine extends Fragment {
         context = view.getContext();
         super.onCreate(savedInstanceState);
 
+        isMetro = (RadioButton) view.findViewById(R.id.mezzoMetro);
+
         layoutBottoniPizze = (RelativeLayout) view.findViewById(R.id.parteBottoni);
         layoutBottoniBibite = (RelativeLayout) view.findViewById(R.id.layoutBottoniBibite);
         layoutBottoniGastronomia = (RelativeLayout) view.findViewById(R.id.layoutBottoniGastronomia);
@@ -131,6 +137,8 @@ public class NuovoOrdine extends Fragment {
         totale = (TextView) view.findViewById(R.id.totaleEuro);
         aggiunte = new AutoCompleteTextView(context);
         cognomeProva = new AutoCompleteTextView(context);
+
+        inizializzaTabelle();
 
         HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
 
@@ -590,7 +598,7 @@ public class NuovoOrdine extends Fragment {
                             @Override
                             public void processFinish(Object output) {
                                 Toast.makeText(context, "Prodotto Inserito!", Toast.LENGTH_SHORT).show();
-                                creaConto(output);
+                                creaConto(tipo, output);
                             }
                         }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, ordine}).execute();
                     }
@@ -599,22 +607,31 @@ public class NuovoOrdine extends Fragment {
         }
     }
 
-    private void creaConto(Object param) {
+    private void creaConto(final String tipoProdotto, Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itr = lista.iterator();
-        if (itr.hasNext()) {
-            while (itr.hasNext()) {
-                HashMap<String, String> riga = itr.next();
-                final String valColonna = riga.get("generated_id");
-                new HttpManager.AsyncManager(new AsyncResponse() {
-                    @Override
-                    public void processFinish(Object output) {
-                        inizializzaTabelle();
-                        riempiConto(output);
+        final String idColonna = lista.get(0).get("generated_id");
+
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(final Object output) {
+                if (tipoProdotto.equals("Pizza") && isMetro.isChecked()) {
+                    if (sparseMetri.size() == 0 /** TODO OR || METODO CONTROLLARE SE RAGGIUNTO 3 PIZZE */) {
+                        new HttpManager.AsyncManager(new AsyncResponse() {
+                            @Override
+                            public void processFinish(Object output_bis) {
+                                List<HashMap<String, String>> listaBis = (List<HashMap<String, String>>) output_bis;
+                                final int idMetro = Integer.parseInt(listaBis.get(0).get("generated_id"));
+                                riempiConto(output, idMetro);
+                            }
+                        }, null, "INSERISCI_PIZZA_IN_METRO", new String[]{idColonna}).execute();
+                    } else {
+                        riempiConto(output, sparseMetri.keyAt(0));
                     }
-                }, null, "GET_PRODOTTO_IN_ORDINE", new String[]{valColonna}).execute();
+                } else {
+                    riempiConto(output, -1);
+                }
             }
-        }
+        }, null, "GET_PRODOTTO_IN_ORDINE", new String[]{idColonna}).execute();
     }
 
     private void inizializzaTabelle() {
@@ -658,11 +675,10 @@ public class NuovoOrdine extends Fragment {
         totale.setText(new DecimalFormat("#0.00 €").format(current));
     }
 
-    private void riempiConto(final Object param) {
+    private void riempiConto(final Object param, final int idMetro) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         if (itr.hasNext()) {
-
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final String valColonna = riga.get("id_colonna");
@@ -679,7 +695,7 @@ public class NuovoOrdine extends Fragment {
                 if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
                     txtPizza = makeTableRowWithText("PROSC. E FUNGHI");
                 else
-                    txtPizza = makeTableRowWithText(nomeProdotto);
+                    txtPizza = makeTableRowWithText((idMetro == -1) ? nomeProdotto : nomeProdotto + " (METRO)");
 
                 rowPizza.addView(txtPizza);
 
@@ -737,9 +753,39 @@ public class NuovoOrdine extends Fragment {
                     }
                 });
 
+                //IF CHECKBOX
+                //sparseMetri
+                if (idMetro != -1 && sparseMetri.get(idMetro) == null) {
+                    TableLayout tempMetro = new TableLayout(context);
+                    tempMetro.setLayoutParams(new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                    tempMetro.setGravity(Gravity.CENTER_HORIZONTAL);
+                    /*
+                    RelativeLayout temp_layout = new RelativeLayout(context);
+                    RelativeLayout.LayoutParams temp_params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    temp_params.addRule(RelativeLayout.CENTER_VERTICAL);
+                    temp_layout.setLayoutParams(temp_params);
+
+                    View nomeMetro = new View(context);
+                    RelativeLayout.LayoutParams temp_paramsView = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                    temp_paramsView.addRule(RelativeLayout.CENTER_VERTICAL);
+                    temp_paramsView.addRule(RelativeLayout.START_OF, testoMetro.getId());
+                    temp_paramsView.setMargins(30,0,0,30);
+                    nomeMetro.setLayoutParams(temp_paramsView);
+                    temp_layout.addView(nomeMetro);*/
+                    //tempMetro.addView
+                    tempMetro.addView(rowPizza);
+                    sparseMetri.put(idMetro, tempMetro);
+                    layoutContoPizze.addView(tempMetro);
+                    layoutContoPizze.setBackgroundResource(R.drawable.table_bottom_style);
+                    System.out.println("METRO -> AGGIUNTA");
+                } else if (sparseMetri.get(idMetro) != null) {
+                    sparseMetri.get(idMetro).addView(rowPizza);
+                    System.out.println("METRO -> AGGIUNTA A ESISTENTE");
+                }
+
                 switch (tipo) {
                     case "Pizza":
-                        tableOrdiniPizza.addView(rowPizza);
+                        if (idMetro == -1) tableOrdiniPizza.addView(rowPizza);
                         sparsePrezziPizze.put(Integer.parseInt(valColonna), txtPrezzo);
                         break;
                     case "Bibita":
