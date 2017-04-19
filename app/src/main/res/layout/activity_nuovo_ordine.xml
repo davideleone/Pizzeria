@@ -84,6 +84,7 @@
                 android:checkedButton="@+id/pizza"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal">
+
                 <RadioButton
                     android:id="@+id/pizza"
                     style="@style/testoGrande"
@@ -356,10 +357,20 @@
                 android:layout_marginTop="15dp"
                 android:gravity="center_horizontal">
 
+
+                <RelativeLayout
+                    android:id="@+id/riassuntoOrdineMetri"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal">
+
+                </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/riassuntoOrdinePizze"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/riassuntoOrdineMetri"
                     android:gravity="center_horizontal">
 
                 </RelativeLayout>

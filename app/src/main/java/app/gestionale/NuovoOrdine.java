@@ -90,6 +90,8 @@ public class NuovoOrdine extends Fragment {
     private AutoCompleteTextView cognomeProva;
     private CheckBox consegna;
     private RadioButton isMetro;
+    private RelativeLayout layoutContoMetri;
+    private TableLayout tableOrdiniMetri;
 
     private SparseArray<TableLayout> sparseMetri = new SparseArray<TableLayout>();
 /*    final int contOrdini[] = new int[listaOre.size()];
@@ -131,6 +133,7 @@ public class NuovoOrdine extends Fragment {
 
         layoutCaricamento = (RelativeLayout) view.findViewById(R.id.layoutCaricamento);
         progressBar = (ProgressBar) view.findViewById(R.id.caricamento);
+        layoutContoMetri = (RelativeLayout) view.findViewById(R.id.riassuntoOrdineMetri);
         layoutContoPizze = (RelativeLayout) view.findViewById(R.id.riassuntoOrdinePizze);
         layoutContoBibite = (RelativeLayout) view.findViewById(R.id.riassuntoOrdineBibite);
         layoutContoGastronomia = (RelativeLayout) view.findViewById(R.id.riassuntoOrdineGastronomia);
@@ -450,7 +453,7 @@ public class NuovoOrdine extends Fragment {
 
 
                             dialog.dismiss();
-                            
+
                         }
                     }
                 });
@@ -649,6 +652,7 @@ public class NuovoOrdine extends Fragment {
             tableOrdiniBibite.setLayoutParams(layoutTabella);
             tableOrdiniBibite.setGravity(Gravity.CENTER_HORIZONTAL);
 
+
             layoutContoPizze.addView(tableOrdiniPizza);
             layoutContoBibite.addView(tableOrdiniBibite);
             layoutContoGastronomia.addView(tableOrdiniGastronomia);
@@ -693,16 +697,17 @@ public class NuovoOrdine extends Fragment {
                 TextView txtPizza;
 
                 if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
-                    txtPizza = makeTableRowWithText("PROSC. E FUNGHI");
+                    txtPizza = makeTableRowWithText((idMetro == -1) ? "PROSC. E FUNGHI" : "PROSC. E FUNGHI" + " (1/2 M)");
                 else
-                    txtPizza = makeTableRowWithText((idMetro == -1) ? nomeProdotto : nomeProdotto + " (METRO)");
+                    txtPizza = makeTableRowWithText((idMetro == -1) ? nomeProdotto : nomeProdotto + " (1/2 M)");
 
-                rowPizza.addView(txtPizza);
 
                 TextView txtPrezzo;
                 txtPrezzo = makeTableRowWithText(prezzoString);
                 txtPrezzo.setGravity(Gravity.CENTER);
+                rowPizza.addView(txtPizza);
                 rowPizza.addView(txtPrezzo);
+
 
                 Button btnModifica = new Button(context);
                 btnModifica.setText("Modifica");
@@ -731,16 +736,16 @@ public class NuovoOrdine extends Fragment {
                     public void onClick(View v) {
                         HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, new String[]{valColonna});
                         /**
-                        switch (tipo) {
-                            case "Pizza":
-                                tableOrdiniPizza.removeView(rowPizza);
-                                break;
-                            case "Bibita":
-                                tableOrdiniBibite.removeView(rowPizza);
-                                break;
-                            case "Gastronomia":
-                                tableOrdiniGastronomia.removeView(rowPizza);
-                                break;
+                         switch (tipo) {
+                         case "Pizza":
+                         tableOrdiniPizza.removeView(rowPizza);
+                         break;
+                         case "Bibita":
+                         tableOrdiniBibite.removeView(rowPizza);
+                         break;
+                         case "Gastronomia":
+                         tableOrdiniGastronomia.removeView(rowPizza);
+                         break;
                          }*/
                         //rowPizza.setVisibility(View.GONE);
                         rimuoviElemento(tipo, rowPizza);
@@ -756,27 +761,14 @@ public class NuovoOrdine extends Fragment {
                 //IF CHECKBOX
                 //sparseMetri
                 if (idMetro != -1 && sparseMetri.get(idMetro) == null) {
-                    TableLayout tempMetro = new TableLayout(context);
-                    tempMetro.setLayoutParams(new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-                    tempMetro.setGravity(Gravity.CENTER_HORIZONTAL);
-                    /*
-                    RelativeLayout temp_layout = new RelativeLayout(context);
-                    RelativeLayout.LayoutParams temp_params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    temp_params.addRule(RelativeLayout.CENTER_VERTICAL);
-                    temp_layout.setLayoutParams(temp_params);
 
-                    View nomeMetro = new View(context);
-                    RelativeLayout.LayoutParams temp_paramsView = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
-                    temp_paramsView.addRule(RelativeLayout.CENTER_VERTICAL);
-                    temp_paramsView.addRule(RelativeLayout.START_OF, testoMetro.getId());
-                    temp_paramsView.setMargins(30,0,0,30);
-                    nomeMetro.setLayoutParams(temp_paramsView);
-                    temp_layout.addView(nomeMetro);*/
-                    //tempMetro.addView
-                    tempMetro.addView(rowPizza);
-                    sparseMetri.put(idMetro, tempMetro);
-                    layoutContoPizze.addView(tempMetro);
-                    layoutContoPizze.setBackgroundResource(R.drawable.table_bottom_style);
+                    TableLayout.LayoutParams layoutTabellaMetri = new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    tableOrdiniMetri = new TableLayout(context);
+                    tableOrdiniMetri.setLayoutParams(layoutTabellaMetri);
+                    tableOrdiniMetri.setGravity(Gravity.CENTER_HORIZONTAL);
+                    tableOrdiniMetri.addView(rowPizza);
+                    sparseMetri.put(idMetro, tableOrdiniMetri);
+                    layoutContoMetri.addView(tableOrdiniMetri);
                     System.out.println("METRO -> AGGIUNTA");
                 } else if (sparseMetri.get(idMetro) != null) {
                     sparseMetri.get(idMetro).addView(rowPizza);
@@ -800,6 +792,9 @@ public class NuovoOrdine extends Fragment {
                 layoutContoPizze.setBackgroundResource(R.drawable.table_bottom_style);
             if (tableOrdiniGastronomia.getChildCount() > 0)
                 layoutContoGastronomia.setBackgroundResource(R.drawable.table_bottom_style);
+
+            if (tableOrdiniMetri != null && tableOrdiniMetri.getChildCount() > 0)
+                layoutContoMetri.setBackgroundResource(R.drawable.table_bottom_style);
         }
     }
 

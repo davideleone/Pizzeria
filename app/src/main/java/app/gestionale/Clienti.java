@@ -301,7 +301,6 @@ public class Clienti extends Fragment {
             row.put("citta", (riga.get("citta").equals("null") ? "----- " : riga.get("citta")));
             hashColonne.put(idcliente, row);
         }
-
         riempiTabellaClienti();
     }
 
@@ -372,9 +371,10 @@ public class Clienti extends Fragment {
             row.addView(btnModifica);
             row.addView(btnElimina);
             tableClienti.addView(row);
+
+
         }
     }
-
 
     private void inizializzaCitta(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
@@ -387,6 +387,11 @@ public class Clienti extends Fragment {
         }
         adapterCitta = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listaCitta);
         spinnerCitta.setAdapter(adapterCitta);
+    }
+
+    private void copiaInHashMap(SparseArray hashColonne) {
+        HashMap<String, String> clienti = new HashMap<>();
+
     }
 
     private TextView makeTableRowWithText(String text, int resource) {

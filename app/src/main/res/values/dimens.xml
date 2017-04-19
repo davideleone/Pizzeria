@@ -5,7 +5,11 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="dim_145dp">145dp</dimen>
+    <dimen name="dim_215dp">215dp</dimen>
     <dimen name="dim_150dp">150dp</dimen>
+    <dimen name="dim_160dp">160dp</dimen>
+    <dimen name="dim_180dp">180dp</dimen>
     <dimen name="dim_200dp">200dp</dimen>
     <dimen name="dim_450dp">450dp</dimen>
     <dimen name="dim_26dp">26dp</dimen>
