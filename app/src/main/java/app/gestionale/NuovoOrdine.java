@@ -440,12 +440,6 @@ public class NuovoOrdine extends Fragment {
                                 }
                             }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
 
-                            RiepilogoOrdini fragment = new RiepilogoOrdini();
-                            fragment.setArguments(bundle);
-                            FragmentManager fragmentManager = getFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .replace(R.id.flContent, fragment)
-                                    .commit();
 
                             dialog.dismiss();
                             
@@ -475,6 +469,13 @@ public class NuovoOrdine extends Fragment {
                             */
         HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, idOrdine, idClienteCreato, strNome, strCognome, "Pizzeria");
 
+
+        RiepilogoOrdini fragment = new RiepilogoOrdini();
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.flContent, fragment)
+                .commit();
     }
 
     private void creaOrdine(Object param) {
