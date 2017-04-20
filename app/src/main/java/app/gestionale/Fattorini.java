@@ -64,7 +64,8 @@ public class Fattorini extends Fragment {
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
         layoutInserimentoToolbar.setVisibility(View.GONE);
-
+        RelativeLayout layoutRicercaToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutRicercaToolbar);
+        layoutRicercaToolbar.setVisibility(View.GONE);
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_fattorini);
 
         caricaFattorini();
@@ -283,6 +284,8 @@ public class Fattorini extends Fragment {
     private ImageButton makeTableRowWithImageButton(int img) {
         recyclableImageButton = new ImageButton(context);
         recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+        recyclableImageButton.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.dim_26dp));
+        recyclableImageButton.setPadding(40, 0, 0, 0);
         recyclableImageButton.setImageResource(img);
         recyclableImageButton.setBackgroundColor(Color.TRANSPARENT);
         return recyclableImageButton;

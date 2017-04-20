@@ -20,7 +20,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -31,8 +33,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 public class Clienti extends Fragment {
 
@@ -47,6 +47,10 @@ public class Clienti extends Fragment {
     private ArrayList<String> listaCitta;
     private ArrayAdapter<String> adapterCitta;
     private Spinner spinnerCitta;
+    private ArrayList<SparseArray<HashMap<String, String>>> clienti;
+    private ImageButton btnRicerca;
+    private EditText testoRicerca;
+    private HashMap<String, String> listaCliente;
 
 
     @Override
@@ -74,20 +78,46 @@ public class Clienti extends Fragment {
         super.onCreate(savedInstanceState);
         tableClienti = (TableLayout) view.findViewById(R.id.tabell_clienti);
 
+        clienti = (ArrayList<SparseArray<HashMap<String, String>>>) bundle.getSerializable("LISTA_CLIENTI");
+        listaCitta = (ArrayList<String>) bundle.getSerializable("LISTA_CITTA");
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
         RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
         layoutInserimentoToolbar.setVisibility(View.GONE);
 
+        RelativeLayout layoutRicercaToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutRicercaToolbar);
+        layoutRicercaToolbar.setVisibility(View.VISIBLE);
+        btnRicerca = (ImageButton) toolbar.findViewById(R.id.btnRicerca);
+        testoRicerca = (EditText) toolbar.findViewById(R.id.testoCognome);
         spinnerCitta = new Spinner(context);
+        inizializzaCitta(listaCitta);
+        riempiTabellaClienti(null);
+        //aggiornaClienti();
 
-        new HttpManager.AsyncManager(new AsyncResponse() {
+        btnRicerca.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void processFinish(Object output) {
-                inizializzaCitta(output);
-            }
-        }, context, "GET_CITTA", new String[]{}).execute();
+            public void onClick(View v) {
+                if (testoRicerca.getText().toString().isEmpty()) { //TESTO VUOTO
+                    Toast.makeText(context, "Inserisci un cognome valido!", Toast.LENGTH_SHORT).show();
+                    testoRicerca.setText("");
+                    InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    riempiTabellaClienti(null);
+                } else if (getClienteConCognome(testoRicerca.getText().toString()).isEmpty()) { //CLIENTE NON PRESENTE IN LISTA
+                    Toast.makeText(context, "Nessun cliente trovato!", Toast.LENGTH_SHORT).show();
+                    testoRicerca.setText("");
+                    InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    riempiTabellaClienti(null);
+                } else {
+                    InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    riempiTabellaClienti(testoRicerca.getText().toString());
+                    testoRicerca.setText("");
+                }
 
-        aggiornaClienti();
+            }
+        });
 
         FloatingActionButton btnNuovoCliente = (FloatingActionButton) view.findViewById(R.id.btn_Aggiungi);
         btnNuovoCliente.setOnClickListener(new View.OnClickListener() {
@@ -269,47 +299,31 @@ public class Clienti extends Fragment {
                             }
                         }, context, "AGGIORNA_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta, ID_CLIENTE}).execute();
                     }
-
-                    aggiornaClienti();
+                    riempiTabellaClienti(null);
+                    //aggiornaClienti();
                     dialog.dismiss();
                 }
             }
         });
     }
 
-    private void aggiornaClienti() {
-        new HttpManager.AsyncManager(new AsyncResponse() {
-            @Override
-            public void processFinish(Object output) {
-                fixClienti(output);
-            }
-        }, context, "GET_LISTA_UTENTI", new String[]{}).execute();
-    }
-
-    private void fixClienti(Object param) {
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itr = lista.iterator();
-        hashColonne = new SparseArray<HashMap<String, String>>();
-        while (itr.hasNext()) {
-            HashMap<String, String> riga = itr.next();
-            final int idcliente = Integer.parseInt(riga.get("id"));
-            HashMap<String, String> row = new HashMap<String, String>(5);
-            row.put("cognome", riga.get("cognome"));
-            row.put("nome", riga.get("nome"));
-            row.put("telefono", riga.get("telefono"));
-            row.put("via", (riga.get("via").equals("null") ? "----- " : riga.get("via")));
-            row.put("citta", (riga.get("citta").equals("null") ? "----- " : riga.get("citta")));
-            hashColonne.put(idcliente, row);
-        }
-        riempiTabellaClienti();
-    }
-
-    private void riempiTabellaClienti() {
+    private void riempiTabellaClienti(String cognomeCercato) {
         tableClienti.removeViews(1, tableClienti.getChildCount() - 1);
-        for (int i = 0; i < hashColonne.size(); i++) {
-            final HashMap<String, String> listaCliente = hashColonne.valueAt(i);
+        int sizeOfLista = 0;
 
-            final int idcliente = hashColonne.keyAt(i);
+        if (cognomeCercato == null)
+            sizeOfLista = clienti.get(0).size();
+        else
+            sizeOfLista = getClienteConCognome(cognomeCercato).size();
+
+        for (int i = 0; i < sizeOfLista; i++) {
+            // (ArrayList<SparseArray<HashMap<String,String>>>)
+            if (cognomeCercato == null)
+                listaCliente = clienti.get(0).valueAt(i);
+            else
+                listaCliente = clienti.get(0).valueAt(getClienteConCognome(cognomeCercato).get(i));
+
+            final int idcliente = clienti.get(0).keyAt(i);
             final String nome = listaCliente.get("nome");
             final String cognome = listaCliente.get("cognome");
             final String telefono = listaCliente.get("telefono");
@@ -347,7 +361,8 @@ public class Clienti extends Fragment {
                                     new HttpManager.AsyncManager(new AsyncResponse() {
                                         @Override
                                         public void processFinish(Object output) {
-                                            aggiornaClienti();
+                                            clienti.get(0).remove(idcliente);
+                                            riempiTabellaClienti(null);
                                             Toast.makeText(context, "Cliente Eliminato!", Toast.LENGTH_SHORT).show();
                                         }
                                     }, context, "ELIMINA_CLIENTE", new String[]{Integer.toString(idcliente)}).execute();
@@ -371,28 +386,23 @@ public class Clienti extends Fragment {
             row.addView(btnModifica);
             row.addView(btnElimina);
             tableClienti.addView(row);
-
-
         }
     }
 
-    private void inizializzaCitta(Object param) {
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itrAgg = lista.iterator();
-        listaCitta = new ArrayList<>();
-        while (itrAgg.hasNext()) {
-            HashMap<String, String> riga = itrAgg.next();
-            final String nomeCitta = riga.get("nome");
-            listaCitta.add(nomeCitta);
+    private ArrayList<Integer> getClienteConCognome(String cognomeDaRicerca) {
+        ArrayList<Integer> indiciCognomi = new ArrayList<>();
+        for (int i = 0; i < clienti.get(0).size(); i++) {
+            if (clienti.get(0).valueAt(i).get("cognome").equals(cognomeDaRicerca))
+                indiciCognomi.add(i);
         }
-        adapterCitta = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listaCitta);
+        return indiciCognomi;
+    }
+
+    private void inizializzaCitta(ArrayList<String> listaCitta) {
+        adapterCitta = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, listaCitta);
         spinnerCitta.setAdapter(adapterCitta);
     }
 
-    private void copiaInHashMap(SparseArray hashColonne) {
-        HashMap<String, String> clienti = new HashMap<>();
-
-    }
 
     private TextView makeTableRowWithText(String text, int resource) {
         recyclableTextView = new TextView(context);

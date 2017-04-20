@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -52,7 +53,7 @@ public class RiepilogoOrdini extends Fragment {
     private ArrayAdapter<String> arrayDate;
     private String dataRicerca;
 
-    private Spinner spinnerFattorini;
+    //private Spinner spinnerFattorini;
     private ArrayAdapter<String> arrayFattorini;
 
     private List<Integer> idFattorini = new ArrayList<Integer>();
@@ -63,6 +64,7 @@ public class RiepilogoOrdini extends Fragment {
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
     private RelativeLayout sfondo;
+    private String[] arrayFatt;
 
     @Override
     public void onAttach(Context context) {
@@ -91,7 +93,8 @@ public class RiepilogoOrdini extends Fragment {
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
         layoutInserimentoToolbar.setVisibility(View.GONE);
-
+        RelativeLayout layoutRicercaToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutRicercaToolbar);
+        layoutRicercaToolbar.setVisibility(View.GONE);
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_ordini);
         tabellaAssegnati = (TableLayout) view.findViewById(R.id.tabella_ordini_assegnati);
         sfondo = (RelativeLayout) view.findViewById(R.id.sfondo);
@@ -140,7 +143,7 @@ public class RiepilogoOrdini extends Fragment {
             }
         });
 
-        spinnerFattorini = new Spinner(context);
+        //spinnerFattorini = new Spinner(context);
 
         caricaOrdini();
         caricaFattorini();
@@ -343,18 +346,19 @@ public class RiepilogoOrdini extends Fragment {
 
     private void aggiornaTabella() {
         // DELETE OLD
-        for (Map.Entry<TableRow, TableLayout> entry  : mappaRows.entrySet()) (entry.getValue()).removeView(entry.getKey());
+        for (Map.Entry<TableRow, TableLayout> entry : mappaRows.entrySet())
+            (entry.getValue()).removeView(entry.getKey());
         mappaRows.clear();
 
         // UPDATE
         caricaOrdini();
     }
 
-    private void caricaFattorini(){
+    private void caricaFattorini() {
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
-                aggiornaFattorini( output );
+                aggiornaFattorini(output);
             }
         }, context, "GET_ELENCO_FATTORINI", new String[]{}).execute();
     }
@@ -367,7 +371,7 @@ public class RiepilogoOrdini extends Fragment {
         // UPDATE
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
-        if(!lista.isEmpty()){
+        if (!lista.isEmpty()) {
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final Integer idFatt = Integer.parseInt(riga.get("idfattorino"));
@@ -378,20 +382,16 @@ public class RiepilogoOrdini extends Fragment {
         }
 
         // UPDATE SPINNER
-        String[] arrayFatt = new String[nomiFattorini.size()];
+        arrayFatt = new String[nomiFattorini.size()];
         arrayFatt = nomiFattorini.toArray(arrayFatt);
 
-        arrayFattorini = new ArrayAdapter<String>(context, R.layout.fattorini_spinner, arrayFatt);
-        arrayFattorini.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFattorini.setAdapter(arrayFattorini);
-
     }
 
-    private String getFattorinoSelezionato() {
-        return idFattorini.get(spinnerFattorini.getSelectedItemPosition()).toString();
+    private String getFattorinoSelezionato(int indice) {
+        return idFattorini.get(indice).toString();
     }
 
-    private void getPizzeOrdine(String idOrdine){
+    private void getPizzeOrdine(String idOrdine) {
         List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_PIZZA_IN_ORDINE.getValore(), idOrdine);
         Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
         if (itr.hasNext()) {
@@ -404,7 +404,7 @@ public class RiepilogoOrdini extends Fragment {
                 System.out.println("PIZZA = " + nomePizza);
                 System.out.println("PREZZO = " + prezzoPizza);
                 System.out.println("INGREDIENTI = ");
-                for(String item : ingredienti){
+                for (String item : ingredienti) {
                     System.out.println(item);
                 }
                 System.out.println("---------------------------");
@@ -412,7 +412,7 @@ public class RiepilogoOrdini extends Fragment {
         }
     }
 
-    private List<String> getIngredientiPizza(String idExtra){
+    private List<String> getIngredientiPizza(String idExtra) {
         List<String> ingredienti = new ArrayList<String>();
         List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_LISTA_INGREDIENTI_ED_EXTRA.getValore(), idExtra, idExtra, idExtra);
         Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
@@ -425,11 +425,11 @@ public class RiepilogoOrdini extends Fragment {
         return ingredienti;
     }
 
-    private void caricaOrdini(){
+    private void caricaOrdini() {
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
-                processaOrdini( output );
+                processaOrdini(output);
             }
         }, context, "MONITORA_ORDINE", new String[]{dataRicerca}).execute();
     }
@@ -438,7 +438,7 @@ public class RiepilogoOrdini extends Fragment {
     private void processaOrdini(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
-        if(!lista.isEmpty()){
+        if (!lista.isEmpty()) {
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
                 final String cognome = riga.get("cognome");
@@ -467,11 +467,11 @@ public class RiepilogoOrdini extends Fragment {
 
                 btnMostra.setOnClickListener(new View.OnClickListener() {
                     @Override
-                public void onClick(View v) {
+                    public void onClick(View v) {
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
                             public void processFinish(Object output) {
-                                fixDettagliPizze( output , telefono, cognome);
+                                fixDettagliPizze(output, telefono, cognome);
                             }
                         }, context, "GET_PIZZE_CON_EXTRA", new String[]{idOrdine}).execute();
                     }
@@ -481,64 +481,88 @@ public class RiepilogoOrdini extends Fragment {
                     @Override
                     public void onClick(View v) {
 
-                    RelativeLayout layoutDialog = new RelativeLayout(context);
-                    RelativeLayout.LayoutParams spinnerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    spinnerParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    spinnerParams.addRule(RelativeLayout.CENTER_VERTICAL);
-                    spinnerFattorini.setLayoutParams(spinnerParams);
-                    if (spinnerFattorini.getParent() != null)
-                        ((ViewGroup) spinnerFattorini.getParent()).removeView(spinnerFattorini);
-                    layoutDialog.addView(spinnerFattorini);
+                        RelativeLayout layoutDialog = new RelativeLayout(context);
+                        RelativeLayout.LayoutParams dialogParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        layoutDialog.setLayoutParams(dialogParams);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle("Scelta Fattorino");
-                        /** TODO
-                         * FARE SCELTA FATTORINI COME UNA LISTA
-                         * https://developer.android.com/images/ui/dialog_list.png
-                         *
-                         .setAdapter(arrayFattorini, new DialogInterface.OnClickListener() {
-                         public void onClick(DialogInterface dialog, int which) {
-                         // The 'which' argument contains the index position
-                         // of the selected item
-                         }
-                         });*/
-                    builder.setView(layoutDialog);
-                    builder.setPositiveButton("Consegna", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (stato != 3) {
-                                new HttpManager.AsyncManager(new AsyncResponse() {
-                                    @Override
-                                    public void processFinish(Object output) {
+                        final AlertDialog dialog = new AlertDialog.Builder(context)
+                                .setView(layoutDialog)
+                                .setTitle("Scelta Fattorino")
+                                .create();
+
+                        dialog.show();
+
+                        dialog.getWindow().setLayout(650, arrayFatt.length * 208);
+
+                        for (int i = 0; i < arrayFatt.length; i++) {
+                            final int indice = i;
+
+
+                            RelativeLayout.LayoutParams btnParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_80dp));
+                            btnParams.setMargins(30, 0, 0, 0);
+                            if (layoutDialog.getChildCount() > 0)
+                                btnParams.addRule(RelativeLayout.BELOW, layoutDialog.getChildAt(layoutDialog.getChildCount() - 1).getId());
+
+                            final Button btnFattorino = new Button(context);
+                            btnFattorino.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_215dp));
+                            btnFattorino.setGravity(Gravity.CENTER_VERTICAL);
+                            btnFattorino.setLayoutParams(btnParams);
+                            btnFattorino.setId(View.generateViewId());
+                            btnFattorino.setText(arrayFatt[i]);
+                            btnFattorino.setTextColor(Color.GRAY);
+                            btnFattorino.setTextSize(20);
+                            btnFattorino.setBackgroundColor(Color.TRANSPARENT);
+
+                            RelativeLayout.LayoutParams barraParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+                            barraParams.addRule(RelativeLayout.BELOW, btnFattorino.getId());
+                            barraParams.setMargins(25, 0, 25, 0);
+
+                            View barra = new View(context);
+                            barra.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                            barra.setId(View.generateViewId());
+                            barra.setLayoutParams(barraParams);
+                            layoutDialog.addView(btnFattorino);
+                            layoutDialog.addView(barra);
+
+                            btnFattorino.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (stato != 3) {
                                         new HttpManager.AsyncManager(new AsyncResponse() {
                                             @Override
                                             public void processFinish(Object output) {
-                                                Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
+                                                new HttpManager.AsyncManager(new AsyncResponse() {
+                                                    @Override
+                                                    public void processFinish(Object output) {
+                                                        Toast.makeText(context, "Consegna affidata al fattorino", Toast.LENGTH_SHORT).show();
+                                                        aggiornaTabella();
+                                                    }
+                                                }, context, "MANDA_IN_CONSEGNA", new String[]{idOrdine}).execute();
+                                            }
+
+                                            ;
+                                        }, context, "ASSEGNA_FATTORINO", new String[]{getFattorinoSelezionato(indice), idOrdine}).execute();
+                                    } else {
+                                        new HttpManager.AsyncManager(new AsyncResponse() {
+                                            @Override
+                                            public void processFinish(Object output) {
+                                                Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
                                                 aggiornaTabella();
                                             }
-                                        }, context, "MANDA_IN_CONSEGNA", new String[]{idOrdine}).execute();
-                                    };
-                                }, context, "ASSEGNA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
-                            } else {
-                                new HttpManager.AsyncManager(new AsyncResponse() {
-                                    @Override
-                                    public void processFinish(Object output) {
-                                        Toast.makeText(context, "Fattorino cambiato correttamente", Toast.LENGTH_SHORT).show();
-                                        aggiornaTabella();
+                                        }, context, "CAMBIA_FATTORINO", new String[]{getFattorinoSelezionato(indice), idOrdine}).execute();
                                     }
-                                }, context, "CAMBIA_FATTORINO", new String[]{getFattorinoSelezionato(), idOrdine}).execute();
-                            }
+                                    dialog.dismiss();
+                                }
+                            });
                         }
-                    });
-                    builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    builder.create().show();
+
                     }
                 });
 
-                btnAccetta.setOnClickListener(new View.OnClickListener() {
+
+                btnAccetta.setOnClickListener(new View.OnClickListener()
+
+                {
                     @Override
                     public void onClick(View v) {
                         HttpManager.execSimple("ACCETTA_ORDINE", context, idOrdine);
@@ -549,27 +573,27 @@ public class RiepilogoOrdini extends Fragment {
                 btnElimina.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                    new AlertDialog.Builder(context)
-                            .setTitle("Elimina ordine")
-                            .setMessage("Sei sicuro di voler eliminare l'ordine di " + cognome + "?")
-                            .setPositiveButton("Si, elimina", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    new HttpManager.AsyncManager(new AsyncResponse() {
-                                        @Override
-                                        public void processFinish(Object output) {
-                                            aggiornaTabella();
-                                            Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }, context, "ELIMINA_ORDINE", new String[]{idOrdine}).execute();
-                                }
-                            })
-                            .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            })
-                            .setIcon(R.drawable.logo)
-                            .show();
+                        new AlertDialog.Builder(context)
+                                .setTitle("Elimina ordine")
+                                .setMessage("Sei sicuro di voler eliminare l'ordine di " + cognome + "?")
+                                .setPositiveButton("Si, elimina", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        new HttpManager.AsyncManager(new AsyncResponse() {
+                                            @Override
+                                            public void processFinish(Object output) {
+                                                aggiornaTabella();
+                                                Toast.makeText(context, "Ordine Eliminato!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }, context, "ELIMINA_ORDINE", new String[]{idOrdine}).execute();
+                                    }
+                                })
+                                .setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                })
+                                .setIcon(R.drawable.logo)
+                                .show();
                     }
                 });
 
@@ -590,10 +614,11 @@ public class RiepilogoOrdini extends Fragment {
             }
         } else {
             Toast.makeText(context, "Nessun nuovo ordine", Toast.LENGTH_SHORT).show();
-        }
     }
 
-    private void mostraDettaglio(SparseArray<List<HashMap<String, String>>> hashPizze, String telefono, String cognome, boolean isTolti){
+    }
+
+    private void mostraDettaglio(SparseArray<List<HashMap<String, String>>> hashPizze, String telefono, String cognome, boolean isTolti) {
         final RelativeLayout layoutContenitore = new RelativeLayout(context);
 
         RelativeLayout layoutDettaglio = new RelativeLayout(context);
@@ -610,7 +635,6 @@ public class RiepilogoOrdini extends Fragment {
 
         RelativeLayout.LayoutParams paramsStato = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
         paramsStato.addRule(RelativeLayout.END_OF, textStato.getId());
-        paramsStato.addRule(RelativeLayout.CENTER_HORIZONTAL);
         ImageView imgStato = new ImageView(context);
         imgStato.setId(View.generateViewId());
         imgStato.setLayoutParams(paramsStato);
@@ -669,7 +693,7 @@ public class RiepilogoOrdini extends Fragment {
         //getPizzeOrdine(idOrdine);
     }
 
-    private void fixDettagliPizze(Object param, String telefono, String cognome){
+    private void fixDettagliPizze(Object param, String telefono, String cognome) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         SparseArray<List<HashMap<String, String>>> hashColonne = new SparseArray<List<HashMap<String, String>>>();
@@ -683,7 +707,7 @@ public class RiepilogoOrdini extends Fragment {
             row.put("prezzoprodotto", riga.get("prezzoprodotto"));
             row.put("nomeextra", riga.get("nomeextra"));
             row.put("tipo", riga.get("tipo"));
-            if(Integer.parseInt(riga.get("tipo")) == 2) isTolti = true;
+            if (Integer.parseInt(riga.get("tipo")) == 2) isTolti = true;
             listaTemp.add(row);
             hashColonne.put(idcolonna, listaTemp);
         }

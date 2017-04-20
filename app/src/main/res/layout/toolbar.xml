@@ -29,4 +29,34 @@
             android:drawableRight="@drawable/ic_arrow_dx"
             android:text="Inserisci   " />
     </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutRicercaToolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:layout_marginEnd="30dp"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/testoCognome"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dim_45dp"
+            android:layout_centerVertical="true"
+            android:backgroundTint="#ffffff"
+            android:hint="Ricerca cliente (Cognome)"
+            android:minWidth="@dimen/dim_215dp"
+            android:textColor="#ffffff" />
+
+        <ImageButton
+            android:id="@+id/btnRicerca"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@id/testoCognome"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_toolbar_ricerca" />
+    </RelativeLayout>
 </android.support.v7.widget.Toolbar>

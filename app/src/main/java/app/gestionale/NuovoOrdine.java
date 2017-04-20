@@ -141,7 +141,7 @@ public class NuovoOrdine extends Fragment {
             @Override
             public void onClick(View v) {
                 nuovoMetro = true;
-                Toast.makeText(listener, "Nuova Pizza-Metro predisposta", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Nuova Pizza-Metro predisposta", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -500,7 +500,7 @@ public class NuovoOrdine extends Fragment {
                             */
         HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, idOrdine, idClienteCreato, strNome, strCognome, "Pizzeria");
 
-        Toast.makeText(listener, "Ordine completato con successo!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Ordine completato con successo!", Toast.LENGTH_SHORT).show();
 
         RiepilogoOrdini fragment = new RiepilogoOrdini();
         fragment.setArguments(bundle);

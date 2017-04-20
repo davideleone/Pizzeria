@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private String idOrdine = "";
     private String modifica = "";
     private SparseArray<HashMap<String, String>> hashColonne;
-
+    private ArrayList<SparseArray<HashMap<String, String>>> clienti;
+    private ArrayList<String> listaCitta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        clienti = new ArrayList<>();
         frameLayout = (FrameLayout) findViewById(R.id.flContent);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -78,9 +80,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }, this, "GET_LISTA_UTENTI", new String[]{}).execute();
 
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                inizializzaCitta(output);
+            }
+        }, null, "GET_CITTA", new String[]{}).execute();
 
 
         //logo = (ImageView) findViewById(R.id.logo_accipizza);
+    }
+
+    private void inizializzaCitta(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itrAgg = lista.iterator();
+        listaCitta = new ArrayList<>();
+        while (itrAgg.hasNext()) {
+            HashMap<String, String> riga = itrAgg.next();
+            final String nomeCitta = riga.get("nome");
+            listaCitta.add(nomeCitta);
+        }
     }
 
     private void fixClienti(Object param) {
@@ -99,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
             hashColonne.put(idcliente, row);
         }
 
-        //List<SparseArray<HashMap<String,String>>> clienti = new List<SparseArray<HashMap<String, String>>>();
+        clienti.add(hashColonne);
+        //Toast.makeText(this, ""+clienti.get(0).size(), Toast.LENGTH_SHORT).show();
 
-        //clienti.add(hashColonne);
     }
 
 
@@ -129,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment fragment = null;
         Class fragmentClass;
-        Bundle bundle = null;
+        Bundle bundle = new Bundle();
 
         switch (menuItem.getItemId()) {
             case R.id.nav_first_fragment:
@@ -155,6 +174,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Insert the fragment by replacing any existing fragment
         if (fragment != null) {
+            bundle.putSerializable("LISTA_CLIENTI", clienti);
+            bundle.putSerializable("LISTA_CITTA", listaCitta);
+            fragment.setArguments(bundle);
             getFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
             // Highlight the selected item has been done by NavigationView
             menuItem.setChecked(false);
