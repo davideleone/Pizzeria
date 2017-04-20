@@ -115,7 +115,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_toEndOf="@id/gruppoRadioButton"
                 android:background="@android:color/transparent"
-                android:src="@drawable/plus"
+                android:src="@drawable/tick"
                 android:visibility="gone" />
 
         </RelativeLayout>

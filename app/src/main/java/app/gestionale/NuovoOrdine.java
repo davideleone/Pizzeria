@@ -24,6 +24,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
@@ -69,7 +70,7 @@ public class NuovoOrdine extends Fragment {
 
     private HashMap<String, Float> hashExtra;
     private List<String> tempExtraAgg = new ArrayList<String>();
-    private SparseArray<TextView> sparsePrezziPizze = new SparseArray<TextView>();
+    private SparseArray<TextView> sparsePrezziProdotti = new SparseArray<TextView>();
 
     private TableLayout tableOrdiniPizza;
     private TableLayout tableOrdiniGastronomia;
@@ -91,10 +92,11 @@ public class NuovoOrdine extends Fragment {
     private CheckBox consegna;
     private RadioButton isMetro;
     private RelativeLayout layoutContoMetri;
-    private TableLayout tableOrdiniMetri;
+    private boolean nuovoMetro = false;
+    private float totMetriAggiornato = -1;
 
-    private SparseArray<TableLayout> sparseMetri = new SparseArray<TableLayout>();
-/*    final int contOrdini[] = new int[listaOre.size()];
+    private SparseArray<HashMap<TableLayout, List<Integer>>> sparseMetri = new SparseArray<HashMap<TableLayout, List<Integer>>>();
+/*    final int contOrdini[] = ne4w int[listaOre.size()];
     final int[] nPizze = new int[listaOre.size()];*/
 
     @Override
@@ -126,6 +128,22 @@ public class NuovoOrdine extends Fragment {
         super.onCreate(savedInstanceState);
 
         isMetro = (RadioButton) view.findViewById(R.id.mezzoMetro);
+        final ImageButton spezzaPizza = (ImageButton) view.findViewById(R.id.spezzaPizze);
+
+        isMetro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                spezzaPizza.setVisibility((isChecked) ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        spezzaPizza.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nuovoMetro = true;
+                Toast.makeText(listener, "Nuova Pizza-Metro predisposta", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         layoutBottoniPizze = (RelativeLayout) view.findViewById(R.id.parteBottoni);
         layoutBottoniBibite = (RelativeLayout) view.findViewById(R.id.layoutBottoniBibite);
@@ -156,6 +174,8 @@ public class NuovoOrdine extends Fragment {
         btnInserisci.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                aggiornaTotaliMetri();
 
                 new HttpManager.AsyncManager(new AsyncResponse() {
                     @Override
@@ -504,10 +524,6 @@ public class NuovoOrdine extends Fragment {
         }, null, "GET_LISTA_PRODOTTI", new String[]{}).execute();
     }
 
-    private void setIdCliente(String idCliente) {
-        this.idCliente = idCliente;
-    }
-
     private void setIdOrdine(String idOrdine) {
         this.idOrdine = idOrdine;
     }
@@ -618,7 +634,8 @@ public class NuovoOrdine extends Fragment {
             @Override
             public void processFinish(final Object output) {
                 if (tipoProdotto.equals("Pizza") && isMetro.isChecked()) {
-                    if (sparseMetri.size() == 0 /** TODO OR || METODO CONTROLLARE SE RAGGIUNTO 3 PIZZE */) {
+                    if (sparseMetri.size() == 0 || nuovoMetro || isUltimoMetroFull()) {
+                        nuovoMetro = false;
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
                             public void processFinish(Object output_bis) {
@@ -628,13 +645,53 @@ public class NuovoOrdine extends Fragment {
                             }
                         }, null, "INSERISCI_PIZZA_IN_METRO", new String[]{idColonna}).execute();
                     } else {
-                        riempiConto(output, sparseMetri.keyAt(0));
+                        int idMetro = sparseMetri.keyAt(sparseMetri.size() - 1);
+                        HttpManager.execSimple("INSERISCI_PIZZA_IN_METRO_CON_ID", null, Integer.toString(idMetro), idColonna);
+                        riempiConto(output, idMetro);
                     }
                 } else {
                     riempiConto(output, -1);
                 }
             }
         }, null, "GET_PRODOTTO_IN_ORDINE", new String[]{idColonna}).execute();
+    }
+
+    private void aggiornaTotaliMetri() {
+        if (totMetriAggiornato > -1) aggiornaTotale(totMetriAggiornato, false);
+
+        float totToAdd = 0;
+        for (int i = 0; i < sparseMetri.size(); i++) {
+            List<Integer> listaPizze = sparseMetri.valueAt(i).entrySet().iterator().next().getValue();
+            float totaleMetro = 0;
+            for (int idPizza : listaPizze)
+                totaleMetro += Float.parseFloat((sparsePrezziProdotti.get(idPizza).getText().toString()).substring(0, sparsePrezziProdotti.get(idPizza).getText().toString().length() - 2));
+            switch (listaPizze.size()) {
+                case 1:
+                    totaleMetro *= 2.5;
+                    break;
+                case 2:
+                    totaleMetro *= 1.25;
+                    break;
+                case 3:
+                    totaleMetro *= 0.83;
+                    break;
+            }
+            totToAdd += totaleMetro;
+        }
+        totMetriAggiornato = totToAdd;
+        aggiornaTotale(totToAdd, true);
+    }
+
+    private boolean isUltimoMetroFull() {
+        return (sparseMetri.valueAt(sparseMetri.size() - 1)) != null && sparseMetri.valueAt(sparseMetri.size() - 1).entrySet().iterator().next().getValue().size() == 3;
+    }
+
+    private boolean isColonnaMetro(int idPizza) {
+        boolean isMetro = false;
+        for (int i = 0; i < sparseMetri.size() && !isMetro; i++) {
+            isMetro = sparseMetri.valueAt(i).entrySet().iterator().next().getValue().contains(idPizza);
+        }
+        return isMetro;
     }
 
     private void inizializzaTabelle() {
@@ -659,18 +716,28 @@ public class NuovoOrdine extends Fragment {
         }
     }
 
-    private void rimuoviElemento(String tipo, TableRow toRemove) {
-        switch (tipo) {
-            case "Pizza":
-                tableOrdiniPizza.removeView(toRemove);
-                break;
-            case "Bibita":
-                tableOrdiniBibite.removeView(toRemove);
-                break;
-            case "Gastronomia":
-                tableOrdiniGastronomia.removeView(toRemove);
-                break;
+    private void rimuoviElemento(String tipo, TableRow toRemove, int idMetro, int idColonna) {
+        if (idMetro == -1) {
+            switch (tipo) {
+                case "Pizza":
+                    tableOrdiniPizza.removeView(toRemove);
+                    break;
+                case "Bibita":
+                    tableOrdiniBibite.removeView(toRemove);
+                    break;
+                case "Gastronomia":
+                    tableOrdiniGastronomia.removeView(toRemove);
+                    break;
+            }
+        } else {
+            sparseMetri.get(idMetro).entrySet().iterator().next().getValue().remove((Integer) idColonna);
+            sparseMetri.get(idMetro).entrySet().iterator().next().getKey().removeView(toRemove);
+            if (sparseMetri.get(idMetro).entrySet().iterator().next().getValue().isEmpty()) {
+                layoutContoMetri.removeView(sparseMetri.get(idMetro).entrySet().iterator().next().getKey());
+                sparseMetri.remove(idMetro);
+            }
         }
+        sparsePrezziProdotti.remove(idColonna);
     }
 
     private void aggiornaTotale(float prezzo, boolean isSomma) {
@@ -691,9 +758,11 @@ public class NuovoOrdine extends Fragment {
                 final float prezzoFloat = Float.parseFloat(riga.get("prezzoprodotto"));
                 final String prezzoString = new DecimalFormat("#0.00 €").format(prezzoFloat);
 
-                aggiornaTotale(prezzoFloat, true);
+                if (idMetro == -1) aggiornaTotale(prezzoFloat, true);
 
                 final TableRow rowPizza = new TableRow(context);
+                rowPizza.setId(View.generateViewId());
+
                 TextView txtPizza;
 
                 if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
@@ -701,13 +770,11 @@ public class NuovoOrdine extends Fragment {
                 else
                     txtPizza = makeTableRowWithText((idMetro == -1) ? nomeProdotto : nomeProdotto + " (1/2 M)");
 
-
                 TextView txtPrezzo;
                 txtPrezzo = makeTableRowWithText(prezzoString);
                 txtPrezzo.setGravity(Gravity.CENTER);
                 rowPizza.addView(txtPizza);
                 rowPizza.addView(txtPrezzo);
-
 
                 Button btnModifica = new Button(context);
                 btnModifica.setText("Modifica");
@@ -734,7 +801,7 @@ public class NuovoOrdine extends Fragment {
                 btnElimina.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, new String[]{valColonna});
+                        HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, valColonna);
                         /**
                          switch (tipo) {
                          case "Pizza":
@@ -748,37 +815,46 @@ public class NuovoOrdine extends Fragment {
                          break;
                          }*/
                         //rowPizza.setVisibility(View.GONE);
-                        rimuoviElemento(tipo, rowPizza);
+                        if (idMetro == -1)
+                            aggiornaTotale(Float.parseFloat((sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)), false);
+
+                        rimuoviElemento(tipo, rowPizza, idMetro, Integer.parseInt(valColonna));
                         if (tableOrdiniPizza.getChildCount() == 0)
                             layoutContoPizze.setBackgroundResource(0);
                         if (tableOrdiniGastronomia.getChildCount() == 0)
                             layoutContoGastronomia.setBackgroundResource(0);
-                        aggiornaTotale(Float.parseFloat((sparsePrezziPizze.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziPizze.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)), false);
+
                         Toast.makeText(context, nomeProdotto + " eliminato!", Toast.LENGTH_SHORT).show();
                     }
                 });
 
-                //IF CHECKBOX
-                //sparseMetri
                 if (idMetro != -1 && sparseMetri.get(idMetro) == null) {
+                    RelativeLayout.LayoutParams layoutTabellaMetri = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    HashMap<TableLayout, List<Integer>> hashTemp = new HashMap<TableLayout, List<Integer>>(1);
+                    List<Integer> tempList = new ArrayList<Integer>();
+                    tempList.add(Integer.parseInt(valColonna));
 
-                    TableLayout.LayoutParams layoutTabellaMetri = new TableLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    tableOrdiniMetri = new TableLayout(context);
+                    TableLayout tableOrdiniMetri = new TableLayout(context);
                     tableOrdiniMetri.setLayoutParams(layoutTabellaMetri);
                     tableOrdiniMetri.setGravity(Gravity.CENTER_HORIZONTAL);
+                    tableOrdiniMetri.setId(View.generateViewId());
+                    if (layoutContoMetri.getChildCount() > 0)
+                        layoutTabellaMetri.addRule(RelativeLayout.BELOW, layoutContoMetri.getChildAt(layoutContoMetri.getChildCount() - 1).getId());
+                    /** TODO AGGIUNGERE DIVISORIO COME IL CONTO (ANCHE STATICO, DOPO CI PENSO IO PER I NUMERI DINAMICI */
                     tableOrdiniMetri.addView(rowPizza);
-                    sparseMetri.put(idMetro, tableOrdiniMetri);
+                    hashTemp.put(tableOrdiniMetri, tempList);
+                    sparseMetri.put(idMetro, hashTemp);
                     layoutContoMetri.addView(tableOrdiniMetri);
                     System.out.println("METRO -> AGGIUNTA");
                 } else if (sparseMetri.get(idMetro) != null) {
-                    sparseMetri.get(idMetro).addView(rowPizza);
+                    sparseMetri.get(idMetro).entrySet().iterator().next().getKey().addView(rowPizza);
+                    sparseMetri.get(idMetro).entrySet().iterator().next().getValue().add(Integer.parseInt(valColonna));
                     System.out.println("METRO -> AGGIUNTA A ESISTENTE");
                 }
 
                 switch (tipo) {
                     case "Pizza":
                         if (idMetro == -1) tableOrdiniPizza.addView(rowPizza);
-                        sparsePrezziPizze.put(Integer.parseInt(valColonna), txtPrezzo);
                         break;
                     case "Bibita":
                         tableOrdiniBibite.addView(rowPizza);
@@ -787,18 +863,18 @@ public class NuovoOrdine extends Fragment {
                         tableOrdiniGastronomia.addView(rowPizza);
                         break;
                 }
+                sparsePrezziProdotti.put(Integer.parseInt(valColonna), txtPrezzo);
             }
             if (tableOrdiniPizza.getChildCount() > 0)
                 layoutContoPizze.setBackgroundResource(R.drawable.table_bottom_style);
             if (tableOrdiniGastronomia.getChildCount() > 0)
                 layoutContoGastronomia.setBackgroundResource(R.drawable.table_bottom_style);
-
-            if (tableOrdiniMetri != null && tableOrdiniMetri.getChildCount() > 0)
+            if (layoutContoMetri.getChildCount() > 0)
                 layoutContoMetri.setBackgroundResource(R.drawable.table_bottom_style);
         }
     }
 
-    private void inizializzaAggiunte(Object param, String valColonna, RelativeLayout baseLayout, final List<String> ingrBaseRimossi) {
+    private void inizializzaAggiunte(Object param, final String valColonna, RelativeLayout baseLayout, final List<String> ingrBaseRimossi) {
         if (param != null) {
             final String idColonna = valColonna;
             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
@@ -1020,11 +1096,13 @@ public class NuovoOrdine extends Fragment {
                 new HttpManager.AsyncManager(new AsyncResponse() {
                     @Override
                     public void processFinish(Object output) {
-                        aggiornaTotale(Float.parseFloat((sparsePrezziPizze.get(valColonna).getText().toString()).substring(0, sparsePrezziPizze.get(valColonna).getText().toString().length() - 2)), false);
                         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
                         Float prezzoFinale = Float.parseFloat(lista.get(0).get("prezzo_finale"));
-                        sparsePrezziPizze.get(valColonna).setText(new DecimalFormat("#0.00 €").format(prezzoFinale));
-                        aggiornaTotale(prezzoFinale, true);
+                        if (!isColonnaMetro(valColonna)) {
+                            aggiornaTotale(Float.parseFloat((sparsePrezziProdotti.get(valColonna).getText().toString()).substring(0, sparsePrezziProdotti.get(valColonna).getText().toString().length() - 2)), false);
+                            aggiornaTotale(prezzoFinale, true);
+                        }
+                        sparsePrezziProdotti.get(valColonna).setText(new DecimalFormat("#0.00 €").format(prezzoFinale));
                     }
                 }, context, "GET_PREZZO_PIZZA_FINALE", new String[]{idColonna}).execute();
             }
