@@ -42,25 +42,20 @@ import terranovaproductions.newcomicreader.FloatingActionMenu;
 
 public class RiepilogoOrdini extends Fragment {
 
+    Stampa stampa = new Stampa();
     private TableLayout tabellaOrdini;
     private TableLayout tabellaAssegnati;
-
     private FragmentActivity listener;
     private Bundle bundle;
     private Context context;
-
     private Spinner spinnerDate;
     private ArrayAdapter<String> arrayDate;
     private String dataRicerca;
-
     //private Spinner spinnerFattorini;
     private ArrayAdapter<String> arrayFattorini;
-
     private List<Integer> idFattorini = new ArrayList<Integer>();
     private List<String> nomiFattorini = new ArrayList<String>();
-
     private Map<TableRow, TableLayout> mappaRows = new HashMap<TableRow, TableLayout>();
-
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
     private RelativeLayout sfondo;
@@ -151,10 +146,12 @@ public class RiepilogoOrdini extends Fragment {
         FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu_circle);
         menu.setMultipleOfFB(3.2f);
         menu.setIsCircle(true);
+        // menu.;
 
         menu.setOnMenuItemClickListener(new FloatingActionMenu.OnMenuItemClickListener() {
             @Override
             public void onMenuItemClick(FloatingActionMenu fam, int index, FloatingActionButton item) {
+
                 switch (index) {
                     case 0:
                         RelativeLayout.LayoutParams paramContenitore = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -334,7 +331,15 @@ public class RiepilogoOrdini extends Fragment {
                     .setView(layoutInformazioni)
                     .setPositiveButton("Stampa", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            //STAMPA
+                            /*try{
+                                stampa.findBT();
+                                stampa.openBT();
+                                stampa.sendData();
+                                stampa.closeBT();
+
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }*/
                         }
                     })
                     .setIcon(R.drawable.pizza_logo)
@@ -391,39 +396,6 @@ public class RiepilogoOrdini extends Fragment {
         return idFattorini.get(indice).toString();
     }
 
-    private void getPizzeOrdine(String idOrdine) {
-        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_PIZZA_IN_ORDINE.getValore(), idOrdine);
-        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
-        if (itr.hasNext()) {
-            while (itr.hasNext()) {
-                HashMap<String, Object> riga = itr.next();
-                final String nomePizza = riga.get("nomeprodotto").toString();
-                final String prezzoPizza = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("prezzoprodotto").toString())) + " \u20ac";
-                final String idExtra = riga.get("id_colonna").toString();
-                List<String> ingredienti = getIngredientiPizza(idExtra);
-                System.out.println("PIZZA = " + nomePizza);
-                System.out.println("PREZZO = " + prezzoPizza);
-                System.out.println("INGREDIENTI = ");
-                for (String item : ingredienti) {
-                    System.out.println(item);
-                }
-                System.out.println("---------------------------");
-            }
-        }
-    }
-
-    private List<String> getIngredientiPizza(String idExtra) {
-        List<String> ingredienti = new ArrayList<String>();
-        List<HashMap<String, Object>> risultatoQuery = DBmanager.selectQuery(EnumQuery.GET_LISTA_INGREDIENTI_ED_EXTRA.getValore(), idExtra, idExtra, idExtra);
-        Iterator<HashMap<String, Object>> itr = risultatoQuery.iterator();
-        if (itr.hasNext()) {
-            while (itr.hasNext()) {
-                HashMap<String, Object> riga = itr.next();
-                ingredienti.add(riga.get("nomeingrediente").toString());
-            }
-        }
-        return ingredienti;
-    }
 
     private void caricaOrdini() {
         new HttpManager.AsyncManager(new AsyncResponse() {
@@ -459,7 +431,10 @@ public class RiepilogoOrdini extends Fragment {
                 TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_100dp);
                 TextView viaOrdine = makeTableRowWithText((riga.get("via").equals("null") ? " ----- " : riga.get("via")), R.dimen.dim_200dp);
                 TextView cittaOrdine = makeTableRowWithText(riga.get("citta").equals("null") ? " ----- " : riga.get("citta"), R.dimen.dim_150dp);
-
+                if (viaOrdine.getText().toString().length() > 8)
+                    viaOrdine.setTextSize(20);
+                if (cittaOrdine.getText().toString().length() > 8)
+                    cittaOrdine.setTextSize(20);
                 ImageButton btnMostra = makeTableRowWithImageButton(R.drawable.mostra);
                 ImageButton btnAccetta = makeTableRowWithImageButton(R.drawable.accetta);
                 ImageButton btnConsegna = makeTableRowWithImageButton(R.drawable.consegna);

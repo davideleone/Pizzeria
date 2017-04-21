@@ -66,4 +66,6 @@ public class Funzioni {
         }
         return numero;
     }
+
+
 }

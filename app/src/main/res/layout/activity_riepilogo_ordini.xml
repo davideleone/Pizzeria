@@ -251,6 +251,7 @@
 
     <terranovaproductions.newcomicreader.FloatingActionMenu
         android:id="@+id/fab_menu_circle"
+        style="@style/FabStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="16dp"

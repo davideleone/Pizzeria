@@ -222,6 +222,7 @@ public class Clienti extends Fragment {
         inserimentoLayout.addView(telefonoInput);
         inserimentoLayout.addView(viaInput);
         inserimentoLayout.addView(txtCitta);
+
         if (spinnerCitta.getParent() != null)
             ((ViewGroup) spinnerCitta.getParent()).removeView(spinnerCitta);
         inserimentoLayout.addView(spinnerCitta);
@@ -340,7 +341,7 @@ public class Clienti extends Fragment {
             TextView txtTelefono = makeTableRowWithText(telefono, R.dimen.dim_200dp);
             TextView txtVia = makeTableRowWithText(via, R.dimen.dim_200dp);
             TextView txtCitta = makeTableRowWithText(citta, R.dimen.dim_200dp);
-            ImageButton btnModifica = makeTableRowWithImageButton(R.drawable.modifica);
+            ImageButton btnModifica = makeTableRowWithImageButton(R.drawable.modifica_nero);
             ImageButton btnElimina = makeTableRowWithImageButton(R.drawable.elimina);
 
             btnModifica.setOnClickListener(new View.OnClickListener() {

@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private SparseArray<HashMap<String, String>> hashColonne;
     private ArrayList<SparseArray<HashMap<String, String>>> clienti;
     private ArrayList<String> listaCitta;
+    private ArrayList<HashMap<String, String>> listaProdotti;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +88,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }, null, "GET_CITTA", new String[]{}).execute();
 
-
+        new HttpManager.AsyncManager(new AsyncResponse() {
+            @Override
+            public void processFinish(Object output) {
+                inizializzaProdotti(output);
+            }
+        }, this, "GET_LISTA_PRODOTTI", new String[]{}).execute();
         //logo = (ImageView) findViewById(R.id.logo_accipizza);
+    }
+
+    private void inizializzaProdotti(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        listaProdotti = new ArrayList<>();
+        HashMap<String, String> row = new HashMap<String, String>(3);
+        while (itr.hasNext()) {
+            HashMap<String, String> riga = itr.next();
+            row.put("tipo", riga.get("tipo"));
+            row.put("nome", riga.get("nome"));
+            row.put("prezzo", riga.get("prezzo"));
+        }
+        listaProdotti.add(row);
     }
 
     private void inizializzaCitta(Object param) {
@@ -176,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
         if (fragment != null) {
             bundle.putSerializable("LISTA_CLIENTI", clienti);
             bundle.putSerializable("LISTA_CITTA", listaCitta);
+            bundle.putSerializable("LISTA_PRODOTTI", listaProdotti);
             fragment.setArguments(bundle);
             getFragmentManager().beginTransaction().replace(R.id.flContent, fragment).commit();
             // Highlight the selected item has been done by NavigationView
