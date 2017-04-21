@@ -88,14 +88,14 @@ public class NuovoOrdine extends Fragment {
     private String strCivico = "";
     private String strCitta = "";
     private String idOrdine = "";
-    private String idCliente = "";
     private String cognomeTrovato = "";
     private CheckBox consegna;
     private RadioButton isMetro;
     private RelativeLayout layoutContoMetri;
     private boolean nuovoMetro = false;
     private float totMetriAggiornato = -1;
-    private int countMetri = 1;
+    private int idMetro_onMod = -1;
+    private RelativeLayout layoutBarra_onMod = null;
     private ArrayList<SparseArray<HashMap<String, String>>> clienti;
     private ArrayAdapter adapterClienti;
     private ArrayList<String> listaClienti;
@@ -153,7 +153,6 @@ public class NuovoOrdine extends Fragment {
             @Override
             public void onClick(View v) {
                 nuovoMetro = true;
-                countMetri++;
                 Toast.makeText(context, "Nuova Pizza-Metro predisposta", Toast.LENGTH_SHORT).show();
             }
         });
@@ -505,6 +504,10 @@ public class NuovoOrdine extends Fragment {
         return view;
     }
 
+    private void recuperaOrdine(String id_ordine) {
+        // riempiConto
+    }
+
     private void completaOrdine(String strData, String strOra, String strNome, String strCognome, String strTelefono, Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
@@ -535,21 +538,17 @@ public class NuovoOrdine extends Fragment {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         HashMap<String, String> riga = itr.next();
-        final String idOrdine = riga.get("generated_id");
-        setIdOrdine(idOrdine);
+        final String ID_ORDINE = riga.get("generated_id");
+        idOrdine = ID_ORDINE;
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
-                impostaBottoni(idOrdine, output);
+                impostaBottoni(output);
             }
         }, null, "GET_LISTA_PRODOTTI", new String[]{}).execute();
     }
 
-    private void setIdOrdine(String idOrdine) {
-        this.idOrdine = idOrdine;
-    }
-
-    private void impostaBottoni(String idOrdine, Object param) {
+    private void impostaBottoni(Object param) {
         final String ordine = idOrdine;
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
@@ -655,7 +654,7 @@ public class NuovoOrdine extends Fragment {
             @Override
             public void processFinish(final Object output) {
                 if (tipoProdotto.equals("Pizza") && isMetro.isChecked()) {
-                    if (sparseMetri.size() == 0 || nuovoMetro || isUltimoMetroFull()) {
+                    if ((sparseMetri.size() == 0 || nuovoMetro || isUltimoMetroFull()) && idMetro_onMod == -1) {
                         nuovoMetro = false;
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
@@ -666,7 +665,12 @@ public class NuovoOrdine extends Fragment {
                             }
                         }, null, "INSERISCI_PIZZA_IN_METRO", new String[]{idColonna}).execute();
                     } else {
-                        int idMetro = sparseMetri.keyAt(sparseMetri.size() - 1);
+                        int idMetro = (idMetro_onMod == -1) ? sparseMetri.keyAt(sparseMetri.size() - 1) : idMetro_onMod;
+                        if (layoutBarra_onMod != null) {
+                            layoutBarra_onMod.setBackgroundResource(0);
+                            idMetro_onMod = -1;
+                            layoutBarra_onMod = null;
+                        }
                         HttpManager.execSimple("INSERISCI_PIZZA_IN_METRO_CON_ID", null, Integer.toString(idMetro), idColonna);
                         riempiConto(output, idMetro);
                     }
@@ -823,19 +827,6 @@ public class NuovoOrdine extends Fragment {
                     @Override
                     public void onClick(View v) {
                         HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, valColonna);
-                        /**
-                         switch (tipo) {
-                         case "Pizza":
-                         tableOrdiniPizza.removeView(rowPizza);
-                         break;
-                         case "Bibita":
-                         tableOrdiniBibite.removeView(rowPizza);
-                         break;
-                         case "Gastronomia":
-                         tableOrdiniGastronomia.removeView(rowPizza);
-                         break;
-                         }*/
-                        //rowPizza.setVisibility(View.GONE);
                         if (idMetro == -1)
                             aggiornaTotale(Float.parseFloat((sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)), false);
 
@@ -855,14 +846,14 @@ public class NuovoOrdine extends Fragment {
                     List<Integer> tempList = new ArrayList<Integer>();
                     tempList.add(Integer.parseInt(valColonna));
 
-                    TableLayout tableOrdiniMetri = new TableLayout(context);
+                    final TableLayout tableOrdiniMetri = new TableLayout(context);
                     tableOrdiniMetri.setLayoutParams(layoutTabellaMetri);
                     tableOrdiniMetri.setGravity(Gravity.CENTER_HORIZONTAL);
                     tableOrdiniMetri.setId(View.generateViewId());
                     if (layoutContoMetri.getChildCount() > 0)
                         layoutTabellaMetri.addRule(RelativeLayout.BELOW, layoutContoMetri.getChildAt(layoutContoMetri.getChildCount() - 1).getId());
 
-                    RelativeLayout layoutBarra = new RelativeLayout(context);
+                    final RelativeLayout layoutBarra = new RelativeLayout(context);
                     RelativeLayout.LayoutParams paramLayoutBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                     paramLayoutBarra.setMargins(30, 0, 30, 0);
                     layoutBarra.setLayoutParams(paramLayoutBarra);
@@ -878,7 +869,7 @@ public class NuovoOrdine extends Fragment {
                     testoInMezzo.setId(View.generateViewId());
                     testoInMezzo.setTextAppearance(context, R.style.testoGrande);
                     testoInMezzo.setTextColor(getResources().getColor(R.color.giallo));
-                    testoInMezzo.setText(countMetri + "° Mezzo Metro");
+                    testoInMezzo.setText("Mezzo-Metro");
 
                     RelativeLayout.LayoutParams testoInMezzoParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                     testoInMezzoParam.setMargins(0, 0, 30, 0);
@@ -900,6 +891,23 @@ public class NuovoOrdine extends Fragment {
                     btnModificaMezzoMetro.setLayoutParams(paramBtn);
                     btnModificaMezzoMetro.setBackgroundResource(0);
 
+                    btnModificaMezzoMetro.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (sparseMetri.get(idMetro).entrySet().iterator().next().getValue().size() < 3) {
+                                if (idMetro_onMod == -1) {
+                                    idMetro_onMod = idMetro;
+                                    layoutBarra_onMod = layoutBarra;
+                                    layoutBarra.setBackgroundResource(R.color.menu_primary);
+                                } else {
+                                    idMetro_onMod = -1;
+                                    layoutBarra_onMod = null;
+                                    layoutBarra.setBackgroundResource(0);
+                                }
+                            }
+                        }
+                    });
+
                     View barradx = new View(context);
                     barradx.setBackgroundColor(getResources().getColor(R.color.giallo));
 
@@ -919,11 +927,9 @@ public class NuovoOrdine extends Fragment {
                     hashTemp.put(tableOrdiniMetri, tempList);
                     sparseMetri.put(idMetro, hashTemp);
                     layoutContoMetri.addView(tableOrdiniMetri);
-                    System.out.println("METRO -> AGGIUNTA");
                 } else if (sparseMetri.get(idMetro) != null) {
                     sparseMetri.get(idMetro).entrySet().iterator().next().getKey().addView(rowPizza);
                     sparseMetri.get(idMetro).entrySet().iterator().next().getValue().add(Integer.parseInt(valColonna));
-                    System.out.println("METRO -> AGGIUNTA A ESISTENTE");
                 }
 
                 switch (tipo) {
