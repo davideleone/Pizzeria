@@ -50,4 +50,20 @@ public class Funzioni {
     public static String getCurrentDate() {
         return new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance(Locale.ITALY).getTime());
     }
+
+    public static double arrotonda(double numero) {
+        final double soglia = 0.5;
+        int parteIntera = (int) numero;
+        double parteDecimale = numero - parteIntera;
+
+        double scarto = soglia - parteDecimale;
+        if (scarto >= 0) {
+            if (parteDecimale < scarto) numero = parteIntera;
+            else numero = parteIntera + soglia;
+        } else {
+            if (parteDecimale >= scarto + 1) numero = parteIntera + 1;
+            else numero = parteIntera + soglia;
+        }
+        return numero;
+    }
 }
