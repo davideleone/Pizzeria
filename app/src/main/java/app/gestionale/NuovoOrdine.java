@@ -195,6 +195,8 @@ public class NuovoOrdine extends Fragment {
             }, context, "CREA_ORDINE", new String[]{}).execute();
         }
 
+        impostaBottoni();
+
 
         btnInserisci.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -555,8 +557,6 @@ public class NuovoOrdine extends Fragment {
         HashMap<String, String> riga = itr.next();
         final String ID_ORDINE = riga.get("generated_id");
         idOrdine = ID_ORDINE;
-
-        impostaBottoni();
     }
 
     private void impostaBottoni() {
