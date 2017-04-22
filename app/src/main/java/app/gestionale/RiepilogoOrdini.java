@@ -4,10 +4,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
@@ -20,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -29,6 +35,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,12 +46,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import terranovaproductions.newcomicreader.FloatingActionMenu;
 
 public class RiepilogoOrdini extends Fragment {
 
     Stampa stampa = new Stampa();
+    TextView myLabel;
+    // will enable user to enter any text to be printed
+    EditText myTextbox;
+    // android built in classes for bluetooth operations
+    BluetoothAdapter mBluetoothAdapter;
+    BluetoothSocket mmSocket;
+    BluetoothDevice mmDevice;
+    // needed for communication to bluetooth device / network
+    OutputStream mmOutputStream;
+    InputStream mmInputStream;
+    Thread workerThread;
+    byte[] readBuffer;
+    int readBufferPosition;
+    volatile boolean stopWorker;
     private TableLayout tabellaOrdini;
     private TableLayout tabellaAssegnati;
     private FragmentActivity listener;
@@ -52,14 +77,12 @@ public class RiepilogoOrdini extends Fragment {
     private ArrayAdapter<String> arrayDate;
     private String dataRicerca;
     //private Spinner spinnerFattorini;
-    private ArrayAdapter<String> arrayFattorini;
     private List<Integer> idFattorini = new ArrayList<Integer>();
     private List<String> nomiFattorini = new ArrayList<String>();
     private Map<TableRow, TableLayout> mappaRows = new HashMap<TableRow, TableLayout>();
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
-    private RelativeLayout sfondo;
-    private String[] arrayFatt;
+    private String[] arrayFatt;    // will show the statuses like bluetooth open, close or data sent
 
     @Override
     public void onAttach(Context context) {
@@ -92,8 +115,9 @@ public class RiepilogoOrdini extends Fragment {
         layoutRicercaToolbar.setVisibility(View.GONE);
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_ordini);
         tabellaAssegnati = (TableLayout) view.findViewById(R.id.tabella_ordini_assegnati);
-        sfondo = (RelativeLayout) view.findViewById(R.id.sfondo);
         spinnerDate = (Spinner) view.findViewById(R.id.date_settimane);
+
+        HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
 
         String[] dateSettimana;
         Calendar c = Calendar.getInstance(Locale.ITALY);
@@ -331,15 +355,15 @@ public class RiepilogoOrdini extends Fragment {
                     .setView(layoutInformazioni)
                     .setPositiveButton("Stampa", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            /*try{
-                                stampa.findBT();
-                                stampa.openBT();
-                                stampa.sendData();
-                                stampa.closeBT();
+                            try {
+                                findBT();
+                                openBT();
+                                sendData("Riepilogo Serata del " + dataRicerca);
+                                //closeBT();
 
                             } catch (IOException ex) {
                                 ex.printStackTrace();
-                            }*/
+                            }
                         }
                     })
                     .setIcon(R.drawable.pizza_logo)
@@ -593,7 +617,7 @@ public class RiepilogoOrdini extends Fragment {
 
     }
 
-    private void mostraDettaglio(SparseArray<List<HashMap<String, String>>> hashPizze, String telefono, String cognome, boolean isTolti) {
+    private void mostraDettaglio(SparseArray<List<HashMap<String, String>>> hashPizze, String telefono, String cognome, boolean isTolti, boolean isAggiunti) {
         final RelativeLayout layoutContenitore = new RelativeLayout(context);
 
         RelativeLayout layoutDettaglio = new RelativeLayout(context);
@@ -636,6 +660,7 @@ public class RiepilogoOrdini extends Fragment {
         RelativeLayout.LayoutParams paramsLinea = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
         paramsLinea.addRule(RelativeLayout.BELOW, textTelefono.getId());
         paramsLinea.setMargins(30, 10, 30, 0);
+
         View separator = new View(context);
         separator.setId(View.generateViewId());
         separator.setBackgroundColor(getResources().getColor(R.color.grigio));
@@ -646,11 +671,12 @@ public class RiepilogoOrdini extends Fragment {
         RelativeLayout layoutPizze = new RelativeLayout(context);
         layoutPizze.setGravity(Gravity.CENTER);
         layoutPizze.setLayoutParams(paramsLayoutPizze);
+        layoutPizze.setId(View.generateViewId());
 
         RelativeLayout.LayoutParams paramsCaricamento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramsCaricamento.addRule(RelativeLayout.CENTER_HORIZONTAL, separator.getId());
 
-        layoutPizze = dettaglioPizze(hashPizze, isTolti, layoutPizze);
+        layoutPizze = dettaglioPizze(hashPizze, isTolti, isAggiunti, layoutPizze);
 
         layoutDettaglio.addView(textStato);
         layoutDettaglio.addView(imgStato);
@@ -673,6 +699,7 @@ public class RiepilogoOrdini extends Fragment {
         Iterator<HashMap<String, String>> itr = lista.iterator();
         SparseArray<List<HashMap<String, String>>> hashColonne = new SparseArray<List<HashMap<String, String>>>();
         boolean isTolti = false;
+        boolean isAggiunti = false;
         while (itr.hasNext()) {
             HashMap<String, String> riga = itr.next();
             final int idcolonna = Integer.parseInt(riga.get("id_colonna"));
@@ -682,14 +709,17 @@ public class RiepilogoOrdini extends Fragment {
             row.put("prezzoprodotto", riga.get("prezzoprodotto"));
             row.put("nomeextra", riga.get("nomeextra"));
             row.put("tipo", riga.get("tipo"));
-            if (Integer.parseInt(riga.get("tipo")) == 2) isTolti = true;
+            if (!riga.get("tipo").equals("null") && Integer.parseInt(riga.get("tipo")) == 2)
+                isTolti = true;
+            if (!riga.get("tipo").equals("null") && Integer.parseInt(riga.get("tipo")) == 1)
+                isAggiunti = true;
             listaTemp.add(row);
             hashColonne.put(idcolonna, listaTemp);
         }
-        mostraDettaglio(hashColonne, telefono, cognome, isTolti);
+        mostraDettaglio(hashColonne, telefono, cognome, isTolti, isAggiunti);
     }
 
-    private RelativeLayout dettaglioPizze(SparseArray<List<HashMap<String, String>>> hashPizze, boolean isTolti, RelativeLayout layoutPizze) {
+    private RelativeLayout dettaglioPizze(SparseArray<List<HashMap<String, String>>> hashPizze, boolean isTolti, boolean isAggiunti, RelativeLayout layoutPizze) {
         for (int i = 0; i < hashPizze.size(); i++) {
             boolean baseLayoutCreata = false;
             List<HashMap<String, String>> listaPizza = hashPizze.valueAt(i);
@@ -697,56 +727,66 @@ public class RiepilogoOrdini extends Fragment {
 
             TextView nomeingredientiAggiunti = new TextView(context);
             TextView nomeingredientiTolti = new TextView(context);
+
             while (itrPizza.hasNext()) {
                 HashMap<String, String> valorePizza = itrPizza.next();
                 final String nome = valorePizza.get("nomeprodotto");
                 final float prezzo = Float.parseFloat(valorePizza.get("prezzoprodotto"));
-                final int tipoExtra = Integer.parseInt(valorePizza.get("tipo"));
+                final int tipoExtra = (valorePizza.get("tipo").equals("null")) ? 0 : Integer.parseInt(valorePizza.get("tipo"));
                 final String nomeExtra = valorePizza.get("nomeextra");
 
                 if (!baseLayoutCreata) {
                     RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    if (i > 0)
+                    if (layoutPizze.getChildCount() > 0)
                         paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
                     paramsNome.setMargins(30, 30, 0, 0);
 
-                    TextView nomePizza = new TextView(context);
-                    nomePizza.setText("- " + nome);
-                    nomePizza.setId(View.generateViewId());
-                    nomePizza.setTextAppearance(context, R.style.testoGrande);
-                    nomePizza.setLayoutParams(paramsNome);
-                    layoutPizze.addView(nomePizza);
+                    final TextView nomeProdotto = new TextView(context);
+                    nomeProdotto.setText("- " + nome);
+                    nomeProdotto.setId(View.generateViewId());
+                    nomeProdotto.setTextSize(20);
+                    nomeProdotto.setLayoutParams(paramsNome);
+                    layoutPizze.addView(nomeProdotto);
 
                     RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    paramsPrezzo.addRule(RelativeLayout.END_OF, nomePizza.getId());
-                    paramsPrezzo.setMargins(20, 30, 0, 0);
+                    paramsPrezzo.addRule(RelativeLayout.END_OF, nomeProdotto.getId());
+                    paramsPrezzo.setMargins(20, 0, 0, 0);
 
                     TextView prezzoPizza = new TextView(context);
                     prezzoPizza.setText(new DecimalFormat("#0.00 €").format(prezzo));
                     prezzoPizza.setId(View.generateViewId());
+                    prezzoPizza.setTextSize(20);
                     prezzoPizza.setTextAppearance(context, R.style.testoGrande);
                     prezzoPizza.setLayoutParams(paramsPrezzo);
-
                     layoutPizze.addView(prezzoPizza);
 
-                    RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    paramTolti.addRule(RelativeLayout.BELOW, nomePizza.getId());
-                    paramTolti.setMargins(80, 0, 0, 0);
+                    if (isTolti) {
+                        RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        paramTolti.addRule(RelativeLayout.BELOW, nomeProdotto.getId());
+                        paramTolti.setMargins(80, 0, 0, 0);
+                        nomeingredientiTolti.setText("NO ");
+                        nomeingredientiTolti.setId(View.generateViewId());
+                        nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
+                        nomeingredientiTolti.setMaxEms(20);
+                        nomeingredientiTolti.setLayoutParams(paramTolti);
+                        layoutPizze.addView(nomeingredientiTolti);
+                    }
 
-                    nomeingredientiTolti.setText("NO ");
-                    nomeingredientiTolti.setId(View.generateViewId());
-                    nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
-                    nomeingredientiTolti.setMaxEms(20);
-                    nomeingredientiTolti.setLayoutParams(paramTolti);
+                    if (isAggiunti) {
+                        RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        /*if (!isTolti)
+                            paramAggiunti.addRule(RelativeLayout.BELOW, nomeingredientiTolti.getId());
+                        else*/
+                        paramAggiunti.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
 
-                    RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    paramAggiunti.addRule(RelativeLayout.BELOW, nomeingredientiTolti.getId());
-                    if (isTolti)
-                        paramAggiunti.addRule(RelativeLayout.ALIGN_START, nomeingredientiTolti.getId());
-                    nomeingredientiAggiunti.setText("PIU' ");
-                    nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
-                    nomeingredientiAggiunti.setMaxEms(20);
-                    nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
+                        paramAggiunti.setMargins(80, 0, 0, 0);
+                        nomeingredientiAggiunti.setText("PIU' ");
+                        nomeingredientiAggiunti.setId(View.generateViewId());
+                        nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
+                        nomeingredientiAggiunti.setMaxEms(20);
+                        nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
+                        layoutPizze.addView(nomeingredientiAggiunti);
+                    }
                     baseLayoutCreata = true;
                 }
 
@@ -763,8 +803,6 @@ public class RiepilogoOrdini extends Fragment {
                         nomeingredientiTolti.setText(nomeingredientiTolti.getText() + nomeExtra + "");
                 }
             }
-            layoutPizze.addView(nomeingredientiTolti);
-            layoutPizze.addView(nomeingredientiAggiunti);
         }
         return layoutPizze;
     }
@@ -787,6 +825,165 @@ public class RiepilogoOrdini extends Fragment {
         recyclableImageButton.setImageResource(img);
         recyclableImageButton.setBackgroundColor(Color.TRANSPARENT);
         return recyclableImageButton;
+    }
+
+
+    // this will find a bluetooth printer device
+    void findBT() {
+
+        try {
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+            if (mBluetoothAdapter == null) {
+                Toast.makeText(context, "BlueTooth Printer non trovato!", Toast.LENGTH_SHORT).show();
+            }
+
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBluetooth, 0);
+            }
+
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice device : pairedDevices) {
+
+                    // RPP300 is the name of the bluetooth printer device
+                    // we got this name from the list of paired devices
+                    if (device.getName().equals("BlueTooth Printer")) {
+                        mmDevice = device;
+                        break;
+                    }
+                }
+            }
+
+            Toast.makeText(context, "BlueTooth Printer trovato!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // tries to open a connection to the bluetooth printer device
+    void openBT() throws IOException {
+        try {
+
+            // Standard SerialPortService ID
+            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+            mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
+            mmSocket.connect();
+            mmOutputStream = mmSocket.getOutputStream();
+            mmInputStream = mmSocket.getInputStream();
+
+            beginListenForData();
+
+            Toast.makeText(context, "BlueTooth Printer associato!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+ * after opening a connection to bluetooth printer device,
+ * we have to listen and check if a data were sent to be printed.
+ */
+    void beginListenForData() {
+        try {
+            final Handler handler = new Handler();
+
+            // this is the ASCII code for a newline character
+            final byte delimiter = 10;
+
+            stopWorker = false;
+            readBufferPosition = 0;
+            readBuffer = new byte[1024];
+
+            workerThread = new Thread(new Runnable() {
+                public void run() {
+
+                    while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+
+                        try {
+
+                            int bytesAvailable = mmInputStream.available();
+
+                            if (bytesAvailable > 0) {
+
+                                byte[] packetBytes = new byte[bytesAvailable];
+                                mmInputStream.read(packetBytes);
+
+                                for (int i = 0; i < bytesAvailable; i++) {
+
+                                    byte b = packetBytes[i];
+                                    if (b == delimiter) {
+
+                                        byte[] encodedBytes = new byte[readBufferPosition];
+                                        System.arraycopy(
+                                                readBuffer, 0,
+                                                encodedBytes, 0,
+                                                encodedBytes.length
+                                        );
+
+                                        // specify US-ASCII encoding
+                                        final String data = new String(encodedBytes, "US-ASCII");
+                                        readBufferPosition = 0;
+
+                                        // tell the user data were sent to bluetooth printer device
+                                        handler.post(new Runnable() {
+                                            public void run() {
+                                                myLabel.setText(data);
+                                            }
+                                        });
+
+                                    } else {
+                                        readBuffer[readBufferPosition++] = b;
+                                    }
+                                }
+                            }
+
+                        } catch (IOException ex) {
+                            stopWorker = true;
+                        }
+
+                    }
+                }
+            });
+
+            workerThread.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // this will send text data to be printed by the bluetooth printer
+    void sendData(String testoDaStampare) throws IOException {
+        try {
+
+            // the text typed by the user
+            String msg = testoDaStampare;
+            msg += "\n";
+
+            mmOutputStream.write(msg.getBytes());
+
+            // tell the user data were sent
+            Toast.makeText(context, "Testo inviato!", Toast.LENGTH_SHORT).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // close the connection to bluetooth printer.
+    void closeBT() throws IOException {
+        try {
+            stopWorker = true;
+            mmOutputStream.close();
+            mmInputStream.close();
+            mmSocket.close();
+            Toast.makeText(context, "BlueTooth Printer disassociato!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

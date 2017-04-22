@@ -76,7 +76,6 @@ public class NuovoOrdine extends Fragment {
     private TableLayout tableOrdiniPizza;
     private TableLayout tableOrdiniGastronomia;
     private TableLayout tableOrdiniBibite;
-    private ArrayList<String> listaCitta;
     private ArrayAdapter<String> adapterCitta;
     private Spinner spinnerCitta;
     private ArrayAdapter<String> arrayDate;
@@ -99,9 +98,11 @@ public class NuovoOrdine extends Fragment {
     private ArrayList<SparseArray<HashMap<String, String>>> clienti;
     private ArrayAdapter adapterClienti;
     private ArrayList<String> listaClienti;
+    private ArrayList<String> listaCitta;
     private String nomeTrovato = "";
     private String viaTrovato = "";
     private String telefonoTrovato = "";
+    private ArrayList<HashMap<String, String>> listaProdotti;
 
 
     private SparseArray<HashMap<TableLayout, List<Integer>>> sparseMetri = new SparseArray<HashMap<TableLayout, List<Integer>>>();
@@ -137,6 +138,11 @@ public class NuovoOrdine extends Fragment {
         super.onCreate(savedInstanceState);
 
         clienti = (ArrayList<SparseArray<HashMap<String, String>>>) bundle.getSerializable("LISTA_CLIENTI");
+        listaCitta = (ArrayList<String>) bundle.getSerializable("LISTA_CITTA");
+        listaProdotti = (ArrayList<HashMap<String, String>>) bundle.getSerializable("LISTA_PRODOTTI");
+
+
+        adapterCitta = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaCitta);
 
 
         isMetro = (RadioButton) view.findViewById(R.id.mezzoMetro);
@@ -172,8 +178,6 @@ public class NuovoOrdine extends Fragment {
 
         inizializzaTabelle();
 
-        HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
-
         new HttpManager.AsyncManager(new AsyncResponse() {
             @Override
             public void processFinish(Object output) {
@@ -187,14 +191,6 @@ public class NuovoOrdine extends Fragment {
             public void onClick(View v) {
 
                 aggiornaTotaliMetri();
-
-                new HttpManager.AsyncManager(new AsyncResponse() {
-                    @Override
-                    public void processFinish(Object output) {
-                        inizializzaCitta(output);
-                    }
-                }, context, "GET_CITTA", new String[]{}).execute();
-
 
                 /*new HttpManager.AsyncManager(new AsyncResponse() {
                     @Override
@@ -242,8 +238,6 @@ public class NuovoOrdine extends Fragment {
 
                 cognome.setTextSize(25);
                 cognome.setHint("Cognome");
-                if (!cognomeTrovato.isEmpty())
-                    cognome.setText(cognomeTrovato);
                 cognomeInput.addView(cognome);
 
                 RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -254,8 +248,6 @@ public class NuovoOrdine extends Fragment {
                 nomeInput.setId(View.generateViewId());
                 nome.setTextSize(25);
                 nome.setHint("Nome");
-                if (!nomeTrovato.isEmpty())
-                    nome.setText(nomeTrovato);
                 nomeInput.addView(nome);
 
                 RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -267,8 +259,6 @@ public class NuovoOrdine extends Fragment {
                 telefonoInput.setLayoutParams(editTextTelefonoParams);
                 telefono.setTextSize(25);
                 telefono.setHint("Telefono");
-                if (!telefonoTrovato.isEmpty())
-                    telefono.setText(telefonoTrovato);
                 telefono.setInputType(InputType.TYPE_CLASS_PHONE);
                 telefonoInput.addView(telefono);
 
@@ -331,6 +321,7 @@ public class NuovoOrdine extends Fragment {
                 editTextCittaSpinnerParams.setMargins(40, 0, 0, 40);
 
                 spinnerCitta = new Spinner(context);
+                spinnerCitta.setAdapter(adapterCitta);
                 spinnerCitta.setLayoutParams(editTextCittaSpinnerParams);
 
                 RelativeLayout.LayoutParams editTextDataTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_100dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -457,10 +448,6 @@ public class NuovoOrdine extends Fragment {
                         final String strData = Funzioni.formattaData(spinnerDate.getSelectedItem().toString());
                         final String strOra = spinnerOre.getSelectedItem().toString();
 
-                        if (strNome.isEmpty()) {
-                            toClose = false;
-                            nome.setError("Inserisci nome");
-                        }
                         if (strCognome.isEmpty()) {
                             toClose = false;
                             cognome.setError("Inserisci cognome");
@@ -540,111 +527,105 @@ public class NuovoOrdine extends Fragment {
         HashMap<String, String> riga = itr.next();
         final String ID_ORDINE = riga.get("generated_id");
         idOrdine = ID_ORDINE;
-        new HttpManager.AsyncManager(new AsyncResponse() {
-            @Override
-            public void processFinish(Object output) {
-                impostaBottoni(output);
-            }
-        }, null, "GET_LISTA_PRODOTTI", new String[]{}).execute();
+
+        impostaBottoni();
     }
 
-    private void impostaBottoni(Object param) {
+    private void impostaBottoni() {
         final String ordine = idOrdine;
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itr = lista.iterator();
-        if (itr.hasNext()) {
+        //FARE L'ITERATOR SU HASHMAP ALTRIMENTI RITORNA SEMPRE L'ULTIMO ELEMENTO DELL'HASMAP
+        for (int i = 0; i < listaProdotti.get(i).size(); i++) {
             int countPizze = 0;
             int countBibite = 0;
             int countGastronomia = 0;
-            while (itr.hasNext()) {
 
-                HashMap<String, String> riga = itr.next();
-                final String nomeProdotto = riga.get("nome");
-                final String tipo = riga.get("tipo");
-                Button btnProdotto = null;
+            final String nomeProdotto = listaProdotti.get(i).get("nome");
+            final String tipo = listaProdotti.get(i).get("tipo");
+            final String prezzo = listaProdotti.get(i).get("prezzo");
+            Button btnProdotto = null;
 
-                if (tipo.equals("Pizza")) {
-                    RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            if (tipo.equals("Pizza")) {
+                RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-                    if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
-                        btnProdotto = nuovoBtn("PROSC. E FUNGHI");
-                    else
-                        btnProdotto = nuovoBtn(nomeProdotto);
+                if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
+                    btnProdotto = nuovoBtn("PROSC. E FUNGHI");
+                else
+                    btnProdotto = nuovoBtn(nomeProdotto);
 
-                    if (layoutBottoniPizze.getChildCount() > 0) {
-                        if (countPizze > 3)
-                            if (countPizze % 4 == 0) {
-                                layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 3).getId());
-                            } else {
-                                layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 4).getId());
-                                layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 1).getId());
-                            }
-                        else
+                if (layoutBottoniPizze.getChildCount() > 0) {
+                    if (countPizze > 3)
+                        if (countPizze % 4 == 0) {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 3).getId());
+                        } else {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 4).getId());
                             layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 1).getId());
-                    }
-
-                    btnProdotto.setLayoutParams(layoutBtnDx);
-                    countPizze++;
-                    layoutBottoniPizze.addView(btnProdotto);
-
-
-                } else if (tipo.equals("Bibita")) {
-                    RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                    btnProdotto = nuovoBtn(nomeProdotto);
-
-                    if (layoutBottoniBibite.getChildCount() > 0) {
-                        if (countBibite > 2)
-                            if (countBibite % 3 == 0) {
-                                layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 3).getId());
-                            } else {
-                                layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 4).getId());
-                                layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 1).getId());
-                            }
-                        else
-                            layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 1).getId());
-                    }
-
-                    btnProdotto.setLayoutParams(layoutBtnDx);
-                    countBibite++;
-                    layoutBottoniBibite.addView(btnProdotto);
-                } else if (tipo.equals("Gastronomia")) {
-                    RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                    btnProdotto = nuovoBtn(nomeProdotto);
-
-                    if (layoutBottoniGastronomia.getChildCount() > 0) {
-                        if (countGastronomia > 2)
-                            if (countGastronomia % 3 == 0) {
-                                layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 3).getId());
-                            } else {
-                                layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 4).getId());
-                                layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 1).getId());
-                            }
-                        else
-                            layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 1).getId());
-                    }
-
-                    btnProdotto.setLayoutParams(layoutBtnDx);
-                    countGastronomia++;
-                    layoutBottoniGastronomia.addView(btnProdotto);
+                        }
+                    else
+                        layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 1).getId());
                 }
 
-                btnProdotto.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new HttpManager.AsyncManager(new AsyncResponse() {
-                            @Override
-                            public void processFinish(Object output) {
-                                Toast.makeText(context, "Prodotto Inserito!", Toast.LENGTH_SHORT).show();
-                                creaConto(tipo, output);
-                            }
-                        }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, ordine}).execute();
-                    }
-                });
+                btnProdotto.setLayoutParams(layoutBtnDx);
+                countPizze++;
+                layoutBottoniPizze.addView(btnProdotto);
+
+
+            } else if (tipo.equals("Bibita")) {
+                RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                btnProdotto = nuovoBtn(nomeProdotto);
+
+                if (layoutBottoniBibite.getChildCount() > 0) {
+                    if (countBibite > 2)
+                        if (countBibite % 3 == 0) {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 3).getId());
+                        } else {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 4).getId());
+                            layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 1).getId());
+                        }
+                    else
+                        layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniBibite.getChildAt(layoutBottoniBibite.getChildCount() - 1).getId());
+                }
+
+                btnProdotto.setLayoutParams(layoutBtnDx);
+                countBibite++;
+                layoutBottoniBibite.addView(btnProdotto);
+            } else if (tipo.equals("Gastronomia")) {
+                RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                btnProdotto = nuovoBtn(nomeProdotto);
+
+                if (layoutBottoniGastronomia.getChildCount() > 0) {
+                    if (countGastronomia > 2)
+                        if (countGastronomia % 3 == 0) {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 3).getId());
+                        } else {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 4).getId());
+                            layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 1).getId());
+                        }
+                    else
+                        layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniGastronomia.getChildAt(layoutBottoniGastronomia.getChildCount() - 1).getId());
+                }
+
+                btnProdotto.setLayoutParams(layoutBtnDx);
+                countGastronomia++;
+                layoutBottoniGastronomia.addView(btnProdotto);
             }
+
+            btnProdotto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new HttpManager.AsyncManager(new AsyncResponse() {
+                        @Override
+                        public void processFinish(Object output) {
+                            Toast.makeText(context, "Prodotto Inserito!", Toast.LENGTH_SHORT).show();
+                            creaConto(tipo, output);
+                        }
+                    }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, ordine}).execute();
+                }
+            });
         }
     }
+
 
     private void creaConto(final String tipoProdotto, Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
@@ -803,7 +784,8 @@ public class NuovoOrdine extends Fragment {
 
                 Button btnModifica = new Button(context);
                 btnModifica.setText("Modifica");
-                rowPizza.addView(btnModifica);
+                if (!(tipo.equals("Bibita") || (tipo.equals("Gastronomia") && !(nomeProdotto.equals("PANUOZZO") || nomeProdotto.equals("PANUOZZO XXL")))))
+                    rowPizza.addView(btnModifica);
 
                 Button btnElimina = new Button(context);
                 btnElimina.setText("Elimina");
@@ -1245,18 +1227,6 @@ public class NuovoOrdine extends Fragment {
         }
     }
 
-    private void inizializzaCitta(Object param) {
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itrAgg = lista.iterator();
-        listaCitta = new ArrayList<>();
-        while (itrAgg.hasNext()) {
-            HashMap<String, String> riga = itrAgg.next();
-            final String nomeCitta = riga.get("nome");
-            listaCitta.add(nomeCitta);
-        }
-        adapterCitta = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaCitta);
-        spinnerCitta.setAdapter(adapterCitta);
-    }
 
     /*public void checkOrario(Object param) {
 
