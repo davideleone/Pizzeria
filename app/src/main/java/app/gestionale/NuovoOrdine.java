@@ -747,7 +747,7 @@ public class NuovoOrdine extends Fragment {
     }
 
     private void aggiornaTotale(float prezzo, boolean isSomma) {
-        float current = Float.parseFloat((totale.getText().toString()).substring(0, totale.getText().toString().length() - 2));
+        float current = Float.parseFloat((totale.getText().toString()).substring(0, totale.getText().toString().length() - 2).replace(",", "."));
         current = (isSomma) ? current + prezzo : current - prezzo;
         totale.setText(new DecimalFormat("#0.00 €").format(Funzioni.arrotonda(current)));
     }

@@ -130,7 +130,7 @@ public class Stampa {
                                         );
 
                                         // specify US-ASCII encoding
-                                        final String data = new String(encodedBytes, "US-ASCII");
+                                        final String data = new String(encodedBytes, "ASCII");
                                         readBufferPosition = 0;
 
                                         // tell the user data were sent to bluetooth printer device
@@ -169,7 +169,23 @@ public class Stampa {
             String msg = testoDaStampare;
             msg += "\n";
 
-            mmOutputStream.write(msg.getBytes());
+
+            byte[] arrayOfByte1 = {27, 33, 0};
+
+            byte[] format = {27, 33, 0};
+
+            // Bold
+            format[2] = ((byte) (0x8 | arrayOfByte1[2]));
+            // Height
+            format[2] = ((byte) (0x10 | arrayOfByte1[2]));
+            // Width
+            //format[2] = ((byte) (0x20 | arrayOfByte1[2]));
+            // Underline
+            // format[2] = ((byte)(0x80 | arrayOfByte1[2]));
+            // Small
+            // format[2] = ((byte)(0x1 | arrayOfByte1[2]));
+            mmOutputStream.write(format);
+            mmOutputStream.write(msg.getBytes(), 0, msg.getBytes().length);
 
             // tell the user data were sent
             Toast.makeText(context, "Testo inviato!", Toast.LENGTH_SHORT).show();

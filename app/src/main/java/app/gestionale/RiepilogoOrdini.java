@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -23,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -34,11 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,21 +43,6 @@ import java.util.Map;
 import terranovaproductions.newcomicreader.FloatingActionMenu;
 
 public class RiepilogoOrdini extends Fragment {
-
-    TextView myLabel;
-    // will enable user to enter any text to be printed
-    EditText myTextbox;
-    // android built in classes for bluetooth operations
-    BluetoothAdapter mBluetoothAdapter;
-    BluetoothSocket mmSocket;
-    BluetoothDevice mmDevice;
-    // needed for communication to bluetooth device / network
-    OutputStream mmOutputStream;
-    InputStream mmInputStream;
-    Thread workerThread;
-    byte[] readBuffer;
-    int readBufferPosition;
-    volatile boolean stopWorker;
     private TableLayout tabellaOrdini;
     private TableLayout tabellaAssegnati;
     private FragmentActivity listener;
@@ -77,7 +57,9 @@ public class RiepilogoOrdini extends Fragment {
     private Map<TableRow, TableLayout> mappaRows = new HashMap<TableRow, TableLayout>();
     private TextView recyclableTextView;
     private ImageButton recyclableImageButton;
-    private String[] arrayFatt;    // will show the statuses like bluetooth open, close or data sent
+    private String[] arrayFatt;
+    private String testoDaStampare = "";
+    private String intestazione = "";
 
     @Override
     public void onAttach(Context context) {
@@ -142,6 +124,8 @@ public class RiepilogoOrdini extends Fragment {
 
         spinnerDate.setAdapter(arrayDate);
         dataRicerca = Funzioni.formattaData(spinnerDate.getSelectedItem().toString()); // FIRST RUN
+        intestazione = "Riepilogo serata del " + spinnerDate.getSelectedItem().toString();
+        testoDaStampare += intestazione + "\n";
         spinnerDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -266,8 +250,12 @@ public class RiepilogoOrdini extends Fragment {
             paramtotale.addRule(RelativeLayout.BELOW, view2.getId());
             paramtotale.setMargins(20, 20, 0, 0);
 
+
+            String euro = Currency.getInstance(Locale.ITALY).getCurrencyCode();
+
             TextView totaleSerata = new TextView(context);
             totaleSerata.setText("Totale serata: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_serata"))));
+            testoDaStampare += "\n" + totaleSerata.getText().toString().replace("€", euro) + "\n";
             totaleSerata.setId(View.generateViewId());
             totaleSerata.setTextSize(25);
             totaleSerata.setLayoutParams(paramtotale);
@@ -280,6 +268,7 @@ public class RiepilogoOrdini extends Fragment {
 
             TextView totaleSerataConsegna = new TextView(context);
             totaleSerataConsegna.setText("Totale consegne: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_domicilio"))));
+            testoDaStampare += totaleSerataConsegna.getText().toString().replace("€", euro) + "\n";
             totaleSerataConsegna.setId(View.generateViewId());
             totaleSerataConsegna.setTextSize(25);
             totaleSerataConsegna.setLayoutParams(paramTotaleConsegna);
@@ -289,9 +278,9 @@ public class RiepilogoOrdini extends Fragment {
             RelativeLayout.LayoutParams paramTotaleAsporto = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramTotaleAsporto.addRule(RelativeLayout.BELOW, totaleSerataConsegna.getId());
             paramTotaleAsporto.setMargins(20, 20, 0, 0);
-
             TextView totaleSerataAsporto = new TextView(context);
             totaleSerataAsporto.setText("Totale asporto: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_asporto"))));
+            testoDaStampare += totaleSerataAsporto.getText().toString().replace("€", euro) + "\n";
             totaleSerataAsporto.setId(View.generateViewId());
             totaleSerataAsporto.setTextSize(25);
             totaleSerataAsporto.setLayoutParams(paramTotaleAsporto);
@@ -308,12 +297,18 @@ public class RiepilogoOrdini extends Fragment {
             view3.setLayoutParams(paramBarra3);
             layoutInformazioni.addView(view3);
 
+            for (int i = 0; i < intestazione.length() - 1; i++)
+                testoDaStampare += "=";
+
+            testoDaStampare += "\n";
+
             RelativeLayout.LayoutParams paramCountPizze = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramCountPizze.addRule(RelativeLayout.BELOW, view3.getId());
             paramCountPizze.setMargins(20, 20, 0, 0);
-
             TextView countPizze = new TextView(context);
             countPizze.setText("Pizze servite: " + lista.get(0).get("totale_pizze"));
+            testoDaStampare += countPizze.getText().toString() + "\n";
+
             countPizze.setId(View.generateViewId());
             countPizze.setTextSize(25);
             countPizze.setLayoutParams(paramCountPizze);
@@ -326,6 +321,7 @@ public class RiepilogoOrdini extends Fragment {
 
             TextView countBibite = new TextView(context);
             countBibite.setText("Bibite servite: " + lista.get(0).get("totale_bibite"));
+            testoDaStampare += countBibite.getText().toString() + "\n";
             countBibite.setId(View.generateViewId());
             countBibite.setTextSize(25);
             countBibite.setLayoutParams(paramCountBibite);
@@ -338,6 +334,7 @@ public class RiepilogoOrdini extends Fragment {
 
             TextView countGastro = new TextView(context);
             countGastro.setText("Gastronomia servita: " + lista.get(0).get("totale_gastronomia"));
+            testoDaStampare += countGastro.getText().toString() + "\n";
             countGastro.setId(View.generateViewId());
             countGastro.setTextSize(25);
             countGastro.setLayoutParams(paramCountGastro);
@@ -354,9 +351,9 @@ public class RiepilogoOrdini extends Fragment {
                                 Stampa stampa = new Stampa(getActivity(), context);
                                 stampa.findBT();
                                 stampa.openBT();
-                                stampa.sendData("Riepilogo Serata del " + dataRicerca);
+                                stampa.sendData(testoDaStampare + "\n\n\n\n");
                                 stampa.closeBT();
-
+                                testoDaStampare = "";
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
