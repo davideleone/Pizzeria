@@ -178,12 +178,22 @@ public class NuovoOrdine extends Fragment {
 
         inizializzaTabelle();
 
-        new HttpManager.AsyncManager(new AsyncResponse() {
-            @Override
-            public void processFinish(Object output) {
-                creaOrdine(output);
-            }
-        }, null, "CREA_ORDINE", new String[]{}).execute();
+        if (bundle.getString("ID_ORDINE") != null && !bundle.getString("ID_ORDINE").isEmpty()) {
+            idOrdine = bundle.getString("ID_ORDINE");
+            new HttpManager.AsyncManager(new AsyncResponse() {
+                @Override
+                public void processFinish(Object output) {
+                    recuperaOrdine(output);
+                }
+            }, context, "GET_PRODOTTI_IN_ORDINE", new String[]{idOrdine}).execute();
+        } else {
+            new HttpManager.AsyncManager(new AsyncResponse() {
+                @Override
+                public void processFinish(Object output) {
+                    creaOrdine(output);
+                }
+            }, context, "CREA_ORDINE", new String[]{}).execute();
+        }
 
 
         btnInserisci.setOnClickListener(new View.OnClickListener() {
@@ -490,9 +500,28 @@ public class NuovoOrdine extends Fragment {
         return view;
     }
 
-    private void recuperaOrdine(String id_ordine) {
-        // riempiConto
+    private void recuperaOrdine(Object param) {
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        if (itr.hasNext()) {
+            while (itr.hasNext()) {
+                HashMap<String, String> riga = itr.next();
+                final String idColonna = riga.get("id_colonna");
+                final String nome = riga.get("nomeprodotto");
+                final String prezzo = riga.get("prezzoprodotto");
+                final String tipo = riga.get("tipo");
+                final int idMetro = (!riga.get("idmetro").equals("null")) ? Integer.parseInt(riga.get("idmetro")) : -1;
+
+                HashMap<String, String> tmpHash = new HashMap<String, String>(4);
+                tmpHash.put("id_colonna", idColonna);
+                tmpHash.put("nomeprodotto", nome);
+                tmpHash.put("prezzoprodotto", prezzo);
+                tmpHash.put("tipo", tipo);
+                riempiConto(tmpHash, idMetro);
+            }
+        }
     }
+
 
     private void completaOrdine(String strData, String strOra, String strNome, String strCognome, String strTelefono, Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
