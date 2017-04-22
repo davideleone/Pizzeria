@@ -243,7 +243,6 @@ public class Clienti extends Fragment {
             cognome.setText(strCognome);
             telefono.setText(strTelefono);
             via.setText(strVia);
-            spinnerCitta.setSelection(listaCitta.indexOf(strCitta));
         }
 
         final String ID_CLIENTE = idTemp;

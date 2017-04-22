@@ -554,7 +554,7 @@ public class RiepilogoOrdini extends Fragment {
                 btnModifica.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        HashMap<String, String> tmp_hash = new HashMap<>(7);
+                        HashMap<String, String> tmp_hash = new HashMap<>(8);
                         tmp_hash.put("idordine", idOrdine);
                         tmp_hash.put("data", dataOrdine.getText().toString());
                         tmp_hash.put("ora", oraOrdine.getText().toString());
@@ -562,6 +562,7 @@ public class RiepilogoOrdini extends Fragment {
                         tmp_hash.put("nome", nomeCliente.getText().toString());
                         tmp_hash.put("via", viaOrdine.getText().toString());
                         tmp_hash.put("citta", cittaOrdine.getText().toString());
+                        tmp_hash.put("telefono", telefono);
 
                         NuovoOrdine fragment = new NuovoOrdine();
                         bundle.putSerializable("HASHMAP_ORDINE", tmp_hash);
