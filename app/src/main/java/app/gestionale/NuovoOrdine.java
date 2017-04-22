@@ -103,7 +103,7 @@ public class NuovoOrdine extends Fragment {
     private String viaTrovato = "";
     private String telefonoTrovato = "";
     private ArrayList<HashMap<String, String>> listaProdotti;
-    private HashMap<String, String> hash_ordine;
+    private HashMap<String, String> hashOrdine = null;
 
 
     private SparseArray<HashMap<TableLayout, List<Integer>>> sparseMetri = new SparseArray<HashMap<TableLayout, List<Integer>>>();
@@ -179,8 +179,8 @@ public class NuovoOrdine extends Fragment {
         inizializzaTabelle();
 
         if (bundle.getSerializable("HASHMAP_ORDINE") != null) {
-            hash_ordine = (HashMap<String, String>) bundle.getSerializable("HASHMAP_ORDINE");
-            idOrdine = hash_ordine.get("idordine");
+            hashOrdine = (HashMap<String, String>) bundle.getSerializable("HASHMAP_ORDINE");
+            idOrdine = hashOrdine.get("idordine");
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
@@ -443,6 +443,22 @@ public class NuovoOrdine extends Fragment {
                     }
                 });
 
+                if (hashOrdine != null) {
+                    nome.setText(hashOrdine.get("nome"));
+                    cognome.setText(hashOrdine.get("cognome"));
+                    telefono.setText(hashOrdine.get("telefono"));
+                    txtData.setText(hashOrdine.get("data"));
+                    txtOra.setText(hashOrdine.get("ora"));
+                    if (!hashOrdine.get("citta").equals(" ----- ")) {
+                        via.setText(hashOrdine.get("via"));
+                        citta.setText(hashOrdine.get("citta"));
+                        consegna.setChecked(true);
+                        layoutConsegna.setVisibility(View.VISIBLE);
+                    }
+                    nome.setEnabled(false);
+                    cognome.setEnabled(false);
+                }
+
                 final AlertDialog dialog = new AlertDialog.Builder(context)
                         .setView(scrollView)
                         .setTitle("Inserisci Nuovo Ordine - Totale: " + totale.getText().toString())
@@ -485,7 +501,6 @@ public class NuovoOrdine extends Fragment {
                         }
 
                         if (toClose) {
-                            Toast.makeText(context, "Sono entrato!", Toast.LENGTH_SHORT).show();
                             new HttpManager.AsyncManager(new AsyncResponse() {
                                 @Override
                                 public void processFinish(Object output) {
