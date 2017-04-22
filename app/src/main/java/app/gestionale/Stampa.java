@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,93 +16,37 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
-public class Stampa extends Activity {
-    // will show the statuses like bluetooth open, close or data sent
-    TextView myLabel;
+public class Stampa {
 
-    // will enable user to enter any text to be printed
-    EditText myTextbox;
+    Activity activity;
+    Context context;
+    private BluetoothAdapter mBluetoothAdapter;
+    private BluetoothSocket mmSocket;
+    private BluetoothDevice mmDevice;
+    private OutputStream mmOutputStream;
+    private InputStream mmInputStream;
+    private Thread workerThread;
+    private byte[] readBuffer;
+    private int readBufferPosition;
+    private volatile boolean stopWorker;
+    private TextView myLabel;
 
-    // android built in classes for bluetooth operations
-    BluetoothAdapter mBluetoothAdapter;
-    BluetoothSocket mmSocket;
-    BluetoothDevice mmDevice;
-
-    // needed for communication to bluetooth device / network
-    OutputStream mmOutputStream;
-    InputStream mmInputStream;
-    Thread workerThread;
-
-    byte[] readBuffer;
-    int readBufferPosition;
-    volatile boolean stopWorker;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stampa);
-
-        try {
-            // we are going to have three buttons for specific functions
-            Button openButton = (Button) findViewById(R.id.open);
-            Button sendButton = (Button) findViewById(R.id.send);
-            Button closeButton = (Button) findViewById(R.id.close);
-
-            // text label and input box
-            myLabel = (TextView) findViewById(R.id.label);
-            myTextbox = (EditText) findViewById(R.id.entry);
-
-            // open bluetooth connection
-            openButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    try {
-                        findBT();
-                        openBT();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-
-            // send data typed by the user to be printed
-            sendButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    try {
-                        sendData();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-
-            // close bluetooth connection
-            closeButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    try {
-                        closeBT();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public Stampa(Activity ac, Context ct) {
+        activity = ac;
+        context = ct;
     }
 
-    // this will find a bluetooth printer device
-    void findBT() {
-
+    protected void findBT() {
         try {
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
             if (mBluetoothAdapter == null) {
-                myLabel.setText("No bluetooth adapter available");
+                Toast.makeText(context, "BlueTooth Printer non trovato!", Toast.LENGTH_SHORT).show();
             }
 
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBluetooth, 0);
+                activity.startActivityForResult(enableBluetooth, 0);
             }
 
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -121,15 +63,14 @@ public class Stampa extends Activity {
                 }
             }
 
-            myLabel.setText("Bluetooth device found.");
-
+            Toast.makeText(context, "BlueTooth Printer trovato!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // tries to open a connection to the bluetooth printer device
-    void openBT() throws IOException {
+    protected void openBT() throws IOException {
         try {
 
             // Standard SerialPortService ID
@@ -141,8 +82,7 @@ public class Stampa extends Activity {
 
             beginListenForData();
 
-            myLabel.setText("Bluetooth Opened");
-
+            Toast.makeText(context, "BlueTooth Printer associato!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,7 +92,7 @@ public class Stampa extends Activity {
  * after opening a connection to bluetooth printer device,
  * we have to listen and check if a data were sent to be printed.
  */
-    void beginListenForData() {
+    protected void beginListenForData() {
         try {
             final Handler handler = new Handler();
 
@@ -222,17 +162,17 @@ public class Stampa extends Activity {
     }
 
     // this will send text data to be printed by the bluetooth printer
-    void sendData() throws IOException {
+    protected void sendData(String testoDaStampare) throws IOException {
         try {
 
             // the text typed by the user
-            String msg = myTextbox.getText().toString();
+            String msg = testoDaStampare;
             msg += "\n";
 
             mmOutputStream.write(msg.getBytes());
 
             // tell the user data were sent
-            myLabel.setText("Data sent.");
+            Toast.makeText(context, "Testo inviato!", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,17 +180,16 @@ public class Stampa extends Activity {
     }
 
     // close the connection to bluetooth printer.
-    void closeBT() throws IOException {
+    protected void closeBT() throws IOException {
         try {
             stopWorker = true;
             mmOutputStream.close();
             mmInputStream.close();
             mmSocket.close();
-            myLabel.setText("Bluetooth Closed");
+            Toast.makeText(context, "BlueTooth Printer disassociato!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
 }
