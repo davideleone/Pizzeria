@@ -181,7 +181,6 @@ public class RiepilogoOrdini extends Fragment {
                         messaggio.setTextSize(25);
                         messaggio.setLayoutParams(paramMessaggio);
                         messaggio.setTextColor(getResources().getColor(R.color.nero));
-                        //messaggio.setTypeface(null, Typeface.BOLD);
                         layoutInterno.addView(messaggio);
 
                         new AlertDialog.Builder(context)
@@ -453,7 +452,7 @@ public class RiepilogoOrdini extends Fragment {
                 if (cittaOrdine.getText().toString().length() > 8)
                     cittaOrdine.setTextSize(20);
                 ImageButton btnMostra = makeTableRowWithImageButton(R.drawable.mostra);
-                ImageButton btnAccetta = makeTableRowWithImageButton(R.drawable.accetta);
+                ImageButton btnModifica = makeTableRowWithImageButton(R.drawable.modifica_nero);
                 ImageButton btnConsegna = makeTableRowWithImageButton(R.drawable.consegna);
                 ImageButton btnElimina = makeTableRowWithImageButton(R.drawable.elimina);
 
@@ -552,12 +551,12 @@ public class RiepilogoOrdini extends Fragment {
                 });
 
 
-                btnAccetta.setOnClickListener(new View.OnClickListener()
+                btnModifica.setOnClickListener(new View.OnClickListener()
 
                 {
                     @Override
                     public void onClick(View v) {
-                        HttpManager.execSimple("ACCETTA_ORDINE", context, idOrdine);
+                        //HttpManager.execSimple("ACCETTA_ORDINE", context, idOrdine);
                     }
                 });
 
@@ -597,7 +596,11 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(viaOrdine);
                 row.addView(cittaOrdine);
                 row.addView(btnMostra);
-                row.addView(btnAccetta);
+                row.addView(btnModifica);
+                if (stato != 3) {
+                    btnConsegna.setEnabled(false);
+                    btnConsegna.setImageResource(R.drawable.consegna_not_enabled);
+                }
                 row.addView(btnConsegna);
                 row.addView(btnElimina);
 

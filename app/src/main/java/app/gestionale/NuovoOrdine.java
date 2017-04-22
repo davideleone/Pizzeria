@@ -424,6 +424,7 @@ public class NuovoOrdine extends Fragment {
                         nome.setText(clienti.get(0).valueAt(pos).get("nome"));
                         via.setText(clienti.get(0).valueAt(pos).get("via"));
                         telefono.setText(clienti.get(0).valueAt(pos).get("telefono"));
+                        spinnerCitta.setSelection(listaCitta.indexOf(clienti.get(0).valueAt(pos).get("citta")));
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
                         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                     }
@@ -471,16 +472,14 @@ public class NuovoOrdine extends Fragment {
                         }
 
                         if (toClose) {
+                            Toast.makeText(context, "Sono entrato!", Toast.LENGTH_SHORT).show();
                             new HttpManager.AsyncManager(new AsyncResponse() {
                                 @Override
                                 public void processFinish(Object output) {
                                     completaOrdine(strData, strOra, strNome, strCognome, strTelefono, output);
                                 }
                             }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
-
-
                             dialog.dismiss();
-
                         }
                     }
                 });
