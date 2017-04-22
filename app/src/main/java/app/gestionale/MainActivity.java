@@ -98,17 +98,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void inizializzaProdotti(Object param) {
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itr = lista.iterator();
-        listaProdotti = new ArrayList<>();
-        HashMap<String, String> row = new HashMap<String, String>(3);
-        while (itr.hasNext()) {
-            HashMap<String, String> riga = itr.next();
-            row.put("tipo", riga.get("tipo"));
-            row.put("nome", riga.get("nome"));
-            row.put("prezzo", riga.get("prezzo"));
-        }
-        listaProdotti.add(row);
+        ArrayList<HashMap<String, String>> lista = (ArrayList<HashMap<String, String>>) param;
+        listaProdotti = lista;
     }
 
     private void inizializzaCitta(Object param) {

@@ -533,15 +533,16 @@ public class NuovoOrdine extends Fragment {
 
     private void impostaBottoni() {
         final String ordine = idOrdine;
-        //FARE L'ITERATOR SU HASHMAP ALTRIMENTI RITORNA SEMPRE L'ULTIMO ELEMENTO DELL'HASMAP
-        for (int i = 0; i < listaProdotti.get(i).size(); i++) {
-            int countPizze = 0;
-            int countBibite = 0;
-            int countGastronomia = 0;
+        Iterator<HashMap<String, String>> itr = listaProdotti.iterator();
+        int countPizze = 0;
+        int countBibite = 0;
+        int countGastronomia = 0;
 
-            final String nomeProdotto = listaProdotti.get(i).get("nome");
-            final String tipo = listaProdotti.get(i).get("tipo");
-            final String prezzo = listaProdotti.get(i).get("prezzo");
+        while (itr.hasNext()) {
+            HashMap<String, String> riga = itr.next();
+            final String nomeProdotto = riga.get("nome");
+            final String tipo = riga.get("tipo");
+            final String prezzo = riga.get("prezzo");
             Button btnProdotto = null;
 
             if (tipo.equals("Pizza")) {
@@ -567,8 +568,6 @@ public class NuovoOrdine extends Fragment {
                 btnProdotto.setLayoutParams(layoutBtnDx);
                 countPizze++;
                 layoutBottoniPizze.addView(btnProdotto);
-
-
             } else if (tipo.equals("Bibita")) {
                 RelativeLayout.LayoutParams layoutBtnDx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
@@ -618,7 +617,7 @@ public class NuovoOrdine extends Fragment {
                         @Override
                         public void processFinish(Object output) {
                             Toast.makeText(context, "Prodotto Inserito!", Toast.LENGTH_SHORT).show();
-                            creaConto(tipo, output);
+                            creaConto(tipo, nomeProdotto, prezzo, output);
                         }
                     }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, ordine}).execute();
                 }
@@ -627,39 +626,40 @@ public class NuovoOrdine extends Fragment {
     }
 
 
-    private void creaConto(final String tipoProdotto, Object param) {
+    private void creaConto(final String tipoProdotto, String nomeProdotto, String prezzoProdotto, Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         final String idColonna = lista.get(0).get("generated_id");
 
-        new HttpManager.AsyncManager(new AsyncResponse() {
-            @Override
-            public void processFinish(final Object output) {
-                if (tipoProdotto.equals("Pizza") && isMetro.isChecked()) {
-                    if ((sparseMetri.size() == 0 || nuovoMetro || isUltimoMetroFull()) && idMetro_onMod == -1) {
-                        nuovoMetro = false;
-                        new HttpManager.AsyncManager(new AsyncResponse() {
-                            @Override
-                            public void processFinish(Object output_bis) {
-                                List<HashMap<String, String>> listaBis = (List<HashMap<String, String>>) output_bis;
-                                final int idMetro = Integer.parseInt(listaBis.get(0).get("generated_id"));
-                                riempiConto(output, idMetro);
-                            }
-                        }, null, "INSERISCI_PIZZA_IN_METRO", new String[]{idColonna}).execute();
-                    } else {
-                        int idMetro = (idMetro_onMod == -1) ? sparseMetri.keyAt(sparseMetri.size() - 1) : idMetro_onMod;
-                        if (layoutBarra_onMod != null) {
-                            layoutBarra_onMod.setBackgroundResource(0);
-                            idMetro_onMod = -1;
-                            layoutBarra_onMod = null;
-                        }
-                        HttpManager.execSimple("INSERISCI_PIZZA_IN_METRO_CON_ID", null, Integer.toString(idMetro), idColonna);
-                        riempiConto(output, idMetro);
+        final HashMap<String, String> tmpHash = new HashMap<String, String>(4);
+        tmpHash.put("id_colonna", idColonna);
+        tmpHash.put("tipo", tipoProdotto);
+        tmpHash.put("nomeprodotto", nomeProdotto);
+        tmpHash.put("prezzoprodotto", prezzoProdotto);
+
+        if (tipoProdotto.equals("Pizza") && isMetro.isChecked()) {
+            if ((sparseMetri.size() == 0 || nuovoMetro || isUltimoMetroFull()) && idMetro_onMod == -1) {
+                nuovoMetro = false;
+                new HttpManager.AsyncManager(new AsyncResponse() {
+                    @Override
+                    public void processFinish(Object output_bis) {
+                        List<HashMap<String, String>> listaBis = (List<HashMap<String, String>>) output_bis;
+                        final int idMetro = Integer.parseInt(listaBis.get(0).get("generated_id"));
+                        riempiConto(tmpHash, idMetro);
                     }
-                } else {
-                    riempiConto(output, -1);
+                }, null, "INSERISCI_PIZZA_IN_METRO", new String[]{idColonna}).execute();
+            } else {
+                int idMetro = (idMetro_onMod == -1) ? sparseMetri.keyAt(sparseMetri.size() - 1) : idMetro_onMod;
+                if (layoutBarra_onMod != null) {
+                    layoutBarra_onMod.setBackgroundResource(0);
+                    idMetro_onMod = -1;
+                    layoutBarra_onMod = null;
                 }
+                HttpManager.execSimple("INSERISCI_PIZZA_IN_METRO_CON_ID", null, Integer.toString(idMetro), idColonna);
+                riempiConto(tmpHash, idMetro);
             }
-        }, null, "GET_PRODOTTO_IN_ORDINE", new String[]{idColonna}).execute();
+        } else {
+            riempiConto(tmpHash, -1);
+        }
     }
 
     private void aggiornaTotaliMetri() {
@@ -752,188 +752,183 @@ public class NuovoOrdine extends Fragment {
         totale.setText(new DecimalFormat("#0.00 €").format(Funzioni.arrotonda(current)));
     }
 
-    private void riempiConto(final Object param, final int idMetro) {
-        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
-        Iterator<HashMap<String, String>> itr = lista.iterator();
-        if (itr.hasNext()) {
-            while (itr.hasNext()) {
-                HashMap<String, String> riga = itr.next();
-                final String valColonna = riga.get("id_colonna");
-                final String tipo = riga.get("tipo");
-                final String nomeProdotto = riga.get("nomeprodotto");
-                final float prezzoFloat = Float.parseFloat(riga.get("prezzoprodotto"));
-                final String prezzoString = new DecimalFormat("#0.00 €").format(prezzoFloat);
+    private void riempiConto(final HashMap<String, String> hashDettagli, final int idMetro) {
+        final String valColonna = hashDettagli.get("id_colonna");
+        final String tipo = hashDettagli.get("tipo");
+        final String nomeProdotto = hashDettagli.get("nomeprodotto");
+        final float prezzoFloat = Float.parseFloat(hashDettagli.get("prezzoprodotto"));
+        final String prezzoString = new DecimalFormat("#0.00 €").format(prezzoFloat);
 
-                if (idMetro == -1) aggiornaTotale(prezzoFloat, true);
+        if (idMetro == -1) aggiornaTotale(prezzoFloat, true);
 
-                final TableRow rowPizza = new TableRow(context);
-                rowPizza.setId(View.generateViewId());
+        final TableRow rowPizza = new TableRow(context);
+        rowPizza.setId(View.generateViewId());
 
-                TextView txtPizza;
+        TextView txtPizza;
 
-                if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
-                    txtPizza = makeTableRowWithText("PROSC. E FUNGHI");
-                else
-                    txtPizza = makeTableRowWithText(nomeProdotto);
+        if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
+            txtPizza = makeTableRowWithText("PROSC. E FUNGHI");
+        else
+            txtPizza = makeTableRowWithText(nomeProdotto);
 
-                TextView txtPrezzo;
-                txtPrezzo = makeTableRowWithText(prezzoString);
-                txtPrezzo.setGravity(Gravity.CENTER);
-                rowPizza.addView(txtPizza);
-                rowPizza.addView(txtPrezzo);
+        TextView txtPrezzo;
+        txtPrezzo = makeTableRowWithText(prezzoString);
+        txtPrezzo.setGravity(Gravity.CENTER);
+        rowPizza.addView(txtPizza);
+        rowPizza.addView(txtPrezzo);
 
-                Button btnModifica = new Button(context);
-                btnModifica.setText("Modifica");
-                if (!(tipo.equals("Bibita") || (tipo.equals("Gastronomia") && !(nomeProdotto.equals("PANUOZZO") || nomeProdotto.equals("PANUOZZO XXL")))))
-                    rowPizza.addView(btnModifica);
+        Button btnModifica = new Button(context);
+        btnModifica.setText("Modifica");
+        if (!(tipo.equals("Bibita") || (tipo.equals("Gastronomia") && !(nomeProdotto.equals("PANUOZZO") || nomeProdotto.equals("PANUOZZO XXL")))))
+            rowPizza.addView(btnModifica);
 
-                Button btnElimina = new Button(context);
-                btnElimina.setText("Elimina");
-                rowPizza.addView(btnElimina);
+        Button btnElimina = new Button(context);
+        btnElimina.setText("Elimina");
+        rowPizza.addView(btnElimina);
 
-                btnModifica.setOnClickListener(new View.OnClickListener() {
+        btnModifica.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (contenitoreIngredienti != null)
+                    contenitoreIngredienti.removeAllViews();
+                new HttpManager.AsyncManager(new AsyncResponse() {
                     @Override
-                    public void onClick(View v) {
-                        if (contenitoreIngredienti != null)
-                            contenitoreIngredienti.removeAllViews();
-                        new HttpManager.AsyncManager(new AsyncResponse() {
-                            @Override
-                            public void processFinish(Object output) {
-                                fixIngredientiExtra(output, Integer.parseInt(valColonna), nomeProdotto);
-                            }
-                        }, null, "GET_LISTA_BASE_CON_EXTRA", new String[]{valColonna, valColonna}).execute();
+                    public void processFinish(Object output) {
+                        fixIngredientiExtra(output, Integer.parseInt(valColonna), nomeProdotto);
                     }
-                });
-
-                btnElimina.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, valColonna);
-                        if (idMetro == -1)
-                            aggiornaTotale(Float.parseFloat((sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)), false);
-
-                        rimuoviElemento(tipo, rowPizza, idMetro, Integer.parseInt(valColonna));
-                        if (tableOrdiniPizza.getChildCount() == 0)
-                            layoutContoPizze.setBackgroundResource(0);
-                        if (tableOrdiniGastronomia.getChildCount() == 0)
-                            layoutContoGastronomia.setBackgroundResource(0);
-
-                        Toast.makeText(context, nomeProdotto + " eliminato!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                if (idMetro != -1 && sparseMetri.get(idMetro) == null) {
-                    RelativeLayout.LayoutParams layoutTabellaMetri = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    HashMap<TableLayout, List<Integer>> hashTemp = new HashMap<TableLayout, List<Integer>>(1);
-                    List<Integer> tempList = new ArrayList<Integer>();
-                    tempList.add(Integer.parseInt(valColonna));
-
-                    final TableLayout tableOrdiniMetri = new TableLayout(context);
-                    tableOrdiniMetri.setLayoutParams(layoutTabellaMetri);
-                    tableOrdiniMetri.setGravity(Gravity.CENTER_HORIZONTAL);
-                    tableOrdiniMetri.setId(View.generateViewId());
-                    if (layoutContoMetri.getChildCount() > 0)
-                        layoutTabellaMetri.addRule(RelativeLayout.BELOW, layoutContoMetri.getChildAt(layoutContoMetri.getChildCount() - 1).getId());
-
-                    final RelativeLayout layoutBarra = new RelativeLayout(context);
-                    RelativeLayout.LayoutParams paramLayoutBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    paramLayoutBarra.setMargins(30, 0, 30, 0);
-                    layoutBarra.setLayoutParams(paramLayoutBarra);
-
-                    View barraSx = new View(context);
-                    barraSx.setBackgroundColor(getResources().getColor(R.color.giallo));
-
-                    RelativeLayout.LayoutParams paramBarraSx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
-                    paramBarraSx.setMargins(0, 0, 30, 0);
-                    paramBarraSx.addRule(RelativeLayout.CENTER_VERTICAL);
-
-                    TextView testoInMezzo = new TextView(context);
-                    testoInMezzo.setId(View.generateViewId());
-                    testoInMezzo.setTextAppearance(context, R.style.testoGrande);
-                    testoInMezzo.setTextColor(getResources().getColor(R.color.giallo));
-                    testoInMezzo.setText("Mezzo-Metro");
-
-                    RelativeLayout.LayoutParams testoInMezzoParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    testoInMezzoParam.setMargins(0, 0, 30, 0);
-                    testoInMezzoParam.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    testoInMezzoParam.addRule(RelativeLayout.CENTER_VERTICAL);
-                    testoInMezzo.setLayoutParams(testoInMezzoParam);
-
-                    paramBarraSx.addRule(RelativeLayout.START_OF, testoInMezzo.getId());
-                    barraSx.setLayoutParams(paramBarraSx);
-
-                    RelativeLayout.LayoutParams paramBtn = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    paramBtn.setMargins(18, 0, 0, 0);
-                    paramBtn.addRule(RelativeLayout.CENTER_VERTICAL);
-                    paramBtn.addRule(RelativeLayout.END_OF, testoInMezzo.getId());
-
-                    ImageButton btnModificaMezzoMetro = new ImageButton(context);
-                    btnModificaMezzoMetro.setImageResource(R.drawable.modifica);
-                    btnModificaMezzoMetro.setId(View.generateViewId());
-                    btnModificaMezzoMetro.setLayoutParams(paramBtn);
-                    btnModificaMezzoMetro.setBackgroundResource(0);
-
-                    btnModificaMezzoMetro.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (sparseMetri.get(idMetro).entrySet().iterator().next().getValue().size() < 3) {
-                                if (idMetro_onMod == -1) {
-                                    idMetro_onMod = idMetro;
-                                    layoutBarra_onMod = layoutBarra;
-                                    layoutBarra.setBackgroundResource(R.color.menu_primary);
-                                } else {
-                                    idMetro_onMod = -1;
-                                    layoutBarra_onMod = null;
-                                    layoutBarra.setBackgroundResource(0);
-                                }
-                            }
-                        }
-                    });
-
-                    View barradx = new View(context);
-                    barradx.setBackgroundColor(getResources().getColor(R.color.giallo));
-
-                    RelativeLayout.LayoutParams parambarradx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
-                    parambarradx.setMargins(30, 0, 0, 0);
-                    parambarradx.addRule(RelativeLayout.CENTER_VERTICAL);
-                    parambarradx.addRule(RelativeLayout.END_OF, btnModificaMezzoMetro.getId());
-                    barradx.setLayoutParams(parambarradx);
-
-                    layoutBarra.addView(barraSx);
-                    layoutBarra.addView(testoInMezzo);
-                    layoutBarra.addView(btnModificaMezzoMetro);
-                    layoutBarra.addView(barradx);
-                    tableOrdiniMetri.addView(layoutBarra);
-
-                    tableOrdiniMetri.addView(rowPizza);
-                    hashTemp.put(tableOrdiniMetri, tempList);
-                    sparseMetri.put(idMetro, hashTemp);
-                    layoutContoMetri.addView(tableOrdiniMetri);
-                } else if (sparseMetri.get(idMetro) != null) {
-                    sparseMetri.get(idMetro).entrySet().iterator().next().getKey().addView(rowPizza);
-                    sparseMetri.get(idMetro).entrySet().iterator().next().getValue().add(Integer.parseInt(valColonna));
-                }
-
-                switch (tipo) {
-                    case "Pizza":
-                        if (idMetro == -1) tableOrdiniPizza.addView(rowPizza);
-                        break;
-                    case "Bibita":
-                        tableOrdiniBibite.addView(rowPizza);
-                        break;
-                    case "Gastronomia":
-                        tableOrdiniGastronomia.addView(rowPizza);
-                        break;
-                }
-                sparsePrezziProdotti.put(Integer.parseInt(valColonna), txtPrezzo);
+                }, null, "GET_LISTA_BASE_CON_EXTRA", new String[]{valColonna, valColonna}).execute();
             }
-            if (tableOrdiniPizza.getChildCount() > 0)
-                layoutContoPizze.setBackgroundResource(R.drawable.table_bottom_style);
-            if (tableOrdiniGastronomia.getChildCount() > 0)
-                layoutContoGastronomia.setBackgroundResource(R.drawable.table_bottom_style);
+        });
+
+        btnElimina.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, valColonna);
+                if (idMetro == -1)
+                    aggiornaTotale(Float.parseFloat((sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)), false);
+
+                rimuoviElemento(tipo, rowPizza, idMetro, Integer.parseInt(valColonna));
+                if (tableOrdiniPizza.getChildCount() == 0)
+                    layoutContoPizze.setBackgroundResource(0);
+                if (tableOrdiniGastronomia.getChildCount() == 0)
+                    layoutContoGastronomia.setBackgroundResource(0);
+
+                Toast.makeText(context, nomeProdotto + " eliminato!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        if (idMetro != -1 && sparseMetri.get(idMetro) == null) {
+            RelativeLayout.LayoutParams layoutTabellaMetri = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            HashMap<TableLayout, List<Integer>> hashTemp = new HashMap<TableLayout, List<Integer>>(1);
+            List<Integer> tempList = new ArrayList<Integer>();
+            tempList.add(Integer.parseInt(valColonna));
+
+            final TableLayout tableOrdiniMetri = new TableLayout(context);
+            tableOrdiniMetri.setLayoutParams(layoutTabellaMetri);
+            tableOrdiniMetri.setGravity(Gravity.CENTER_HORIZONTAL);
+            tableOrdiniMetri.setId(View.generateViewId());
             if (layoutContoMetri.getChildCount() > 0)
-                layoutContoMetri.setBackgroundResource(R.drawable.table_bottom_style);
+                layoutTabellaMetri.addRule(RelativeLayout.BELOW, layoutContoMetri.getChildAt(layoutContoMetri.getChildCount() - 1).getId());
+
+            final RelativeLayout layoutBarra = new RelativeLayout(context);
+            RelativeLayout.LayoutParams paramLayoutBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramLayoutBarra.setMargins(30, 0, 30, 0);
+            layoutBarra.setLayoutParams(paramLayoutBarra);
+
+            View barraSx = new View(context);
+            barraSx.setBackgroundColor(getResources().getColor(R.color.giallo));
+
+            RelativeLayout.LayoutParams paramBarraSx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+            paramBarraSx.setMargins(0, 0, 30, 0);
+            paramBarraSx.addRule(RelativeLayout.CENTER_VERTICAL);
+
+            TextView testoInMezzo = new TextView(context);
+            testoInMezzo.setId(View.generateViewId());
+            testoInMezzo.setTextAppearance(context, R.style.testoGrande);
+            testoInMezzo.setTextColor(getResources().getColor(R.color.giallo));
+            testoInMezzo.setText("Mezzo-Metro");
+
+            RelativeLayout.LayoutParams testoInMezzoParam = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            testoInMezzoParam.setMargins(0, 0, 30, 0);
+            testoInMezzoParam.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            testoInMezzoParam.addRule(RelativeLayout.CENTER_VERTICAL);
+            testoInMezzo.setLayoutParams(testoInMezzoParam);
+
+            paramBarraSx.addRule(RelativeLayout.START_OF, testoInMezzo.getId());
+            barraSx.setLayoutParams(paramBarraSx);
+
+            RelativeLayout.LayoutParams paramBtn = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramBtn.setMargins(18, 0, 0, 0);
+            paramBtn.addRule(RelativeLayout.CENTER_VERTICAL);
+            paramBtn.addRule(RelativeLayout.END_OF, testoInMezzo.getId());
+
+            ImageButton btnModificaMezzoMetro = new ImageButton(context);
+            btnModificaMezzoMetro.setImageResource(R.drawable.modifica);
+            btnModificaMezzoMetro.setId(View.generateViewId());
+            btnModificaMezzoMetro.setLayoutParams(paramBtn);
+            btnModificaMezzoMetro.setBackgroundResource(0);
+
+            btnModificaMezzoMetro.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (sparseMetri.get(idMetro).entrySet().iterator().next().getValue().size() < 3) {
+                        if (idMetro_onMod == -1) {
+                            idMetro_onMod = idMetro;
+                            layoutBarra_onMod = layoutBarra;
+                            layoutBarra.setBackgroundResource(R.color.menu_primary);
+                        } else {
+                            idMetro_onMod = -1;
+                            layoutBarra_onMod = null;
+                            layoutBarra.setBackgroundResource(0);
+                        }
+                    }
+                }
+            });
+
+            View barradx = new View(context);
+            barradx.setBackgroundColor(getResources().getColor(R.color.giallo));
+
+            RelativeLayout.LayoutParams parambarradx = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+            parambarradx.setMargins(30, 0, 0, 0);
+            parambarradx.addRule(RelativeLayout.CENTER_VERTICAL);
+            parambarradx.addRule(RelativeLayout.END_OF, btnModificaMezzoMetro.getId());
+            barradx.setLayoutParams(parambarradx);
+
+            layoutBarra.addView(barraSx);
+            layoutBarra.addView(testoInMezzo);
+            layoutBarra.addView(btnModificaMezzoMetro);
+            layoutBarra.addView(barradx);
+            tableOrdiniMetri.addView(layoutBarra);
+
+            tableOrdiniMetri.addView(rowPizza);
+            hashTemp.put(tableOrdiniMetri, tempList);
+            sparseMetri.put(idMetro, hashTemp);
+            layoutContoMetri.addView(tableOrdiniMetri);
+        } else if (sparseMetri.get(idMetro) != null) {
+            sparseMetri.get(idMetro).entrySet().iterator().next().getKey().addView(rowPizza);
+            sparseMetri.get(idMetro).entrySet().iterator().next().getValue().add(Integer.parseInt(valColonna));
         }
+
+        switch (tipo) {
+            case "Pizza":
+                if (idMetro == -1) tableOrdiniPizza.addView(rowPizza);
+                break;
+            case "Bibita":
+                tableOrdiniBibite.addView(rowPizza);
+                break;
+            case "Gastronomia":
+                tableOrdiniGastronomia.addView(rowPizza);
+                break;
+        }
+        sparsePrezziProdotti.put(Integer.parseInt(valColonna), txtPrezzo);
+
+        if (tableOrdiniPizza.getChildCount() > 0)
+            layoutContoPizze.setBackgroundResource(R.drawable.table_bottom_style);
+        if (tableOrdiniGastronomia.getChildCount() > 0)
+            layoutContoGastronomia.setBackgroundResource(R.drawable.table_bottom_style);
+        if (layoutContoMetri.getChildCount() > 0)
+            layoutContoMetri.setBackgroundResource(R.drawable.table_bottom_style);
+
     }
 
     private void inizializzaAggiunte(Object param, final String valColonna, RelativeLayout baseLayout, final List<String> ingrBaseRimossi) {
