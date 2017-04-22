@@ -440,13 +440,13 @@ public class RiepilogoOrdini extends Fragment {
                 TableRow row = new TableRow(context);
                 row.setBackgroundResource(R.drawable.table_bottom_style);
 
-                TextView dataOrdine = makeTableRowWithText(riga.get("dataconsegna"), R.dimen.dim_150dp);
-                TextView oraOrdine = makeTableRowWithText(riga.get("oraconsegna").substring(0, 5), R.dimen.dim_80dp);
-                TextView nomeCliente = makeTableRowWithText((riga.get("nome")), R.dimen.dim_150dp);
+                final TextView dataOrdine = makeTableRowWithText(riga.get("dataconsegna"), R.dimen.dim_150dp);
+                final TextView oraOrdine = makeTableRowWithText(riga.get("oraconsegna").substring(0, 5), R.dimen.dim_80dp);
+                final TextView nomeCliente = makeTableRowWithText((riga.get("nome")), R.dimen.dim_150dp);
                 TextView cognomeCliente = makeTableRowWithText(cognome, R.dimen.dim_150dp);
                 TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_100dp);
-                TextView viaOrdine = makeTableRowWithText((riga.get("via").equals("null") ? " ----- " : riga.get("via")), R.dimen.dim_200dp);
-                TextView cittaOrdine = makeTableRowWithText(riga.get("citta").equals("null") ? " ----- " : riga.get("citta"), R.dimen.dim_150dp);
+                final TextView viaOrdine = makeTableRowWithText((riga.get("via").equals("null") ? " ----- " : riga.get("via")), R.dimen.dim_200dp);
+                final TextView cittaOrdine = makeTableRowWithText(riga.get("citta").equals("null") ? " ----- " : riga.get("citta"), R.dimen.dim_150dp);
                 if (viaOrdine.getText().toString().length() > 8)
                     viaOrdine.setTextSize(20);
                 if (cittaOrdine.getText().toString().length() > 8)
@@ -551,12 +551,26 @@ public class RiepilogoOrdini extends Fragment {
                 });
 
 
-                btnModifica.setOnClickListener(new View.OnClickListener()
-
-                {
+                btnModifica.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //HttpManager.execSimple("ACCETTA_ORDINE", context, idOrdine);
+                        HashMap<String, String> tmp_hash = new HashMap<>(7);
+                        tmp_hash.put("idordine", idOrdine);
+                        tmp_hash.put("data", dataOrdine.getText().toString());
+                        tmp_hash.put("ora", oraOrdine.getText().toString());
+                        tmp_hash.put("cognome", cognome);
+                        tmp_hash.put("nome", nomeCliente.getText().toString());
+                        tmp_hash.put("via", viaOrdine.getText().toString());
+                        tmp_hash.put("citta", cittaOrdine.getText().toString());
+
+                        NuovoOrdine fragment = new NuovoOrdine();
+                        bundle.putSerializable("HASHMAP_ORDINE", tmp_hash);
+
+                        fragment.setArguments(bundle);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.flContent, fragment)
+                                .commit();
                     }
                 });
 
@@ -597,10 +611,12 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(cittaOrdine);
                 row.addView(btnMostra);
                 row.addView(btnModifica);
+
                 if (stato != 3) {
                     btnConsegna.setEnabled(false);
                     btnConsegna.setImageResource(R.drawable.consegna_not_enabled);
                 }
+
                 row.addView(btnConsegna);
                 row.addView(btnElimina);
 

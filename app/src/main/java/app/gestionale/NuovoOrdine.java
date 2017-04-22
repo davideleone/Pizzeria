@@ -103,6 +103,7 @@ public class NuovoOrdine extends Fragment {
     private String viaTrovato = "";
     private String telefonoTrovato = "";
     private ArrayList<HashMap<String, String>> listaProdotti;
+    private HashMap<String, String> hash_ordine;
 
 
     private SparseArray<HashMap<TableLayout, List<Integer>>> sparseMetri = new SparseArray<HashMap<TableLayout, List<Integer>>>();
@@ -141,7 +142,6 @@ public class NuovoOrdine extends Fragment {
         listaCitta = (ArrayList<String>) bundle.getSerializable("LISTA_CITTA");
         listaProdotti = (ArrayList<HashMap<String, String>>) bundle.getSerializable("LISTA_PRODOTTI");
 
-
         adapterCitta = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaCitta);
 
 
@@ -178,8 +178,9 @@ public class NuovoOrdine extends Fragment {
 
         inizializzaTabelle();
 
-        if (bundle.getString("ID_ORDINE") != null && !bundle.getString("ID_ORDINE").isEmpty()) {
-            idOrdine = bundle.getString("ID_ORDINE");
+        if (bundle.getSerializable("HASHMAP_ORDINE") != null) {
+            hash_ordine = (HashMap<String, String>) bundle.getSerializable("HASHMAP_ORDINE");
+            idOrdine = hash_ordine.get("idordine");
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
