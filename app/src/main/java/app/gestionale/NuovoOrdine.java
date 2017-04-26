@@ -16,6 +16,7 @@ import android.text.InputType;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -326,7 +327,7 @@ public class NuovoOrdine extends Fragment {
                 txtCitta.setId(View.generateViewId());
                 txtCitta.setLayoutParams(editTextCittaTxtParams);
 
-                RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_300dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 editTextCittaSpinnerParams.addRule(RelativeLayout.BELOW, viaInput.getId());
                 editTextCittaSpinnerParams.addRule(RelativeLayout.END_OF, txtCitta.getId());
                 editTextCittaSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtCitta.getId());
@@ -446,12 +447,20 @@ public class NuovoOrdine extends Fragment {
                 if (hashOrdine != null) {
                     nome.setText(hashOrdine.get("nome"));
                     cognome.setText(hashOrdine.get("cognome"));
+                    cognome.setThreshold(1000);
+                    cognome.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            cognome.setThreshold(1);
+                            return false;
+                        }
+                    });
                     telefono.setText(hashOrdine.get("telefono"));
-                    txtData.setText(hashOrdine.get("data"));
-                    txtOra.setText(hashOrdine.get("ora"));
+                    spinnerDate.setSelection(listaCitta.indexOf(hashOrdine.get("data")));
+                    spinnerOre.setSelection(listaCitta.indexOf(hashOrdine.get("ora")));
                     if (!hashOrdine.get("citta").equals(" ----- ")) {
                         via.setText(hashOrdine.get("via"));
-                        citta.setText(hashOrdine.get("citta"));
+                        spinnerCitta.setSelection(listaCitta.indexOf(hashOrdine.get("citta")));
                         consegna.setChecked(true);
                         layoutConsegna.setVisibility(View.VISIBLE);
                     }
@@ -461,7 +470,7 @@ public class NuovoOrdine extends Fragment {
 
                 final AlertDialog dialog = new AlertDialog.Builder(context)
                         .setView(scrollView)
-                        .setTitle("Inserisci Nuovo Ordine - Totale: " + totale.getText().toString())
+                        .setTitle((hashOrdine != null) ? "Modifica Ordine - Totale: " + totale.getText().toString() : "Inserisci Nuovo Ordine - Totale: " + totale.getText().toString())
                         .setPositiveButton("Inserisci", null)
                         .setNegativeButton("Annulla", null)
                         .create();
@@ -488,15 +497,10 @@ public class NuovoOrdine extends Fragment {
                         }
                         if (consegna.isChecked()) {
                             strVia = via.getText().toString();
-                            strCivico = civico.getText().toString();
                             strCitta = spinnerCitta.getSelectedItem().toString();
                             if (strVia.isEmpty()) {
                                 toClose = false;
                                 via.setError("Inserisci via");
-                            }
-                            if (strCivico.isEmpty()) {
-                                toClose = false;
-                                civico.setError("Inserisci civico");
                             }
                         }
 
@@ -663,7 +667,7 @@ public class NuovoOrdine extends Fragment {
                             Toast.makeText(context, "Prodotto Inserito!", Toast.LENGTH_SHORT).show();
                             creaConto(tipo, nomeProdotto, prezzo, output);
                         }
-                    }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, ordine}).execute();
+                    }, null, "AGGIUNGI_PRODOTTO_TO_ORDINE", new String[]{nomeProdotto, idOrdine}).execute();
                 }
             });
         }

@@ -613,7 +613,7 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(btnMostra);
                 row.addView(btnModifica);
 
-                if (stato != 3) {
+                if (stato != 2) {
                     btnConsegna.setEnabled(false);
                     btnConsegna.setImageResource(R.drawable.consegna_not_enabled);
                 }
