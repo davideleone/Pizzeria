@@ -984,7 +984,6 @@ public class NuovoOrdine extends Fragment {
 
     private void inizializzaAggiunte(Object param, final String valColonna, RelativeLayout baseLayout, final List<String> ingrBaseRimossi) {
         if (param != null) {
-            final String idColonna = valColonna;
             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
             Iterator<HashMap<String, String>> itrAgg = lista.iterator();
             while (itrAgg.hasNext()) {
@@ -998,28 +997,25 @@ public class NuovoOrdine extends Fragment {
             barraMezzo = new View(context);
             barraMezzo.setId(View.generateViewId());
             barraMezzo.setBackgroundColor(getResources().getColor(R.color.grigio));
-            aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
-                    if (ingrBaseRimossi.contains(aggiunte.getText().toString())) {
-                        Toast.makeText(context, "Impossibile aggiungere l'ingrediente", Toast.LENGTH_SHORT).show();
-                    } else {
-                        tempExtraAgg.add(aggiunte.getText().toString());
-                        new HttpManager.AsyncManager(new AsyncResponse() {
-                            @Override
-                            public void processFinish(Object output) {
-                                aggiungiExtra(output);
-                            }
-                        }, null, "AGGIUNGI_EXTRA", new String[]{aggiunte.getText().toString(), idColonna, aggiunte.getText().toString(), "1"}).execute();
-                    }
-                }
-            });
-/*
-            if (aggiunte.getParent() != null)
-                ((ViewGroup) aggiunte.getParent()).removeView(aggiunte);
-            layoutAggiunte.addView(aggiunte);
-            aggiunte.setText("");*/
         }
+
+        final String idColonna = valColonna;
+        aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
+                if (ingrBaseRimossi.contains(aggiunte.getText().toString())) {
+                    Toast.makeText(context, "Impossibile aggiungere l'ingrediente", Toast.LENGTH_SHORT).show();
+                } else {
+                    tempExtraAgg.add(aggiunte.getText().toString());
+                    new HttpManager.AsyncManager(new AsyncResponse() {
+                        @Override
+                        public void processFinish(Object output) {
+                            aggiungiExtra(output);
+                        }
+                    }, null, "AGGIUNGI_EXTRA", new String[]{aggiunte.getText().toString(), idColonna, aggiunte.getText().toString(), "1"}).execute();
+                }
+            }
+        });
 
         RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
         paramBarra.setMargins(30, 30, 30, 30);
@@ -1030,7 +1026,6 @@ public class NuovoOrdine extends Fragment {
         barraMezzo.setLayoutParams(paramBarra);
 
         //LAYOUT INFERIORE CON TEXTVIEW
-        //if(param != null) {
         RelativeLayout.LayoutParams paramLayoutAggiunte = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
         layoutAggiunte.setLayoutParams(paramLayoutAggiunte);
@@ -1045,7 +1040,6 @@ public class NuovoOrdine extends Fragment {
             layoutAggiunte.addView(aggiunte);
             aggiunte.setText("");
         }
-        //}
 
         if (barraMezzo.getParent() != null)
             ((ViewGroup) barraMezzo.getParent()).removeView(barraMezzo);
@@ -1121,7 +1115,6 @@ public class NuovoOrdine extends Fragment {
             Map.Entry riga = (Map.Entry) itr.next();
             final String nomeIngrediente = riga.getKey().toString();
             final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
-            System.out.println(nomeIngrediente + " = " + tipoIngrediente);
             if (tipoIngrediente == 2 || tipoIngrediente == 3 || tipoIngrediente == valColonna) {
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 final CheckBox selezione = new CheckBox(context);
@@ -1169,7 +1162,6 @@ public class NuovoOrdine extends Fragment {
                 layoutIngredienti.addView(selezione);
             } else {
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-                System.out.println("N FIGLI = " + layoutAggiunte.getChildCount());
                 if (idUltimoExtra != -1)
                     layoutSelezione.addRule(RelativeLayout.BELOW, idUltimoExtra);
                 layoutSelezione.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -1240,7 +1232,6 @@ public class NuovoOrdine extends Fragment {
         });
 
         if (hashIngredientiExtra.isEmpty()) {
-            System.out.println("HASHEXTRA VUOTO");
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
@@ -1249,7 +1240,6 @@ public class NuovoOrdine extends Fragment {
                 }
             }, null, "GET_AGGIUNTE", new String[]{}).execute();
         } else {
-            System.out.println("HASHEXTRA PIENO");
             inizializzaAggiunte(null, idColonna, contenitoreIngredienti, ingrBaseRimossi);
             builder.create().show();
         }
