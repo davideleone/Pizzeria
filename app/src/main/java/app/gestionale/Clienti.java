@@ -346,7 +346,7 @@ public class Clienti extends Fragment {
             btnModifica.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mostraDialog(listaCliente);
+                    mostraDialog(listaCliente); /* TODO METTERE SOLO IL CLIENTE CON L'ID IN CUI CLICCO IL BOTTONE*/
                 }
             });
 

@@ -196,14 +196,13 @@ public class Fattorini extends Fragment {
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
                             public void processFinish(Object output) {
-                                riepilogoFattorini(output);
+                                riepilogoFattorini(output, nome, totale);
                             }
                         }, null, "GET_RIEPILOGO_FATTORINO", new String[]{idFattorino}).execute();
                     }
                 });
                 row.addView(nomeFattorino);
                 row.addView(totaleOrdine);
-
                 row.addView(btnMostra);
 
                 tabellaOrdini.addView(row);
@@ -213,8 +212,51 @@ public class Fattorini extends Fragment {
         }
     }
 
-    private void riepilogoFattorini(Object param) {
+    private void riepilogoFattorini(Object param, String nomeFatt, String totaleConsegne) {
+        RelativeLayout contenitoreLayoutFattorino = new RelativeLayout(context);
 
+        RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
+        paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        paramBarra.setMargins(30, 0, 20, 30);
+        View barraInAlto = new View(context);
+        barraInAlto.setId(View.generateViewId());
+        barraInAlto.setBackgroundResource(R.color.celeste);
+        barraInAlto.setLayoutParams(paramBarra);
+        contenitoreLayoutFattorino.addView(barraInAlto);
+
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        while (itr.hasNext()) {
+            HashMap<String, String> riga = itr.next();
+            final String totale = riga.get("totale");
+            final String via = riga.get("via");
+
+            RelativeLayout.LayoutParams paramVia = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_300dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramVia.addRule(RelativeLayout.BELOW, contenitoreLayoutFattorino.getChildAt(contenitoreLayoutFattorino.getChildCount() - 1).getId());
+            paramVia.setMargins(30, 0, 30, 30);
+            TextView viaText = new TextView(context);
+            viaText.setId(View.generateViewId());
+            viaText.setText(via);
+            viaText.setTextAppearance(context, R.style.testoGrande);
+            viaText.setLayoutParams(paramVia);
+            contenitoreLayoutFattorino.addView(viaText);
+
+            RelativeLayout.LayoutParams paramTotale = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_300dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramTotale.addRule(RelativeLayout.BELOW, contenitoreLayoutFattorino.getChildAt(contenitoreLayoutFattorino.getChildCount() - 2).getId());
+            paramTotale.addRule(RelativeLayout.END_OF, viaText.getId());
+
+            TextView totaleText = new TextView(context);
+            totaleText.setId(View.generateViewId());
+            totaleText.setTextAppearance(context, R.style.testoGrande);
+            totaleText.setText("" + new DecimalFormat("#0.00 €").format(Float.parseFloat(totale)));
+            totaleText.setLayoutParams(paramTotale);
+            contenitoreLayoutFattorino.addView(totaleText);
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Riepilogo Fattorino -" + nomeFatt + " - " + totaleConsegne);
+        builder.setView(contenitoreLayoutFattorino);
+        builder.create().show();
     }
 
     private TextView makeTableRowWithText(String text, int resource) {
@@ -228,7 +270,7 @@ public class Fattorini extends Fragment {
 
     private ImageButton makeTableRowWithImageButton(int img) {
         recyclableImageButton = new ImageButton(context);
-        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_150dp));
         recyclableImageButton.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.dim_26dp));
         recyclableImageButton.setPadding(40, 0, 0, 0);
         recyclableImageButton.setImageResource(img);
