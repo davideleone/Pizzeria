@@ -1,7 +1,9 @@
 package app.gestionale;
 
+
 import android.app.Fragment;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -27,9 +29,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    ArrayList<String> listaPizze;
-    ArrayList<String> listaIngredienti;
-    ArrayList<String> listaPrezzi;
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
     private NavigationView nvDrawer;
@@ -49,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<SparseArray<HashMap<String, String>>> clienti;
     private ArrayList<String> listaCitta;
     private ArrayList<HashMap<String, String>> listaProdotti;
+    private TextView presentazione;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         clienti = new ArrayList<>();
         frameLayout = (FrameLayout) findViewById(R.id.flContent);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        presentazione = (TextView) findViewById(R.id.presentazione);
+
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/againts.otf");
+        presentazione.setTypeface(tf);
 
         setSupportActionBar(toolbar);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -95,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }, this, "GET_LISTA_PRODOTTI", new String[]{}).execute();
         //logo = (ImageView) findViewById(R.id.logo_accipizza);
+
+
     }
 
     private void inizializzaProdotti(Object param) {
@@ -120,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
         while (itr.hasNext()) {
             HashMap<String, String> riga = itr.next();
             final int idcliente = Integer.parseInt(riga.get("id"));
-            HashMap<String, String> row = new HashMap<String, String>(5);
+            HashMap<String, String> row = new HashMap<String, String>(6);
+            row.put("idcliente", riga.get("id"));
             row.put("cognome", riga.get("cognome"));
             row.put("nome", riga.get("nome"));
             row.put("telefono", riga.get("telefono"));

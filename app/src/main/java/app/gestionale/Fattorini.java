@@ -179,7 +179,7 @@ public class Fattorini extends Fragment {
         if(!lista.isEmpty()){
             while (itr.hasNext()) {
                 HashMap<String, String> riga = itr.next();
-
+                final String idFattorino = riga.get("idfattorino");
                 final String nome = riga.get("nomefatt");
                 final String totale = new DecimalFormat("#0.00").format((double) Float.parseFloat(riga.get("prezzotot"))) + " \u20ac";
 
@@ -190,6 +190,17 @@ public class Fattorini extends Fragment {
                 TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_450dp);
 
                 ImageButton btnMostra = makeTableRowWithImageButton(R.drawable.mostra);
+                btnMostra.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new HttpManager.AsyncManager(new AsyncResponse() {
+                            @Override
+                            public void processFinish(Object output) {
+                                riepilogoFattorini(output);
+                            }
+                        }, null, "GET_RIEPILOGO_FATTORINO", new String[]{idFattorino}).execute();
+                    }
+                });
                 row.addView(nomeFattorino);
                 row.addView(totaleOrdine);
 
@@ -200,6 +211,10 @@ public class Fattorini extends Fragment {
         } else {
             Toast.makeText(context, "Nessun ordine assegnato per la consegna", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void riepilogoFattorini(Object param) {
+
     }
 
     private TextView makeTableRowWithText(String text, int resource) {

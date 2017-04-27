@@ -25,7 +25,42 @@
             android:layout_height="match_parent"
             android:layout_marginTop="80dp">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
+
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="400dp"
+                    android:layout_height="400dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/logo" />
+
+                <TextView
+                    android:id="@+id/presentazione"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/logo"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="80dp"
+                    android:rotation="-6"
+                    android:text="Benvenuti da AcciPizza!"
+                    android:textColor="@color/giallo"
+                    android:textSize="70sp" />
+
+                <TextView
+                    style="@style/testoPiccolo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="5dp"
+                    android:text="Applicazione creata e sviluppata da L.D.V. Dev™- Info tramite email a infoldvdev@gmail.com"
+                    android:textColor="@color/giallo" />
+
+
+            </RelativeLayout>
         </FrameLayout>
 
     </RelativeLayout>
