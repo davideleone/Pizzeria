@@ -71,7 +71,7 @@ public class NuovoOrdine extends Fragment {
     private RelativeLayout.LayoutParams paramAggiunte;
     private boolean flag = false;
 
-    private HashMap<String, Float> hashExtra;
+    private HashMap<String, Float> hashIngredientiExtra = new HashMap<String, Float>();
     private List<String> tempExtraAgg = new ArrayList<String>();
     private SparseArray<TextView> sparsePrezziProdotti = new SparseArray<TextView>();
 
@@ -107,6 +107,7 @@ public class NuovoOrdine extends Fragment {
     private ArrayList<HashMap<String, String>> listaProdotti;
     private HashMap<String, String> hashOrdine = null;
 
+    private int idUltimoExtra = -1;
 
     private SparseArray<HashMap<TableLayout, List<Integer>>> sparseMetri = new SparseArray<HashMap<TableLayout, List<Integer>>>();
 /*    final int contOrdini[] = ne4w int[listaOre.size()];
@@ -328,7 +329,7 @@ public class NuovoOrdine extends Fragment {
                 txtCitta.setId(View.generateViewId());
                 txtCitta.setLayoutParams(editTextCittaTxtParams);
 
-                RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_300dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 editTextCittaSpinnerParams.addRule(RelativeLayout.BELOW, viaInput.getId());
                 editTextCittaSpinnerParams.addRule(RelativeLayout.END_OF, txtCitta.getId());
                 editTextCittaSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtCitta.getId());
@@ -435,11 +436,12 @@ public class NuovoOrdine extends Fragment {
                 cognome.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
-                        cognome.setText(clienti.get(0).valueAt(pos).get("cognome"));
-                        nome.setText(clienti.get(0).valueAt(pos).get("nome"));
-                        via.setText(clienti.get(0).valueAt(pos).get("via"));
-                        telefono.setText(clienti.get(0).valueAt(pos).get("telefono"));
-                        spinnerCitta.setSelection(listaCitta.indexOf(clienti.get(0).valueAt(pos).get("citta")));
+                        int posArray = listaClienti.indexOf(cognome.getText().toString());
+                        cognome.setText(clienti.get(0).valueAt(posArray).get("cognome"));
+                        nome.setText(clienti.get(0).valueAt(posArray).get("nome"));
+                        via.setText(clienti.get(0).valueAt(posArray).get("via"));
+                        telefono.setText(clienti.get(0).valueAt(posArray).get("telefono"));
+                        spinnerCitta.setSelection(listaCitta.indexOf(clienti.get(0).valueAt(posArray).get("citta")));
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
                         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                     }
@@ -985,16 +987,17 @@ public class NuovoOrdine extends Fragment {
             final String idColonna = valColonna;
             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
             Iterator<HashMap<String, String>> itrAgg = lista.iterator();
-            hashExtra = new HashMap<String, Float>(lista.size());
             while (itrAgg.hasNext()) {
                 HashMap<String, String> riga = itrAgg.next();
                 final String nome = riga.get("nomeingrediente");
                 final float prezzo = Float.parseFloat(riga.get("prezzo"));
-                hashExtra.put(nome, prezzo);
+                hashIngredientiExtra.put(nome, prezzo);
             }
-            adapterAggiunte = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(hashExtra.keySet()));
+            adapterAggiunte = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(hashIngredientiExtra.keySet()));
 
             barraMezzo = new View(context);
+            barraMezzo.setId(View.generateViewId());
+            barraMezzo.setBackgroundColor(getResources().getColor(R.color.grigio));
             aggiunte.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View arg1, int pos, long id) {
@@ -1011,10 +1014,11 @@ public class NuovoOrdine extends Fragment {
                     }
                 }
             });
+/*
             if (aggiunte.getParent() != null)
                 ((ViewGroup) aggiunte.getParent()).removeView(aggiunte);
             layoutAggiunte.addView(aggiunte);
-            aggiunte.setText("");
+            aggiunte.setText("");*/
         }
 
         RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
@@ -1022,19 +1026,26 @@ public class NuovoOrdine extends Fragment {
         paramBarra.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramBarra.addRule(RelativeLayout.BELOW, layoutIngredienti.getId());
 
-        barraMezzo.setId(View.generateViewId());
-        barraMezzo.setBackgroundColor(getResources().getColor(R.color.grigio));
+
         barraMezzo.setLayoutParams(paramBarra);
 
         //LAYOUT INFERIORE CON TEXTVIEW
+        //if(param != null) {
         RelativeLayout.LayoutParams paramLayoutAggiunte = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
         layoutAggiunte.setLayoutParams(paramLayoutAggiunte);
-        paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
-        paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        paramAggiunte.setMargins(0, 20, 0, 0);
-        aggiunte.setLayoutParams(paramAggiunte);
-        aggiunte.setAdapter(adapterAggiunte);
+        if (param != null) {
+            paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+            paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            paramAggiunte.setMargins(0, 20, 0, 0);
+            aggiunte.setLayoutParams(paramAggiunte);
+            aggiunte.setAdapter(adapterAggiunte);
+            if (aggiunte.getParent() != null)
+                ((ViewGroup) aggiunte.getParent()).removeView(aggiunte);
+            layoutAggiunte.addView(aggiunte);
+            aggiunte.setText("");
+        }
+        //}
 
         if (barraMezzo.getParent() != null)
             ((ViewGroup) barraMezzo.getParent()).removeView(barraMezzo);
@@ -1101,6 +1112,8 @@ public class NuovoOrdine extends Fragment {
         final String nomeProdotto = nomePizza;
         final String idColonna = Integer.toString(valColonna);
 
+        idUltimoExtra = -1;
+
         //TABELLA CON CHECKBOX
         int countProdotti = 0;
         Iterator itr = hashExtra.entrySet().iterator();
@@ -1108,6 +1121,7 @@ public class NuovoOrdine extends Fragment {
             Map.Entry riga = (Map.Entry) itr.next();
             final String nomeIngrediente = riga.getKey().toString();
             final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
+            System.out.println(nomeIngrediente + " = " + tipoIngrediente);
             if (tipoIngrediente == 2 || tipoIngrediente == 3 || tipoIngrediente == valColonna) {
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 final CheckBox selezione = new CheckBox(context);
@@ -1155,13 +1169,15 @@ public class NuovoOrdine extends Fragment {
                 layoutIngredienti.addView(selezione);
             } else {
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-                if (layoutAggiunte.getChildCount() > 0)
-                    layoutSelezione.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
+                System.out.println("N FIGLI = " + layoutAggiunte.getChildCount());
+                if (idUltimoExtra != -1)
+                    layoutSelezione.addRule(RelativeLayout.BELOW, idUltimoExtra);
                 layoutSelezione.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
                 final CheckBox newIngrediente = new CheckBox(context);
                 newIngrediente.setLayoutParams(layoutSelezione);
-                newIngrediente.setId(View.generateViewId());
+                idUltimoExtra = View.generateViewId();
+                newIngrediente.setId(idUltimoExtra);
                 newIngrediente.setPadding(5, 0, 5, 0);
                 newIngrediente.setTextSize(25);
                 newIngrediente.setChecked(true);
@@ -1186,9 +1202,20 @@ public class NuovoOrdine extends Fragment {
                         }
                     }
                 });
+
+                paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+                paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                paramAggiunte.setMargins(0, 20, 0, 0);
+                paramAggiunte.addRule(RelativeLayout.BELOW, idUltimoExtra);
+                aggiunte.setLayoutParams(paramAggiunte);
             }
             itr.remove(); // avoids a ConcurrentModificationException
         }
+
+        if (aggiunte.getParent() != null)
+            ((ViewGroup) aggiunte.getParent()).removeView(aggiunte);
+        layoutAggiunte.addView(aggiunte);
+        aggiunte.setText("");
 
         contenitoreIngredienti.addView(layoutIngredienti);
 
@@ -1212,7 +1239,8 @@ public class NuovoOrdine extends Fragment {
             }
         });
 
-        if (hashExtra.isEmpty()) {
+        if (hashIngredientiExtra.isEmpty()) {
+            System.out.println("HASHEXTRA VUOTO");
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
@@ -1221,6 +1249,7 @@ public class NuovoOrdine extends Fragment {
                 }
             }, null, "GET_AGGIUNTE", new String[]{}).execute();
         } else {
+            System.out.println("HASHEXTRA PIENO");
             inizializzaAggiunte(null, idColonna, contenitoreIngredienti, ingrBaseRimossi);
             builder.create().show();
         }
@@ -1239,12 +1268,18 @@ public class NuovoOrdine extends Fragment {
                 //aggiornaTotale(prezzoIngrediente, true);
 
                 RelativeLayout.LayoutParams layoutSelezione = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
-                layoutSelezione.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
+
+                if (idUltimoExtra == -1) {
+                    layoutSelezione.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
+                } else {
+                    layoutSelezione.addRule(RelativeLayout.BELOW, idUltimoExtra);
+                }
                 layoutSelezione.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
                 final CheckBox newIngrediente = new CheckBox(context);
                 newIngrediente.setLayoutParams(layoutSelezione);
-                newIngrediente.setId(View.generateViewId());
+                idUltimoExtra = View.generateViewId();
+                newIngrediente.setId(idUltimoExtra);
                 newIngrediente.setPadding(5, 0, 5, 0);
                 newIngrediente.setTextSize(25);
                 newIngrediente.setChecked(true);
@@ -1263,7 +1298,6 @@ public class NuovoOrdine extends Fragment {
 
                 layoutAggiunte.addView(newIngrediente);
                 aggiunte.setText("");
-                Toast.makeText(context, "Sono qua 3", Toast.LENGTH_SHORT).show();
                 paramAggiunte.addRule(RelativeLayout.BELOW, newIngrediente.getId());
                 aggiunte.setLayoutParams(paramAggiunte);
             }
