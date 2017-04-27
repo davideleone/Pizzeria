@@ -63,7 +63,6 @@ public class Stampa {
                 }
             }
 
-            Toast.makeText(context, "BlueTooth Printer trovato!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,7 +81,6 @@ public class Stampa {
 
             beginListenForData();
 
-            Toast.makeText(context, "BlueTooth Printer associato!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -188,7 +186,6 @@ public class Stampa {
             mmOutputStream.write(msg.getBytes(), 0, msg.getBytes().length);
 
             // tell the user data were sent
-            Toast.makeText(context, "Testo inviato!", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -202,7 +199,7 @@ public class Stampa {
             mmOutputStream.close();
             mmInputStream.close();
             mmSocket.close();
-            Toast.makeText(context, "BlueTooth Printer disassociato!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Stampa completata!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -69,6 +69,7 @@ public class NuovoOrdine extends Fragment {
     private RelativeLayout layoutAggiunte;
     private View barraMezzo;
     private RelativeLayout.LayoutParams paramAggiunte;
+    private boolean flag = false;
 
     private HashMap<String, Float> hashExtra;
     private List<String> tempExtraAgg = new ArrayList<String>();
@@ -1032,7 +1033,6 @@ public class NuovoOrdine extends Fragment {
         paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
         paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramAggiunte.setMargins(0, 20, 0, 0);
-        paramAggiunte.addRule(RelativeLayout.BELOW, layoutAggiunte.getChildAt(layoutAggiunte.getChildCount() - 1).getId());
         aggiunte.setLayoutParams(paramAggiunte);
         aggiunte.setAdapter(adapterAggiunte);
 
@@ -1166,6 +1166,7 @@ public class NuovoOrdine extends Fragment {
                 newIngrediente.setTextSize(25);
                 newIngrediente.setChecked(true);
                 newIngrediente.setText((tipoIngrediente == 4) ? "2 x " + nomeIngrediente : nomeIngrediente);
+                layoutAggiunte.addView(newIngrediente);
 
                 newIngrediente.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
@@ -1185,8 +1186,6 @@ public class NuovoOrdine extends Fragment {
                         }
                     }
                 });
-
-                layoutAggiunte.addView(newIngrediente);
             }
             itr.remove(); // avoids a ConcurrentModificationException
         }
@@ -1264,8 +1263,9 @@ public class NuovoOrdine extends Fragment {
 
                 layoutAggiunte.addView(newIngrediente);
                 aggiunte.setText("");
+                Toast.makeText(context, "Sono qua 3", Toast.LENGTH_SHORT).show();
                 paramAggiunte.addRule(RelativeLayout.BELOW, newIngrediente.getId());
-                //aggiunte.setLayoutParams(paramAggiunte);
+                aggiunte.setLayoutParams(paramAggiunte);
             }
         }
     }
