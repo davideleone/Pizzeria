@@ -955,7 +955,7 @@ public class NuovoOrdine extends Fragment {
                         if (idMetro_onMod == -1) {
                             idMetro_onMod = idMetro;
                             layoutBarra_onMod = layoutBarra;
-                            layoutBarra.setBackgroundResource(R.color.menu_primary);
+                            layoutBarra.setBackgroundResource(R.drawable.borders);
                         } else {
                             idMetro_onMod = -1;
                             layoutBarra_onMod = null;
