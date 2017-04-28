@@ -20,13 +20,13 @@
 
         <TableLayout
             android:id="@+id/tabella_fattorini"
-            android:layout_width="1229dp"
-            android:layout_height="633dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="#FDB55D">
 
             <RelativeLayout
                 android:id="@+id/header"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="#EF634D">
 
@@ -51,7 +51,7 @@
 
                 <TextView
                     android:id="@+id/col_Azioni"
-                    android:layout_width="250dp"
+                    android:layout_width="150dp"
                     android:layout_height="60dp"
                     android:layout_toEndOf="@id/col_Totale"
                     android:gravity="center"

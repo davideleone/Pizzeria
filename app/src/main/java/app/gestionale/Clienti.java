@@ -323,14 +323,16 @@ public class Clienti extends Fragment {
             else
                 listaCliente = clienti.get(0).valueAt(getClienteConCognome(cognomeCercato).get(i));
 
-            final int idcliente = clienti.get(0).keyAt(i);
-            final String nome = listaCliente.get("nome");
-            final String cognome = listaCliente.get("cognome");
-            final String telefono = listaCliente.get("telefono");
-            final String via = listaCliente.get("via");
-            final String citta = listaCliente.get("citta");
+            final HashMap<String, String> listaClienteFinal = listaCliente;
 
-            listaCliente.put("id", Integer.toString(idcliente));
+            final int idcliente = clienti.get(0).keyAt(i);
+            final String nome = listaClienteFinal.get("nome");
+            final String cognome = listaClienteFinal.get("cognome");
+            final String telefono = listaClienteFinal.get("telefono");
+            final String via = listaClienteFinal.get("via");
+            final String citta = listaClienteFinal.get("citta");
+
+            listaClienteFinal.put("id", Integer.toString(idcliente));
 
             TableRow row = new TableRow(context);
             row.setBackgroundResource(R.drawable.table_bottom_style);
@@ -346,7 +348,7 @@ public class Clienti extends Fragment {
             btnModifica.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mostraDialog(listaCliente);
+                    mostraDialog(listaClienteFinal); /* TODO METTERE SOLO IL CLIENTE CON L'ID IN CUI CLICCO IL BOTTONE*/
                 }
             });
 
