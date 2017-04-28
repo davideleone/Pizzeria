@@ -84,12 +84,12 @@
         "source": "C:\\Users\\dalla\\.android\\build-cache\\7a3fce0be7f212445de5fbce63cf7857251887f5\\output\\res\\layout\\design_navigation_item_separator.xml"
     },
     {
-        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\abc_popup_menu_item_layout.xml",
-        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\layout\\abc_popup_menu_item_layout.xml"
-    },
-    {
         "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\notification_template_part_time.xml",
         "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\layout\\notification_template_part_time.xml"
+    },
+    {
+        "merged": "F:\\Desktop\\ProgettoPizzeria\\Pizzeria\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\abc_popup_menu_item_layout.xml",
+        "source": "C:\\Users\\Davide\\.android\\build-cache\\b3ebbd02c513a671bd759cea87368e8b3b3ef3c0\\output\\res\\layout\\abc_popup_menu_item_layout.xml"
     },
     {
         "merged": "C:\\Users\\dalla\\StudioProjects\\Pizzeria\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout\\support_simple_spinner_dropdown_item.xml",

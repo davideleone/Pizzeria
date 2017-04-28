@@ -710,26 +710,52 @@ public class RiepilogoOrdini extends Fragment {
     private void fixDettagliPizze(Object param, String telefono, String cognome) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
-        SparseArray<List<HashMap<String, String>>> hashColonne = new SparseArray<List<HashMap<String, String>>>();
-        boolean isTolti = false;
-        boolean isAggiunti = false;
+        HashMap<String, Integer> hashExtra = new HashMap<String, Integer>();
+        // SPARSE -> HASHMAP (STRING, OBJECT [STRING - HASHMAP<STRING,STRING>])
+        SparseArray<HashMap<String, Object>> sparseDettagli = new SparseArray<HashMap<String, Object>>();
+        ;
         while (itr.hasNext()) {
             HashMap<String, String> riga = itr.next();
-            final int idcolonna = Integer.parseInt(riga.get("id_colonna"));
-            List<HashMap<String, String>> listaTemp = (hashColonne.get(idcolonna) != null) ? hashColonne.get(idcolonna) : new ArrayList<HashMap<String, String>>();
-            HashMap<String, String> row = new HashMap<String, String>(4);
-            row.put("nomeprodotto", riga.get("nomeprodotto"));
-            row.put("prezzoprodotto", riga.get("prezzoprodotto"));
-            row.put("nomeextra", riga.get("nomeextra"));
-            row.put("tipo", riga.get("tipo"));
-            if (!riga.get("tipo").equals("null") && Integer.parseInt(riga.get("tipo")) == 2)
-                isTolti = true;
-            if (!riga.get("tipo").equals("null") && Integer.parseInt(riga.get("tipo")) == 1)
-                isAggiunti = true;
-            listaTemp.add(row);
-            hashColonne.put(idcolonna, listaTemp);
+            final int idColonna = Integer.parseInt(riga.get("id_colonna"));
+            final String nomeProdotto = riga.get("nomeprodotto");
+            final String prezzoProdotto = riga.get("prezzoprodotto");
+            final String nomeExtra = riga.get("nomeextra");
+            final String tipoExtra = riga.get("tipo");
+
+            HashMap<String, Object> hashValori = (sparseDettagli.get(idColonna) != null) ? sparseDettagli.get(idColonna) : new HashMap<String, Object>();
+            hashValori.put("nomeprodotto", nomeProdotto);
+            hashValori.put("prezzoprodotto", prezzoProdotto);
+            HashMap<String, Integer> tmpExtra = (hashValori.get("extra") != null) ? (HashMap<String, Integer>) (hashValori.get("extra")) : new HashMap<String, Integer>();
+            if (!nomeExtra.equals("null")) {
+                if (tmpExtra.get(nomeExtra) != null) {
+                    tmpExtra.put(nomeExtra, 3); // DOPPIO EXTRA
+                } else {
+                    tmpExtra.put(nomeExtra, Integer.parseInt(tipoExtra));
+                }
+            }
+            hashValori.put("extra", tmpExtra);
+            sparseDettagli.put(idColonna, hashValori);
         }
-        mostraDettaglio(hashColonne, telefono, cognome, isTolti, isAggiunti);
+        //mostraDettaglio(hashColonne, telefono, cognome, isTolti, isAggiunti);
+        debugDettagli(sparseDettagli);
+    }
+
+    private void debugDettagli(SparseArray<HashMap<String, Object>> sparseDettagli) {
+        for (int i = 0; i < sparseDettagli.size(); i++) {
+            HashMap<String, Object> hashTmp = sparseDettagli.valueAt(i);
+            System.out.println("NOME PIZZA = " + hashTmp.get("nomeprodotto").toString());
+            System.out.println("PREZZO PIZZA = " + hashTmp.get("prezzoprodotto").toString());
+
+            HashMap<String, Integer> tmpExtra = (HashMap<String, Integer>) (hashTmp.get("extra"));
+            Iterator itr = tmpExtra.entrySet().iterator();
+            while (itr.hasNext()) {
+                Map.Entry riga = (Map.Entry) itr.next();
+                final String nomeIngrediente = riga.getKey().toString();
+                final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
+                System.out.println("EXTRA = " + nomeIngrediente + " ; TIPO = " + tipoIngrediente);
+            }
+            System.out.println("-------------------------------");
+        }
     }
 
     private RelativeLayout dettaglioPizze(SparseArray<List<HashMap<String, String>>> hashPizze, boolean isTolti, boolean isAggiunti, RelativeLayout layoutPizze) {
