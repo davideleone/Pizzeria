@@ -7,6 +7,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -21,7 +22,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -95,6 +95,7 @@ public class RiepilogoOrdini extends Fragment {
         spinnerDate = (Spinner) view.findViewById(R.id.date_settimane);
 
         HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
+        HttpManager.execSimple("ELIMINA_UTENTI_TEMP", context);
 
         String[] dateSettimana;
         Calendar c = Calendar.getInstance(Locale.ITALY);
@@ -462,7 +463,7 @@ public class RiepilogoOrdini extends Fragment {
                         new HttpManager.AsyncManager(new AsyncResponse() {
                             @Override
                             public void processFinish(Object output) {
-                                fixDettagliPizze(output, telefono, cognome);
+                                fixDettagliPizze(output, telefono, cognome, stato);
                             }
                         }, context, "GET_PIZZE_CON_EXTRA", new String[]{idOrdine}).execute();
                     }
@@ -613,9 +614,12 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(btnMostra);
                 row.addView(btnModifica);
 
-                if (stato != 2) {
+                if (!(stato == 2 || stato == 3)) {
                     btnConsegna.setEnabled(false);
                     btnConsegna.setImageResource(R.drawable.consegna_not_enabled);
+                } else {
+                    btnConsegna.setEnabled(true);
+                    btnConsegna.setImageResource(R.drawable.consegna);
                 }
 
                 row.addView(btnConsegna);
@@ -626,31 +630,24 @@ public class RiepilogoOrdini extends Fragment {
             }
         } else {
             Toast.makeText(context, "Nessun nuovo ordine", Toast.LENGTH_SHORT).show();
-    }
+        }
 
     }
 
-    private void mostraDettaglio(SparseArray<List<HashMap<String, String>>> hashPizze, String telefono, String cognome, boolean isTolti, boolean isAggiunti) {
+    private void mostraDettaglio(SparseArray<HashMap<String, Object>> sparseDettagli, String telefono, String cognome, String stato) {
         final RelativeLayout layoutContenitore = new RelativeLayout(context);
 
         RelativeLayout layoutDettaglio = new RelativeLayout(context);
         layoutDettaglio.setId(View.generateViewId());
 
-        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_80dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramsStatoText.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramsStatoText.setMargins(0, 15, 0, 0);
         TextView textStato = new TextView(context);
         textStato.setId(View.generateViewId());
-        textStato.setText("Stato: ");
+        textStato.setText("Stato: " + stato);
         textStato.setTextAppearance(context, R.style.testoGrande);
         textStato.setLayoutParams(paramsStatoText);
-
-        RelativeLayout.LayoutParams paramsStato = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_45dp), ViewGroup.LayoutParams.WRAP_CONTENT);
-        paramsStato.addRule(RelativeLayout.END_OF, textStato.getId());
-        ImageView imgStato = new ImageView(context);
-        imgStato.setId(View.generateViewId());
-        imgStato.setLayoutParams(paramsStato);
-        imgStato.setImageResource(R.drawable.giallo);
 
         RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
         paramsConsegna.addRule(RelativeLayout.BELOW, textStato.getId());
@@ -689,10 +686,9 @@ public class RiepilogoOrdini extends Fragment {
         RelativeLayout.LayoutParams paramsCaricamento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramsCaricamento.addRule(RelativeLayout.CENTER_HORIZONTAL, separator.getId());
 
-        layoutPizze = dettaglioPizze(hashPizze, isTolti, isAggiunti, layoutPizze);
+        layoutPizze = dettaglioPizze(sparseDettagli, layoutPizze);
 
         layoutDettaglio.addView(textStato);
-        layoutDettaglio.addView(imgStato);
         layoutDettaglio.addView(textConsegna);
         layoutDettaglio.addView(textTelefono);
         layoutDettaglio.addView(separator);
@@ -707,7 +703,7 @@ public class RiepilogoOrdini extends Fragment {
         //getPizzeOrdine(idOrdine);
     }
 
-    private void fixDettagliPizze(Object param, String telefono, String cognome) {
+    private void fixDettagliPizze(Object param, String telefono, String cognome, int stato) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
         Iterator<HashMap<String, String>> itr = lista.iterator();
         HashMap<String, Integer> hashExtra = new HashMap<String, Integer>();
@@ -736,112 +732,101 @@ public class RiepilogoOrdini extends Fragment {
             hashValori.put("extra", tmpExtra);
             sparseDettagli.put(idColonna, hashValori);
         }
-        //mostraDettaglio(hashColonne, telefono, cognome, isTolti, isAggiunti);
-        debugDettagli(sparseDettagli);
+        mostraDettaglio(sparseDettagli, telefono, cognome, convertiStato(stato));
     }
 
-    private void debugDettagli(SparseArray<HashMap<String, Object>> sparseDettagli) {
+
+    private RelativeLayout dettaglioPizze(SparseArray<HashMap<String, Object>> sparseDettagli, RelativeLayout layoutPizze) {
+
         for (int i = 0; i < sparseDettagli.size(); i++) {
+            boolean tolti = false;
+            boolean aggiunti = false;
             HashMap<String, Object> hashTmp = sparseDettagli.valueAt(i);
-            System.out.println("NOME PIZZA = " + hashTmp.get("nomeprodotto").toString());
-            System.out.println("PREZZO PIZZA = " + hashTmp.get("prezzoprodotto").toString());
+            final String nomeProdotto = hashTmp.get("nomeprodotto").toString();
+            final String prezzoProdotto = hashTmp.get("prezzoprodotto").toString();
+
+            RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            if (layoutPizze.getChildCount() > 0)
+                paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
+            paramsNome.setMargins(30, 30, 0, 0);
+
+            final TextView nomeProdottoTxt = new TextView(context);
+            nomeProdottoTxt.setText("- " + nomeProdotto);
+            nomeProdottoTxt.setId(View.generateViewId());
+            nomeProdottoTxt.setTextSize(20);
+            nomeProdottoTxt.setTypeface(null, Typeface.BOLD);
+            nomeProdottoTxt.setLayoutParams(paramsNome);
+            layoutPizze.addView(nomeProdottoTxt);
+
+            RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramsPrezzo.addRule(RelativeLayout.END_OF, nomeProdottoTxt.getId());
+            if (layoutPizze.getChildCount() > 1)
+                paramsPrezzo.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 2).getId());
+
+            paramsPrezzo.setMargins(20, 30, 0, 0);
+
+            TextView prezzoPizza = new TextView(context);
+            prezzoPizza.setText(new DecimalFormat("#0.00 €").format(Float.parseFloat(prezzoProdotto)));
+            prezzoPizza.setId(View.generateViewId());
+            prezzoPizza.setTextSize(20);
+            prezzoPizza.setTypeface(null, Typeface.BOLD);
+            prezzoPizza.setLayoutParams(paramsPrezzo);
+            layoutPizze.addView(prezzoPizza);
+
+            RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramTolti.addRule(RelativeLayout.BELOW, nomeProdottoTxt.getId());
+            paramTolti.setMargins(80, 0, 0, 0);
+
+            TextView nomeingredientiTolti = new TextView(context);
+            nomeingredientiTolti.setText("SENZA ");
+            nomeingredientiTolti.setId(View.generateViewId());
+            nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
+            nomeingredientiTolti.setMaxEms(20);
+            nomeingredientiTolti.setLayoutParams(paramTolti);
+
+            RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramAggiunti.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
+            paramAggiunti.setMargins(80, 0, 0, 0);
+
+            TextView nomeingredientiAggiunti = new TextView(context);
+            nomeingredientiAggiunti.setText("PIU' ");
+            nomeingredientiAggiunti.setId(View.generateViewId());
+            nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
+            nomeingredientiAggiunti.setMaxEms(20);
+
 
             HashMap<String, Integer> tmpExtra = (HashMap<String, Integer>) (hashTmp.get("extra"));
             Iterator itr = tmpExtra.entrySet().iterator();
+
+
             while (itr.hasNext()) {
                 Map.Entry riga = (Map.Entry) itr.next();
                 final String nomeIngrediente = riga.getKey().toString();
                 final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
-                System.out.println("EXTRA = " + nomeIngrediente + " ; TIPO = " + tipoIngrediente);
-            }
-            System.out.println("-------------------------------");
-        }
-    }
 
-    private RelativeLayout dettaglioPizze(SparseArray<List<HashMap<String, String>>> hashPizze, boolean isTolti, boolean isAggiunti, RelativeLayout layoutPizze) {
-        for (int i = 0; i < hashPizze.size(); i++) {
-            boolean baseLayoutCreata = false;
-            List<HashMap<String, String>> listaPizza = hashPizze.valueAt(i);
-            Iterator<HashMap<String, String>> itrPizza = listaPizza.iterator();
-
-            TextView nomeingredientiAggiunti = new TextView(context);
-            TextView nomeingredientiTolti = new TextView(context);
-
-            while (itrPizza.hasNext()) {
-                HashMap<String, String> valorePizza = itrPizza.next();
-                final String nome = valorePizza.get("nomeprodotto");
-                final float prezzo = Float.parseFloat(valorePizza.get("prezzoprodotto"));
-                final int tipoExtra = (valorePizza.get("tipo").equals("null")) ? 0 : Integer.parseInt(valorePizza.get("tipo"));
-                final String nomeExtra = valorePizza.get("nomeextra");
-
-                if (!baseLayoutCreata) {
-                    RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    if (layoutPizze.getChildCount() > 0)
-                        paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
-                    paramsNome.setMargins(30, 30, 0, 0);
-
-                    final TextView nomeProdotto = new TextView(context);
-                    nomeProdotto.setText("- " + nome);
-                    nomeProdotto.setId(View.generateViewId());
-                    nomeProdotto.setTextSize(20);
-                    nomeProdotto.setLayoutParams(paramsNome);
-                    layoutPizze.addView(nomeProdotto);
-
-                    RelativeLayout.LayoutParams paramsPrezzo = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    paramsPrezzo.addRule(RelativeLayout.END_OF, nomeProdotto.getId());
-                    paramsPrezzo.setMargins(20, 0, 0, 0);
-
-                    TextView prezzoPizza = new TextView(context);
-                    prezzoPizza.setText(new DecimalFormat("#0.00 €").format(prezzo));
-                    prezzoPizza.setId(View.generateViewId());
-                    prezzoPizza.setTextSize(20);
-                    prezzoPizza.setTextAppearance(context, R.style.testoGrande);
-                    prezzoPizza.setLayoutParams(paramsPrezzo);
-                    layoutPizze.addView(prezzoPizza);
-
-                    if (isTolti) {
-                        RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        paramTolti.addRule(RelativeLayout.BELOW, nomeProdotto.getId());
-                        paramTolti.setMargins(80, 0, 0, 0);
-                        nomeingredientiTolti.setText("NO ");
-                        nomeingredientiTolti.setId(View.generateViewId());
-                        nomeingredientiTolti.setTextAppearance(context, R.style.testoPiccolo);
-                        nomeingredientiTolti.setMaxEms(20);
-                        nomeingredientiTolti.setLayoutParams(paramTolti);
-                        layoutPizze.addView(nomeingredientiTolti);
-                    }
-
-                    if (isAggiunti) {
-                        RelativeLayout.LayoutParams paramAggiunti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        /*if (!isTolti)
-                            paramAggiunti.addRule(RelativeLayout.BELOW, nomeingredientiTolti.getId());
-                        else*/
-                        paramAggiunti.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
-
-                        paramAggiunti.setMargins(80, 0, 0, 0);
-                        nomeingredientiAggiunti.setText("PIU' ");
-                        nomeingredientiAggiunti.setId(View.generateViewId());
-                        nomeingredientiAggiunti.setTextAppearance(context, R.style.testoPiccolo);
-                        nomeingredientiAggiunti.setMaxEms(20);
-                        nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
-                        layoutPizze.addView(nomeingredientiAggiunti);
-                    }
-                    baseLayoutCreata = true;
+                if (tipoIngrediente == 2) {
+                    tolti = true;
+                    nomeingredientiTolti.append(" " + nomeIngrediente);
+                } else if (tipoIngrediente == 1) {
+                    aggiunti = true;
+                    nomeingredientiAggiunti.append(" " + nomeIngrediente);
                 }
 
-                if (tipoExtra == 1) {
-                    if (itrPizza.hasNext())
-                        nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + nomeExtra + ", ");
-                    else
-                        nomeingredientiAggiunti.setText(nomeingredientiAggiunti.getText() + nomeExtra + "");
-
-                } else {
-                    if (itrPizza.hasNext())
-                        nomeingredientiTolti.setText(nomeingredientiTolti.getText() + nomeExtra + ", ");
-                    else
-                        nomeingredientiTolti.setText(nomeingredientiTolti.getText() + nomeExtra + "");
-                }
             }
+
+
+            if (tolti) {
+                layoutPizze.addView(nomeingredientiTolti);
+            }
+            if (aggiunti) {
+                if (tolti)
+                    paramAggiunti.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
+                else
+                    paramAggiunti.addRule(RelativeLayout.BELOW, nomeProdottoTxt.getId());
+                nomeingredientiAggiunti.setLayoutParams(paramAggiunti);
+                layoutPizze.addView(nomeingredientiAggiunti);
+            }
+
         }
         return layoutPizze;
     }
@@ -864,6 +849,22 @@ public class RiepilogoOrdini extends Fragment {
         recyclableImageButton.setImageResource(img);
         recyclableImageButton.setBackgroundColor(Color.TRANSPARENT);
         return recyclableImageButton;
+    }
+
+    private String convertiStato(int Stato) {
+        String stato = "";
+        switch (Stato) {
+            case 1:
+                stato = "D'asporto";
+                break;
+            case 2:
+                stato = "Da affidare al fattorino";
+                break;
+            case 3:
+                stato = "In consegna";
+                break;
+        }
+        return stato;
     }
 
 }
