@@ -104,6 +104,7 @@ public class NuovoOrdine extends Fragment {
     private HashMap<String, String> hashOrdine = null;
     private HashMap<String, String> hashOrdineCompletato = null;
     private int idUltimoExtra = -1;
+    private CheckBox scontoChechbox;
 
     private SparseArray<HashMap<TableLayout, List<Integer>>> sparseMetri = new SparseArray<HashMap<TableLayout, List<Integer>>>();
 
@@ -139,7 +140,7 @@ public class NuovoOrdine extends Fragment {
         listaCitta = (ArrayList<String>) bundle.getSerializable("LISTA_CITTA");
         listaProdotti = (ArrayList<HashMap<String, String>>) bundle.getSerializable("LISTA_PRODOTTI");
 
-        hashOrdineCompletato = new HashMap<>(8);
+        hashOrdineCompletato = new HashMap<>(9);
 
 
         adapterCitta = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaCitta);
@@ -179,6 +180,7 @@ public class NuovoOrdine extends Fragment {
         inizializzaTabelle();
 
         if (bundle.getSerializable("HASHMAP_ORDINE") != null) {
+            ((DrawerLocker) getActivity()).setDrawerEnabled(false);
             hashOrdine = (HashMap<String, String>) bundle.getSerializable("HASHMAP_ORDINE");
             idOrdine = hashOrdine.get("idordine");
             new HttpManager.AsyncManager(new AsyncResponse() {
@@ -188,6 +190,8 @@ public class NuovoOrdine extends Fragment {
                 }
             }, context, "GET_PRODOTTI_IN_ORDINE", new String[]{idOrdine}).execute();
         } else {
+            ((DrawerLocker) getActivity()).setDrawerEnabled(true);
+
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
@@ -415,6 +419,16 @@ public class NuovoOrdine extends Fragment {
                 spinnerOre.setAdapter(adapterOre);
                 spinnerOre.setLayoutParams(editTextOraSpinnerParams);
 
+                RelativeLayout.LayoutParams editTextScontoChechboxParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                scontoChechbox = new CheckBox(context);
+                scontoChechbox.setId(View.generateViewId());
+                editTextScontoChechboxParams.addRule(RelativeLayout.BELOW, txtOra.getId());
+                editTextScontoChechboxParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                editTextScontoChechboxParams.setMargins(40, 0, 0, 40);
+                scontoChechbox.setLayoutParams(editTextScontoChechboxParams);
+                scontoChechbox.setTextSize(25);
+                scontoChechbox.setText("Sconto");
 
                 inserimentoLayout.addView(nomeInput);
                 inserimentoLayout.addView(cognomeInput);
@@ -428,6 +442,7 @@ public class NuovoOrdine extends Fragment {
                 inserimentoLayout.addView(spinnerDate);
                 inserimentoLayout.addView(txtOra);
                 inserimentoLayout.addView(spinnerOre);
+                inserimentoLayout.addView(scontoChechbox);
                 scrollView.addView(inserimentoLayout);
 
                 cognome.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -458,12 +473,20 @@ public class NuovoOrdine extends Fragment {
                     telefono.setText(hashOrdine.get("telefono"));
                     spinnerDate.setSelection(listaCitta.indexOf(hashOrdine.get("data")));
                     spinnerOre.setSelection(listaCitta.indexOf(hashOrdine.get("ora")));
+                    Toast.makeText(context, hashOrdine.get("sconto"), Toast.LENGTH_SHORT).show();
                     if (!hashOrdine.get("citta").equals(" ----- ")) {
                         via.setText(hashOrdine.get("via"));
                         spinnerCitta.setSelection(listaCitta.indexOf(hashOrdine.get("citta")));
                         consegna.setChecked(true);
                         layoutConsegna.setVisibility(View.VISIBLE);
                     }
+
+                    if (hashOrdine.get("sconto").equals("true")) {
+                        scontoChechbox.setChecked(true);
+                        scontoChechbox.setEnabled(false);
+                    } else
+                        scontoChechbox.setChecked(false);
+
                     nome.setEnabled(false);
                     cognome.setEnabled(false);
                 }
@@ -511,7 +534,7 @@ public class NuovoOrdine extends Fragment {
                             }
 
                             if (isStessoCliente) {
-                                completaOrdine(strData, strOra, strNome, strCognome, strTelefono, "-1");
+                                completaOrdine(consegna.isChecked(), scontoChechbox.isChecked(), strData, strOra, strNome, strCognome, strTelefono, "-1");
                             } else if (hashOrdine != null) {
                                 HttpManager.execSimple("ELIMINA_LEGAME_CREA", null, idOrdine);
                             }
@@ -530,18 +553,18 @@ public class NuovoOrdine extends Fragment {
                                             @Override
                                             public void processFinish(Object output) {
                                                 List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
-                                                completaOrdine(strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
+                                                completaOrdine(consegna.isChecked(), scontoChechbox.isChecked(), strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
                                             }
                                         }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
                                     } else {
-                                        completaOrdine(strData, strOra, strNome, strCognome, strTelefono, Integer.toString(idClienteEsistente));
+                                        completaOrdine(consegna.isChecked(), scontoChechbox.isChecked(), strData, strOra, strNome, strCognome, strTelefono, Integer.toString(idClienteEsistente));
                                     }
                                 } else {
                                     new HttpManager.AsyncManager(new AsyncResponse() {
                                         @Override
                                         public void processFinish(Object output) {
                                             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
-                                            completaOrdine(strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
+                                            completaOrdine(consegna.isChecked(), scontoChechbox.isChecked(), strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
                                         }
                                     }, null, "INSERISCI_CLIENTE_TEMP", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
                                 }
@@ -595,12 +618,20 @@ public class NuovoOrdine extends Fragment {
     }
 
 
-    private void completaOrdine(String strData, String strOra, String strNome, String strCognome, String strTelefono, String idClienteDaAssociare) {
+    private void completaOrdine(boolean consegna, boolean sconto, String strData, String strOra, String strNome, String strCognome, String strTelefono, String idClienteDaAssociare) {
 
-        if (consegna.isChecked())
-            HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, (totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString(), strCitta, strOra, strData, strVia, strTelefono, idOrdine);
+        Double contoTotale = Double.parseDouble((totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString());
+
+        if (sconto)
+            contoTotale = Funzioni.arrotonda(contoTotale - ((contoTotale * 10) / 100));
+
+        if (consegna) {
+            if (contoTotale < 20)
+                contoTotale++;
+            HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, "" + contoTotale, strCitta, strOra, strData, strVia, strTelefono, "" + sconto, idOrdine);
+        }
         else
-            HttpManager.execSimple("AGGIORNA_ORDINE_ASPORTO", null, (totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString(), strOra, strData, strTelefono, idOrdine);
+            HttpManager.execSimple("AGGIORNA_ORDINE_ASPORTO", null, "" + contoTotale, strOra, strData, strTelefono, idOrdine);
 
         if (!idClienteDaAssociare.equals("-1"))
             HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, idOrdine, idClienteDaAssociare, strNome, strCognome, "Pizzeria");
@@ -615,9 +646,8 @@ public class NuovoOrdine extends Fragment {
         hashOrdineCompletato.put("Via", strVia);
         hashOrdineCompletato.put("Citta", strCitta);
         hashOrdineCompletato.put("Telefono", strTelefono);
-        hashOrdineCompletato.put("Totale", totale.getText().toString());
-
-        hashOrdineCompletato.toString();
+        hashOrdineCompletato.put("Totale", "" + contoTotale);
+        hashOrdineCompletato.put("Sconto", "" + sconto);
 
         RiepilogoOrdini fragment = new RiepilogoOrdini();
         bundle.putString("ID_ORDINE_COMPLETATO", idOrdine);

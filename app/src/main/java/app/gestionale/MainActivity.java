@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DrawerLocker {
 
     private DrawerLayout mDrawer;
     private Toolbar toolbar;
@@ -239,4 +239,11 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
     }
 
+    @Override
+    public void setDrawerEnabled(boolean enabled) {
+        int lockMode = enabled ? DrawerLayout.LOCK_MODE_UNLOCKED :
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED;
+        mDrawer.setDrawerLockMode(lockMode);
+        drawerToggle.setDrawerIndicatorEnabled(enabled);
+    }
 }

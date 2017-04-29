@@ -61,6 +61,7 @@ public class Fattorini extends Fragment {
         context = view.getContext();
         super.onCreate(savedInstanceState);
 
+        ((DrawerLocker) getActivity()).setDrawerEnabled(true);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
         layoutInserimentoToolbar.setVisibility(View.GONE);

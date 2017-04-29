@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -61,6 +62,9 @@ public class RiepilogoOrdini extends Fragment {
     private String intestazione = "";
     private String idOrdine = "";
     private HashMap<String, String> hashOrdineCompletato = null;
+    private TextView nomeProdottoTxt;
+    private ScrollView scrollView;
+    private String sconto = "";
 
     @Override
     public void onAttach(Context context) {
@@ -85,6 +89,7 @@ public class RiepilogoOrdini extends Fragment {
         context = view.getContext();
         super.onCreate(savedInstanceState);
 
+        ((DrawerLocker) getActivity()).setDrawerEnabled(true);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
         layoutInserimentoToolbar.setVisibility(View.GONE);
@@ -97,7 +102,7 @@ public class RiepilogoOrdini extends Fragment {
         if (bundle.getString("ID_ORDINE_COMPLETATO") != null) {
             idOrdine = bundle.getString("ID_ORDINE_COMPLETATO");
             hashOrdineCompletato = (HashMap<String, String>) bundle.getSerializable("HASH_ORDINE_COMPLETATO");
-            Toast.makeText(context, "Id_ordine_creato: " + idOrdine, Toast.LENGTH_SHORT).show();
+            sconto = hashOrdineCompletato.get("Sconto");
 
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
@@ -569,7 +574,9 @@ public class RiepilogoOrdini extends Fragment {
                 btnModifica.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        HashMap<String, String> tmp_hash = new HashMap<>(8);
+
+
+                        HashMap<String, String> tmp_hash = new HashMap<>(9);
                         tmp_hash.put("idordine", idOrdine);
                         tmp_hash.put("data", dataOrdine.getText().toString());
                         tmp_hash.put("ora", oraOrdine.getText().toString());
@@ -578,6 +585,7 @@ public class RiepilogoOrdini extends Fragment {
                         tmp_hash.put("via", viaOrdine.getText().toString());
                         tmp_hash.put("citta", cittaOrdine.getText().toString());
                         tmp_hash.put("telefono", telefono);
+                        tmp_hash.put("sconto", "" + sconto);
 
                         NuovoOrdine fragment = new NuovoOrdine();
                         bundle.putSerializable("HASHMAP_ORDINE", tmp_hash);
@@ -639,8 +647,11 @@ public class RiepilogoOrdini extends Fragment {
                 row.addView(btnConsegna);
                 row.addView(btnElimina);
 
-                mappaRows.put(row, ((stato != 3) ? tabellaOrdini : tabellaAssegnati));
-                ((stato != 3) ? tabellaOrdini : tabellaAssegnati).addView(row);
+                if (stato == 1)
+                    row.setBackgroundResource(R.color.menu_primary);
+
+                mappaRows.put(row, (!(stato == 1 || stato == 3) ? tabellaOrdini : tabellaAssegnati));
+                (!(stato == 1 || stato == 3) ? tabellaOrdini : tabellaAssegnati).addView(row);
             }
         } else {
             Toast.makeText(context, "Nessun nuovo ordine", Toast.LENGTH_SHORT).show();
@@ -690,24 +701,23 @@ public class RiepilogoOrdini extends Fragment {
         separator.setBackgroundColor(getResources().getColor(R.color.grigio));
         separator.setLayoutParams(paramsLinea);
 
-        RelativeLayout.LayoutParams paramsLayoutPizze = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramsLayoutPizze = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         paramsLayoutPizze.addRule(RelativeLayout.BELOW, layoutDettaglio.getId());
-        RelativeLayout layoutPizze = new RelativeLayout(context);
-        layoutPizze.setGravity(Gravity.CENTER);
-        layoutPizze.setLayoutParams(paramsLayoutPizze);
-        layoutPizze.setId(View.generateViewId());
+
+        scrollView = new ScrollView(context);
+        scrollView.setLayoutParams(paramsLayoutPizze);
 
         RelativeLayout.LayoutParams paramsCaricamento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramsCaricamento.addRule(RelativeLayout.CENTER_HORIZONTAL, separator.getId());
 
-        layoutPizze = dettaglioPizze(sparseDettagli, layoutPizze);
+        scrollView = dettaglioPizze(sparseDettagli, scrollView);
 
         layoutDettaglio.addView(textStato);
         layoutDettaglio.addView(textConsegna);
         layoutDettaglio.addView(textTelefono);
         layoutDettaglio.addView(separator);
         layoutContenitore.addView(layoutDettaglio);
-        layoutContenitore.addView(layoutPizze);
+        layoutContenitore.addView(scrollView);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Dettaglio ordine di " + cognome);
@@ -715,6 +725,7 @@ public class RiepilogoOrdini extends Fragment {
         builder.create().show();
 
     }
+
 
     private void fixDettagliPizze(Object param, String telefono, String cognome, int stato) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
@@ -752,21 +763,53 @@ public class RiepilogoOrdini extends Fragment {
     }
 
 
-    private RelativeLayout dettaglioPizze(SparseArray<HashMap<String, Object>> sparseDettagli, RelativeLayout layoutPizze) {
+    private ScrollView dettaglioPizze(SparseArray<HashMap<String, Object>> sparseDettagli, ScrollView scrollView) {
 
+        RelativeLayout layoutPizze = new RelativeLayout(context);
+        layoutPizze.setGravity(Gravity.CENTER);
+        //layoutPizze.setLayoutParams(paramsLayoutPizze);
+        layoutPizze.setId(View.generateViewId());
+
+        int idmetro_old = 0;
         for (int i = 0; i < sparseDettagli.size(); i++) {
             boolean tolti = false;
             boolean aggiunti = false;
             HashMap<String, Object> hashTmp = sparseDettagli.valueAt(i);
             final String nomeProdotto = hashTmp.get("nomeprodotto").toString();
             final String prezzoProdotto = hashTmp.get("prezzoprodotto").toString();
+            final int idMetro = Integer.parseInt(hashTmp.get("metro").toString());
+
+
+            if ((idMetro != idmetro_old) && idMetro != -1) {
+
+                RelativeLayout.LayoutParams paramsMetro = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                if (layoutPizze.getChildCount() > 0)
+                    paramsMetro.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
+                paramsMetro.setMargins(30, 30, 0, 0);
+
+                TextView mezzometroTxt = new TextView(context);
+                mezzometroTxt.setText("1/2 Metro");
+                mezzometroTxt.setLayoutParams(paramsMetro);
+                mezzometroTxt.setId(View.generateViewId());
+                mezzometroTxt.setTextSize(20);
+                mezzometroTxt.setTypeface(null, Typeface.BOLD);
+                layoutPizze.addView(mezzometroTxt);
+
+                idmetro_old = idMetro;
+            }
+
+
 
             RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             if (layoutPizze.getChildCount() > 0)
                 paramsNome.addRule(RelativeLayout.BELOW, layoutPizze.getChildAt(layoutPizze.getChildCount() - 1).getId());
-            paramsNome.setMargins(30, 30, 0, 0);
+            if (idMetro != -1)
+                paramsNome.setMargins(60, 30, 0, 0);
+            else
+                paramsNome.setMargins(30, 30, 0, 0);
 
-            final TextView nomeProdottoTxt = new TextView(context);
+
+            nomeProdottoTxt = new TextView(context);
             nomeProdottoTxt.setText("- " + nomeProdotto);
             nomeProdottoTxt.setId(View.generateViewId());
             nomeProdottoTxt.setTextSize(20);
@@ -788,6 +831,7 @@ public class RiepilogoOrdini extends Fragment {
             prezzoPizza.setTypeface(null, Typeface.BOLD);
             prezzoPizza.setLayoutParams(paramsPrezzo);
             layoutPizze.addView(prezzoPizza);
+
 
             RelativeLayout.LayoutParams paramTolti = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramTolti.addRule(RelativeLayout.BELOW, nomeProdottoTxt.getId());
@@ -823,11 +867,13 @@ public class RiepilogoOrdini extends Fragment {
                 if (tipoIngrediente == 2) {
                     tolti = true;
                     nomeingredientiTolti.append(" " + nomeIngrediente);
-                } else if (tipoIngrediente == 1 || tipoIngrediente == 3) {
+                } else if (tipoIngrediente == 1) {
                     aggiunti = true;
-                    nomeingredientiAggiunti.append(((tipoIngrediente == 3) ? " " : " 2x") + nomeIngrediente);
+                    nomeingredientiAggiunti.append(" " + nomeIngrediente);
+                } else if (tipoIngrediente == 3) {
+                    aggiunti = true;
+                    nomeingredientiAggiunti.append(" 2 x " + nomeIngrediente);
                 }
-
             }
 
 
@@ -844,7 +890,8 @@ public class RiepilogoOrdini extends Fragment {
             }
 
         }
-        return layoutPizze;
+        scrollView.addView(layoutPizze);
+        return scrollView;
     }
 
 
@@ -900,6 +947,7 @@ public class RiepilogoOrdini extends Fragment {
             final String nomeExtra = riga.get("nomeextra");
             final String tipoExtra = riga.get("tipo");
 
+
             HashMap<String, Object> hashValori = (sparseDettagli.get(idColonna) != null) ? sparseDettagli.get(idColonna) : new HashMap<String, Object>();
             hashValori.put("nomeprodotto", nomeProdotto);
             hashValori.put("prezzoprodotto", prezzoProdotto);
@@ -915,6 +963,8 @@ public class RiepilogoOrdini extends Fragment {
             sparseDettagli.put(idColonna, hashValori);
         }
 
+        String ingredientiAggiunti = "PIU'";
+        String ingredientiTolti = "NO";
 
         for (int i = 0; i < sparseDettagli.size(); i++) {
             HashMap<String, Object> hashTmp = sparseDettagli.valueAt(i);
@@ -927,13 +977,25 @@ public class RiepilogoOrdini extends Fragment {
                 final String nomeIngrediente = riga.getKey().toString();
                 final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
                 if (nomeIngrediente.equals("Integrale") || nomeIngrediente.equals("7 Cereali")) {
-                    nomeprodotto += " [" + nomeIngrediente.substring(0, 3) + "]";
-                }
-                //System.out.println("EXTRA = " + nomeIngrediente + " ; TIPO = " + tipoIngrediente);
+                    nomeprodotto += " [" + nomeIngrediente + "]";
+                } else if (tipoIngrediente == 1)
+                    ingredientiAggiunti += " " + nomeIngrediente;
+                else if (tipoIngrediente == 2)
+                    ingredientiTolti += " " + nomeIngrediente + " ";
+                else if (tipoIngrediente == 3)
+                    ingredientiAggiunti += " 2x" + nomeIngrediente;
             }
 
             testoDaStampare += "- " + nomeprodotto + " " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(hashTmp.get("prezzoprodotto").toString())) + "\n";
+            if (!ingredientiTolti.equals("NO"))
+                testoDaStampare += ingredientiTolti + "\n";
+            if (ingredientiAggiunti.equals("PIU'"))
+                testoDaStampare += "\n";
+            if (!ingredientiAggiunti.equals("PIU'"))
+                testoDaStampare += ingredientiAggiunti + "\n\n";
 
+            ingredientiAggiunti = "PIU'";
+            ingredientiTolti = "NO";
         }
 
         testoDaStampare += "--------------------------\n";
@@ -941,17 +1003,18 @@ public class RiepilogoOrdini extends Fragment {
 
         testoDaStampare += "Data: " + Funzioni.formattaData(hashOrdineCompletato.get("Data")) + "\n";
         testoDaStampare += "Ora: " + hashOrdineCompletato.get("Ora") + "\n";
-        if (!hashOrdineCompletato.get("Via").equals("null"))
+        if (!hashOrdineCompletato.get("Via").equals(""))
             testoDaStampare += "Via: " + hashOrdineCompletato.get("Via") + "\n";
-        if (!hashOrdineCompletato.get("Citta").equals("null"))
+        if (!hashOrdineCompletato.get("Citta").equals(""))
             testoDaStampare += "Citta: " + hashOrdineCompletato.get("Citta") + "\n";
         testoDaStampare += "Sig: " + hashOrdineCompletato.get("Cognome");
-        if (!hashOrdineCompletato.get("Nome").equals("null"))
+        if (!hashOrdineCompletato.get("Nome").equals(""))
             testoDaStampare += ", " + hashOrdineCompletato.get("Nome") + "\n";
         testoDaStampare += "Tel: " + hashOrdineCompletato.get("Telefono");
 
+        System.out.print(testoDaStampare);
 
-        try {
+        /*try {
             Stampa stampa = new Stampa(getActivity(), context);
             stampa.findBT();
             stampa.openBT();
@@ -959,7 +1022,7 @@ public class RiepilogoOrdini extends Fragment {
             stampa.closeBT();
         } catch (Exception e) {
 
-        }
+        }*/
     }
 
 }

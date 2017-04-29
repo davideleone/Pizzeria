@@ -78,6 +78,7 @@ public class Clienti extends Fragment {
         super.onCreate(savedInstanceState);
         tableClienti = (TableLayout) view.findViewById(R.id.tabell_clienti);
 
+        ((DrawerLocker) getActivity()).setDrawerEnabled(true);
         clienti = (ArrayList<SparseArray<HashMap<String, String>>>) bundle.getSerializable("LISTA_CLIENTI");
         listaCitta = (ArrayList<String>) bundle.getSerializable("LISTA_CITTA");
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
