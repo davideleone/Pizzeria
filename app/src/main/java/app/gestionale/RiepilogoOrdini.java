@@ -730,10 +730,13 @@ public class RiepilogoOrdini extends Fragment {
             final String prezzoProdotto = riga.get("prezzoprodotto");
             final String nomeExtra = riga.get("nomeextra");
             final String tipoExtra = riga.get("tipo");
+            final String idMetro = riga.get("idmetro");
 
             HashMap<String, Object> hashValori = (sparseDettagli.get(idColonna) != null) ? sparseDettagli.get(idColonna) : new HashMap<String, Object>();
             hashValori.put("nomeprodotto", nomeProdotto);
             hashValori.put("prezzoprodotto", prezzoProdotto);
+            hashValori.put("metro", (idMetro.equals("null")) ? "-1" : idMetro); // SE NULL, IDMETRO == -1
+
             HashMap<String, Integer> tmpExtra = (hashValori.get("extra") != null) ? (HashMap<String, Integer>) (hashValori.get("extra")) : new HashMap<String, Integer>();
             if (!nomeExtra.equals("null")) {
                 if (tmpExtra.get(nomeExtra) != null) {
@@ -820,9 +823,9 @@ public class RiepilogoOrdini extends Fragment {
                 if (tipoIngrediente == 2) {
                     tolti = true;
                     nomeingredientiTolti.append(" " + nomeIngrediente);
-                } else if (tipoIngrediente == 1) {
+                } else if (tipoIngrediente == 1 || tipoIngrediente == 3) {
                     aggiunti = true;
-                    nomeingredientiAggiunti.append(" " + nomeIngrediente);
+                    nomeingredientiAggiunti.append(((tipoIngrediente == 3) ? " " : " 2x") + nomeIngrediente);
                 }
 
             }
