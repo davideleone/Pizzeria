@@ -108,6 +108,8 @@ public class NuovoOrdine extends Fragment {
     private ArrayList<HashMap<String, String>> listaProdotti;
     private HashMap<String, String> hashOrdine = null;
     private HashMap<String, String> hashOrdineCompletato = null;
+    private RelativeLayout layoutModificaToolbar;
+    private Button btnModificaOrdine;
 
     private int idUltimoExtra = -1;
 
@@ -136,12 +138,12 @@ public class NuovoOrdine extends Fragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.activity_nuovo_ordine, container, false);
+        super.onCreate(savedInstanceState);
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         RelativeLayout layoutInserimentoToolbar = (RelativeLayout) toolbar.findViewById(R.id.layoutInserimentoToolbar);
         Button btnInserisci = (Button) toolbar.findViewById(R.id.inserisciOrdine);
         layoutInserimentoToolbar.setVisibility(View.VISIBLE);
         context = view.getContext();
-        super.onCreate(savedInstanceState);
 
         clienti = (ArrayList<SparseArray<HashMap<String, String>>>) bundle.getSerializable("LISTA_CLIENTI");
         listaCitta = (ArrayList<String>) bundle.getSerializable("LISTA_CITTA");
@@ -189,12 +191,15 @@ public class NuovoOrdine extends Fragment {
         if (bundle.getSerializable("HASHMAP_ORDINE") != null) {
             hashOrdine = (HashMap<String, String>) bundle.getSerializable("HASHMAP_ORDINE");
             idOrdine = hashOrdine.get("idordine");
+
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
                     recuperaOrdine(output);
                 }
             }, context, "GET_PRODOTTI_IN_ORDINE", new String[]{idOrdine}).execute();
+
+
         } else {
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override

@@ -10,6 +10,7 @@
     app:popupTheme="@style/AppTheme.PopupOverlay"
     app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
+
     <RelativeLayout
         android:id="@+id/layoutInserimentoToolbar"
         android:layout_width="wrap_content"
