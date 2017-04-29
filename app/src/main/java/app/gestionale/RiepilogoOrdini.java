@@ -51,7 +51,6 @@ public class RiepilogoOrdini extends Fragment {
     private Spinner spinnerDate;
     private ArrayAdapter<String> arrayDate;
     private String dataRicerca;
-    //private Spinner spinnerFattorini;
     private List<Integer> idFattorini = new ArrayList<Integer>();
     private List<String> nomiFattorini = new ArrayList<String>();
     private Map<TableRow, TableLayout> mappaRows = new HashMap<TableRow, TableLayout>();
@@ -60,6 +59,8 @@ public class RiepilogoOrdini extends Fragment {
     private String[] arrayFatt;
     private String testoDaStampare = "";
     private String intestazione = "";
+    private String idOrdine = "";
+    private HashMap<String, String> hashOrdineCompletato = null;
 
     @Override
     public void onAttach(Context context) {
@@ -79,7 +80,6 @@ public class RiepilogoOrdini extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.activity_riepilogo_ordini, container, false);
         context = view.getContext();
@@ -93,6 +93,21 @@ public class RiepilogoOrdini extends Fragment {
         tabellaOrdini = (TableLayout) view.findViewById(R.id.tabella_ordini);
         tabellaAssegnati = (TableLayout) view.findViewById(R.id.tabella_ordini_assegnati);
         spinnerDate = (Spinner) view.findViewById(R.id.date_settimane);
+
+        if (bundle.getString("ID_ORDINE_COMPLETATO") != null) {
+            idOrdine = bundle.getString("ID_ORDINE_COMPLETATO");
+            hashOrdineCompletato = (HashMap<String, String>) bundle.getSerializable("HASH_ORDINE_COMPLETATO");
+            Toast.makeText(context, "Id_ordine_creato: " + idOrdine, Toast.LENGTH_SHORT).show();
+
+            new HttpManager.AsyncManager(new AsyncResponse() {
+                @Override
+                public void processFinish(Object output) {
+                    stampaOrdine(output, hashOrdineCompletato);
+                }
+            }, context, "GET_PIZZE_CON_EXTRA", new String[]{idOrdine}).execute();
+
+
+        }
 
         HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
         HttpManager.execSimple("ELIMINA_UTENTI_TEMP", context);
@@ -142,7 +157,6 @@ public class RiepilogoOrdini extends Fragment {
             }
         });
 
-        //spinnerFattorini = new Spinner(context);
 
         caricaOrdini();
         caricaFattorini();
@@ -150,7 +164,6 @@ public class RiepilogoOrdini extends Fragment {
         FloatingActionMenu menu = (FloatingActionMenu) view.findViewById(R.id.fab_menu_circle);
         menu.setMultipleOfFB(3.2f);
         menu.setIsCircle(true);
-        // menu.;
 
         menu.setOnMenuItemClickListener(new FloatingActionMenu.OnMenuItemClickListener() {
             @Override
@@ -232,6 +245,7 @@ public class RiepilogoOrdini extends Fragment {
 
     private void mostraRiepilogo(Object param) {
         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        testoDaStampare = "";
         if (!lista.isEmpty()) {
             RelativeLayout.LayoutParams paramContenitoreInformazioni = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
             RelativeLayout layoutInformazioni = new RelativeLayout(context);
@@ -700,7 +714,6 @@ public class RiepilogoOrdini extends Fragment {
         builder.setView(layoutContenitore);
         builder.create().show();
 
-        //getPizzeOrdine(idOrdine);
     }
 
     private void fixDettagliPizze(Object param, String telefono, String cognome, int stato) {
@@ -709,7 +722,7 @@ public class RiepilogoOrdini extends Fragment {
         HashMap<String, Integer> hashExtra = new HashMap<String, Integer>();
         // SPARSE -> HASHMAP (STRING, OBJECT [STRING - HASHMAP<STRING,STRING>])
         SparseArray<HashMap<String, Object>> sparseDettagli = new SparseArray<HashMap<String, Object>>();
-        ;
+
         while (itr.hasNext()) {
             HashMap<String, String> riga = itr.next();
             final int idColonna = Integer.parseInt(riga.get("id_colonna"));
@@ -865,6 +878,85 @@ public class RiepilogoOrdini extends Fragment {
                 break;
         }
         return stato;
+    }
+
+
+    private void stampaOrdine(Object param, HashMap<String, String> hashOrdineCompletato) {
+        testoDaStampare = "";
+        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) param;
+        Iterator<HashMap<String, String>> itr = lista.iterator();
+        HashMap<String, Integer> hashExtra = new HashMap<String, Integer>();
+        // SPARSE -> HASHMAP (STRING, OBJECT [STRING - HASHMAP<STRING,STRING>])
+        SparseArray<HashMap<String, Object>> sparseDettagli = new SparseArray<HashMap<String, Object>>();
+
+        while (itr.hasNext()) {
+            HashMap<String, String> riga = itr.next();
+            final int idColonna = Integer.parseInt(riga.get("id_colonna"));
+            final String nomeProdotto = riga.get("nomeprodotto");
+            final String prezzoProdotto = riga.get("prezzoprodotto");
+            final String nomeExtra = riga.get("nomeextra");
+            final String tipoExtra = riga.get("tipo");
+
+            HashMap<String, Object> hashValori = (sparseDettagli.get(idColonna) != null) ? sparseDettagli.get(idColonna) : new HashMap<String, Object>();
+            hashValori.put("nomeprodotto", nomeProdotto);
+            hashValori.put("prezzoprodotto", prezzoProdotto);
+            HashMap<String, Integer> tmpExtra = (hashValori.get("extra") != null) ? (HashMap<String, Integer>) (hashValori.get("extra")) : new HashMap<String, Integer>();
+            if (!nomeExtra.equals("null")) {
+                if (tmpExtra.get(nomeExtra) != null) {
+                    tmpExtra.put(nomeExtra, 3); // DOPPIO EXTRA
+                } else {
+                    tmpExtra.put(nomeExtra, Integer.parseInt(tipoExtra));
+                }
+            }
+            hashValori.put("extra", tmpExtra);
+            sparseDettagli.put(idColonna, hashValori);
+        }
+
+
+        for (int i = 0; i < sparseDettagli.size(); i++) {
+            HashMap<String, Object> hashTmp = sparseDettagli.valueAt(i);
+            String nomeprodotto = hashTmp.get("nomeprodotto").toString();
+
+            HashMap<String, Integer> tmpExtra = (HashMap<String, Integer>) (hashTmp.get("extra"));
+            Iterator itrIngredienti = tmpExtra.entrySet().iterator();
+            while (itrIngredienti.hasNext()) {
+                Map.Entry riga = (Map.Entry) itrIngredienti.next();
+                final String nomeIngrediente = riga.getKey().toString();
+                final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
+                if (nomeIngrediente.equals("Integrale") || nomeIngrediente.equals("7 Cereali")) {
+                    nomeprodotto += " [" + nomeIngrediente.substring(0, 3) + "]";
+                }
+                //System.out.println("EXTRA = " + nomeIngrediente + " ; TIPO = " + tipoIngrediente);
+            }
+
+            testoDaStampare += "- " + nomeprodotto + " " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(hashTmp.get("prezzoprodotto").toString())) + "\n";
+
+        }
+
+        testoDaStampare += "--------------------------\n";
+        testoDaStampare += "Totale:           " + hashOrdineCompletato.get("Totale").replace("€", "EUR") + "\n\n";
+
+        testoDaStampare += "Data: " + Funzioni.formattaData(hashOrdineCompletato.get("Data")) + "\n";
+        testoDaStampare += "Ora: " + hashOrdineCompletato.get("Ora") + "\n";
+        if (!hashOrdineCompletato.get("Via").equals("null"))
+            testoDaStampare += "Via: " + hashOrdineCompletato.get("Via") + "\n";
+        if (!hashOrdineCompletato.get("Citta").equals("null"))
+            testoDaStampare += "Citta: " + hashOrdineCompletato.get("Citta") + "\n";
+        testoDaStampare += "Sig: " + hashOrdineCompletato.get("Cognome");
+        if (!hashOrdineCompletato.get("Nome").equals("null"))
+            testoDaStampare += ", " + hashOrdineCompletato.get("Nome") + "\n";
+        testoDaStampare += "Tel: " + hashOrdineCompletato.get("Telefono");
+
+
+        try {
+            Stampa stampa = new Stampa(getActivity(), context);
+            stampa.findBT();
+            stampa.openBT();
+            stampa.sendData(testoDaStampare + "\n\n");
+            stampa.closeBT();
+        } catch (Exception e) {
+
+        }
     }
 
 }

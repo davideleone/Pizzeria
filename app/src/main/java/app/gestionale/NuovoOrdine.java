@@ -107,6 +107,7 @@ public class NuovoOrdine extends Fragment {
     private String telefonoTrovato = "";
     private ArrayList<HashMap<String, String>> listaProdotti;
     private HashMap<String, String> hashOrdine = null;
+    private HashMap<String, String> hashOrdineCompletato = null;
 
     private int idUltimoExtra = -1;
 
@@ -145,6 +146,9 @@ public class NuovoOrdine extends Fragment {
         clienti = (ArrayList<SparseArray<HashMap<String, String>>>) bundle.getSerializable("LISTA_CLIENTI");
         listaCitta = (ArrayList<String>) bundle.getSerializable("LISTA_CITTA");
         listaProdotti = (ArrayList<HashMap<String, String>>) bundle.getSerializable("LISTA_PRODOTTI");
+
+        hashOrdineCompletato = new HashMap<>(8);
+
 
         adapterCitta = new ArrayAdapter<String>(context, R.layout.date_spinner_new_orders, listaCitta);
 
@@ -522,18 +526,18 @@ public class NuovoOrdine extends Fragment {
                                         @Override
                                         public void processFinish(Object output) {
                                             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
-                                            completaOrdine(strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
+                                            completaOrdine(idOrdine, strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
                                         }
                                     }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
                                 } else {
-                                    completaOrdine(strData, strOra, strNome, strCognome, strTelefono, Integer.toString(idClienteEsistente));
+                                    completaOrdine(idOrdine, strData, strOra, strNome, strCognome, strTelefono, Integer.toString(idClienteEsistente));
                                 }
                             } else {
                                 new HttpManager.AsyncManager(new AsyncResponse() {
                                     @Override
                                     public void processFinish(Object output) {
                                         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
-                                        completaOrdine(strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
+                                        completaOrdine(idOrdine, strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
                                     }
                                 }, null, "INSERISCI_CLIENTE_TEMP", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
                             }
@@ -585,7 +589,7 @@ public class NuovoOrdine extends Fragment {
     }
 
 
-    private void completaOrdine(String strData, String strOra, String strNome, String strCognome, String strTelefono, String idClienteDaAssociare) {
+    private void completaOrdine(String idOrdine, String strData, String strOra, String strNome, String strCognome, String strTelefono, String idClienteDaAssociare) {
 
         if (consegna.isChecked())
             HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, (totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString(), strCitta, strOra, strData, strVia, strTelefono, idOrdine);
@@ -596,7 +600,21 @@ public class NuovoOrdine extends Fragment {
 
         Toast.makeText(context, "Ordine completato con successo!", Toast.LENGTH_SHORT).show();
 
+
+        hashOrdineCompletato.put("Data", strData);
+        hashOrdineCompletato.put("Ora", strOra);
+        hashOrdineCompletato.put("Nome", strNome);
+        hashOrdineCompletato.put("Cognome", strCognome);
+        hashOrdineCompletato.put("Via", strVia);
+        hashOrdineCompletato.put("Citta", strCitta);
+        hashOrdineCompletato.put("Telefono", strTelefono);
+        hashOrdineCompletato.put("Totale", totale.getText().toString());
+
+        hashOrdineCompletato.toString();
+
         RiepilogoOrdini fragment = new RiepilogoOrdini();
+        bundle.putString("ID_ORDINE_COMPLETATO", idOrdine);
+        bundle.putSerializable("HASH_ORDINE_COMPLETATO", hashOrdineCompletato);
         fragment.setArguments(bundle);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
