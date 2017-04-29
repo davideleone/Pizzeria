@@ -70,7 +70,6 @@ public class NuovoOrdine extends Fragment {
     private RelativeLayout layoutAggiunte;
     private View barraMezzo;
     private RelativeLayout.LayoutParams paramAggiunte;
-    private boolean flag = false;
 
     private HashMap<String, Float> hashIngredientiExtra = new HashMap<String, Float>();
     private List<String> tempExtraAgg = new ArrayList<String>();
@@ -87,10 +86,8 @@ public class NuovoOrdine extends Fragment {
     private ArrayAdapter<String> adapterOre;
     private Spinner spinnerOre;
     private String strVia = "";
-    private String strCivico = "";
     private String strCitta = "";
     private String idOrdine = "";
-    private String cognomeTrovato = "";
     private CheckBox consegna;
     private RadioButton isMetro;
     private RelativeLayout layoutContoMetri;
@@ -102,20 +99,13 @@ public class NuovoOrdine extends Fragment {
     private ArrayAdapter adapterClienti;
     private ArrayList<String> listaClienti;
     private ArrayList<String> listaCitta;
-    private String nomeTrovato = "";
     private String viaTrovato = "";
-    private String telefonoTrovato = "";
     private ArrayList<HashMap<String, String>> listaProdotti;
     private HashMap<String, String> hashOrdine = null;
     private HashMap<String, String> hashOrdineCompletato = null;
-    private RelativeLayout layoutModificaToolbar;
-    private Button btnModificaOrdine;
-
     private int idUltimoExtra = -1;
 
     private SparseArray<HashMap<TableLayout, List<Integer>>> sparseMetri = new SparseArray<HashMap<TableLayout, List<Integer>>>();
-/*    final int contOrdini[] = ne4w int[listaOre.size()];
-    final int[] nPizze = new int[listaOre.size()];*/
 
     @Override
     public void onAttach(Context context) {
@@ -191,15 +181,12 @@ public class NuovoOrdine extends Fragment {
         if (bundle.getSerializable("HASHMAP_ORDINE") != null) {
             hashOrdine = (HashMap<String, String>) bundle.getSerializable("HASHMAP_ORDINE");
             idOrdine = hashOrdine.get("idordine");
-
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
                 public void processFinish(Object output) {
                     recuperaOrdine(output);
                 }
             }, context, "GET_PRODOTTI_IN_ORDINE", new String[]{idOrdine}).execute();
-
-
         } else {
             new HttpManager.AsyncManager(new AsyncResponse() {
                 @Override
@@ -518,34 +505,48 @@ public class NuovoOrdine extends Fragment {
                         }
 
                         if (toClose) {
-                            if (consegna.isChecked()) {
-                                HashMap<String, String> cliente = new HashMap<String, String>(4);
-                                cliente.put("cognome", strCognome.trim());
-                                cliente.put("telefono", strTelefono.trim());
-                                cliente.put("via", strVia.trim());
-                                cliente.put("citta", strCitta.trim());
-                                int idClienteEsistente = getIDClienteEsistente(cliente);
+                            boolean isStessoCliente = hashOrdine != null && hashOrdine.get("telefono").equals(strTelefono);
+                            if (consegna.isChecked() && isStessoCliente) {
+                                isStessoCliente = hashOrdine.get("via").equals(strVia) && hashOrdine.get("citta").equals(strCitta);
+                            }
 
-                                if (idClienteEsistente == -1) {
+                            if (isStessoCliente) {
+                                completaOrdine(strData, strOra, strNome, strCognome, strTelefono, "-1");
+                            } else if (hashOrdine != null) {
+                                HttpManager.execSimple("ELIMINA_LEGAME_CREA", null, idOrdine);
+                            }
+
+                            if (!isStessoCliente) {
+                                if (consegna.isChecked()) {
+                                    HashMap<String, String> cliente = new HashMap<String, String>(4);
+                                    cliente.put("cognome", strCognome.trim());
+                                    cliente.put("telefono", strTelefono.trim());
+                                    cliente.put("via", strVia.trim());
+                                    cliente.put("citta", strCitta.trim());
+                                    int idClienteEsistente = getIDClienteEsistente(cliente);
+
+                                    if (idClienteEsistente == -1) {
+                                        new HttpManager.AsyncManager(new AsyncResponse() {
+                                            @Override
+                                            public void processFinish(Object output) {
+                                                List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
+                                                completaOrdine(strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
+                                            }
+                                        }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
+                                    } else {
+                                        completaOrdine(strData, strOra, strNome, strCognome, strTelefono, Integer.toString(idClienteEsistente));
+                                    }
+                                } else {
                                     new HttpManager.AsyncManager(new AsyncResponse() {
                                         @Override
                                         public void processFinish(Object output) {
                                             List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
-                                            completaOrdine(idOrdine, strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
+                                            completaOrdine(strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
                                         }
-                                    }, null, "INSERISCI_CLIENTE", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
-                                } else {
-                                    completaOrdine(idOrdine, strData, strOra, strNome, strCognome, strTelefono, Integer.toString(idClienteEsistente));
+                                    }, null, "INSERISCI_CLIENTE_TEMP", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
                                 }
-                            } else {
-                                new HttpManager.AsyncManager(new AsyncResponse() {
-                                    @Override
-                                    public void processFinish(Object output) {
-                                        List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
-                                        completaOrdine(idOrdine, strData, strOra, strNome, strCognome, strTelefono, lista.get(0).get("generated_id"));
-                                    }
-                                }, null, "INSERISCI_CLIENTE_TEMP", new String[]{strCognome, strNome, strTelefono, strVia, strCitta}).execute();
                             }
+
                             dialog.dismiss();
                         }
                     }
@@ -594,14 +595,15 @@ public class NuovoOrdine extends Fragment {
     }
 
 
-    private void completaOrdine(String idOrdine, String strData, String strOra, String strNome, String strCognome, String strTelefono, String idClienteDaAssociare) {
+    private void completaOrdine(String strData, String strOra, String strNome, String strCognome, String strTelefono, String idClienteDaAssociare) {
 
         if (consegna.isChecked())
             HttpManager.execSimple("AGGIORNA_ORDINE_DOMICILIO", null, (totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString(), strCitta, strOra, strData, strVia, strTelefono, idOrdine);
         else
             HttpManager.execSimple("AGGIORNA_ORDINE_ASPORTO", null, (totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString(), strOra, strData, strTelefono, idOrdine);
 
-        HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, idOrdine, idClienteDaAssociare, strNome, strCognome, "Pizzeria");
+        if (!idClienteDaAssociare.equals("-1"))
+            HttpManager.execSimple("ASSOCIA_ORDINE_CLIENTE", null, idOrdine, idClienteDaAssociare, strNome, strCognome, "Pizzeria");
 
         Toast.makeText(context, "Ordine completato con successo!", Toast.LENGTH_SHORT).show();
 
@@ -636,7 +638,6 @@ public class NuovoOrdine extends Fragment {
     }
 
     private void impostaBottoni() {
-        final String ordine = idOrdine;
         Iterator<HashMap<String, String>> itr = listaProdotti.iterator();
         int countPizze = 0;
         int countBibite = 0;
