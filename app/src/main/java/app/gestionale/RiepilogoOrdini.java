@@ -701,14 +701,11 @@ public class RiepilogoOrdini extends Fragment {
         separator.setBackgroundColor(getResources().getColor(R.color.grigio));
         separator.setLayoutParams(paramsLinea);
 
-        RelativeLayout.LayoutParams paramsLayoutPizze = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams paramsLayoutPizze = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramsLayoutPizze.addRule(RelativeLayout.BELOW, layoutDettaglio.getId());
 
         scrollView = new ScrollView(context);
         scrollView.setLayoutParams(paramsLayoutPizze);
-
-        RelativeLayout.LayoutParams paramsCaricamento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        paramsCaricamento.addRule(RelativeLayout.CENTER_HORIZONTAL, separator.getId());
 
         scrollView = dettaglioPizze(sparseDettagli, scrollView);
 
@@ -766,7 +763,6 @@ public class RiepilogoOrdini extends Fragment {
     private ScrollView dettaglioPizze(SparseArray<HashMap<String, Object>> sparseDettagli, ScrollView scrollView) {
 
         RelativeLayout layoutPizze = new RelativeLayout(context);
-        layoutPizze.setGravity(Gravity.CENTER);
         //layoutPizze.setLayoutParams(paramsLayoutPizze);
         layoutPizze.setId(View.generateViewId());
 
@@ -797,7 +793,6 @@ public class RiepilogoOrdini extends Fragment {
 
                 idmetro_old = idMetro;
             }
-
 
 
             RelativeLayout.LayoutParams paramsNome = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -946,11 +941,13 @@ public class RiepilogoOrdini extends Fragment {
             final String prezzoProdotto = riga.get("prezzoprodotto");
             final String nomeExtra = riga.get("nomeextra");
             final String tipoExtra = riga.get("tipo");
-
+            final String idMetro = riga.get("idmetro");
 
             HashMap<String, Object> hashValori = (sparseDettagli.get(idColonna) != null) ? sparseDettagli.get(idColonna) : new HashMap<String, Object>();
             hashValori.put("nomeprodotto", nomeProdotto);
             hashValori.put("prezzoprodotto", prezzoProdotto);
+            hashValori.put("metro", (idMetro.equals("null")) ? "-1" : idMetro); // SE NULL, IDMETRO == -1
+
             HashMap<String, Integer> tmpExtra = (hashValori.get("extra") != null) ? (HashMap<String, Integer>) (hashValori.get("extra")) : new HashMap<String, Integer>();
             if (!nomeExtra.equals("null")) {
                 if (tmpExtra.get(nomeExtra) != null) {
@@ -963,12 +960,57 @@ public class RiepilogoOrdini extends Fragment {
             sparseDettagli.put(idColonna, hashValori);
         }
 
-        String ingredientiAggiunti = "PIU'";
-        String ingredientiTolti = "NO";
 
+        int idmetro_old = -1;
+        float countTotale = 0;
+        int countPizze = 1;
+        boolean metro = false;
+        boolean metroUltima = false;
         for (int i = 0; i < sparseDettagli.size(); i++) {
             HashMap<String, Object> hashTmp = sparseDettagli.valueAt(i);
+            final int idMetro = Integer.parseInt(hashTmp.get("metro").toString());
+            final String prezzoprodotto = hashTmp.get("prezzoprodotto").toString();
+
+            String intestazioneMetro = "======== 1/2 Metro =======";
+
+            if (((idmetro_old != idMetro)) && idMetro != -1)
+                testoDaStampare += intestazioneMetro + "\n";
+
+
+            if (((idmetro_old != idMetro) && idmetro_old != -1) && i != 0) {
+
+                switch (countPizze) {
+                    case 1:
+                        countTotale *= 2.5;
+                        break;
+                    case 2:
+                        countTotale *= 1.25;
+                        break;
+                    case 3:
+                        countTotale *= 0.83;
+                        break;
+                }
+
+                if (countPizze != 0)
+                    testoDaStampare += "======= (" + new DecimalFormat("#0.00 EUR").format(Funzioni.arrotonda((double) countTotale)) + ") ======\n";
+
+                countTotale = 0;
+                countPizze = 0;
+
+            }
+
+            if (idMetro != -1) {
+                metro = true;
+                countPizze++;
+                countTotale += Float.parseFloat(prezzoprodotto);
+            } else metro = false;
+
+            idmetro_old = idMetro;
+
             String nomeprodotto = hashTmp.get("nomeprodotto").toString();
+
+            String ingredientiAggiunti = (metro) ? "  PIU'" : "PIU'";
+            String ingredientiTolti = (metro) ? "  NO" : "NO";
 
             HashMap<String, Integer> tmpExtra = (HashMap<String, Integer>) (hashTmp.get("extra"));
             Iterator itrIngredienti = tmpExtra.entrySet().iterator();
@@ -986,20 +1028,43 @@ public class RiepilogoOrdini extends Fragment {
                     ingredientiAggiunti += " 2x" + nomeIngrediente;
             }
 
-            testoDaStampare += "- " + nomeprodotto + " " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(hashTmp.get("prezzoprodotto").toString())) + "\n";
-            if (!ingredientiTolti.equals("NO"))
-                testoDaStampare += ingredientiTolti + "\n";
-            if (ingredientiAggiunti.equals("PIU'"))
-                testoDaStampare += "\n";
-            if (!ingredientiAggiunti.equals("PIU'"))
-                testoDaStampare += ingredientiAggiunti + "\n\n";
+            testoDaStampare += (metro) ? "- " + nomeprodotto + "\n" : "- " + nomeprodotto + " " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(prezzoprodotto)) + "\n";
+            if (!(ingredientiTolti.equals("NO") || (ingredientiTolti.equals("  NO")))) {
+                testoDaStampare += " " + ingredientiTolti + "\n";
+                if (ingredientiAggiunti.equals("PIU'") || (ingredientiAggiunti.equals("  PIU'")))
+                    testoDaStampare += "\n";
+            }
+            if (!(ingredientiAggiunti.equals("PIU'") || (ingredientiAggiunti.equals("  PIU'")))) {
+                testoDaStampare += " " + ingredientiAggiunti + "\n\n";
 
-            ingredientiAggiunti = "PIU'";
-            ingredientiTolti = "NO";
+            }
         }
 
+
+        System.out.println(countPizze + "" + idmetro_old);
+
+        if (idmetro_old != -1) {
+            switch (countPizze) {
+                case 1:
+                    countTotale *= 2.5;
+                    break;
+                case 2:
+                    countTotale *= 1.25;
+                    break;
+                case 3:
+                    countTotale *= 0.83;
+                    break;
+            }
+
+            if (countPizze != 0)
+                testoDaStampare += "======= (" + new DecimalFormat("#0.00 EUR").format(Funzioni.arrotonda((double) countTotale)) + ") ======\n";
+
+        }
+
+
+
         testoDaStampare += "--------------------------\n";
-        testoDaStampare += "Totale:           " + hashOrdineCompletato.get("Totale").replace("€", "EUR") + "\n\n";
+        testoDaStampare += "Totale:        " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(hashOrdineCompletato.get("Totale"))) + "\n\n";
 
         testoDaStampare += "Data: " + Funzioni.formattaData(hashOrdineCompletato.get("Data")) + "\n";
         testoDaStampare += "Ora: " + hashOrdineCompletato.get("Ora") + "\n";
@@ -1010,6 +1075,7 @@ public class RiepilogoOrdini extends Fragment {
         testoDaStampare += "Sig: " + hashOrdineCompletato.get("Cognome");
         if (!hashOrdineCompletato.get("Nome").equals(""))
             testoDaStampare += ", " + hashOrdineCompletato.get("Nome") + "\n";
+        else testoDaStampare += "\n";
         testoDaStampare += "Tel: " + hashOrdineCompletato.get("Telefono");
 
         System.out.print(testoDaStampare);
@@ -1024,5 +1090,6 @@ public class RiepilogoOrdini extends Fragment {
 
         }*/
     }
+
 
 }
