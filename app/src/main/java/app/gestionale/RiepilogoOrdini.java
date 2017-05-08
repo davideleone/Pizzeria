@@ -114,9 +114,6 @@ public class RiepilogoOrdini extends Fragment {
 
         }
 
-        HttpManager.execSimple("ELIMINA_ORDINI_TEMP", context);
-        HttpManager.execSimple("ELIMINA_UTENTI_TEMP", context);
-
         String[] dateSettimana;
         Calendar c = Calendar.getInstance(Locale.ITALY);
         Calendar c_copia = Calendar.getInstance(Locale.ITALY);
@@ -197,7 +194,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         TextView messaggio = new TextView(context);
                         messaggio.setText("Con quest'azione tutti i dati relativi agli ordini saranno eliminati definitavamente!");
-                        messaggio.setTextSize(25);
+                        messaggio.setTextSize(15);
                         messaggio.setLayoutParams(paramMessaggio);
                         messaggio.setTextColor(getResources().getColor(R.color.nero));
                         layoutInterno.addView(messaggio);
@@ -265,7 +262,7 @@ public class RiepilogoOrdini extends Fragment {
             view2.setLayoutParams(paramBarra2);
             layoutInformazioni.addView(view2);
 
-            RelativeLayout.LayoutParams paramtotale = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams paramtotale = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramtotale.addRule(RelativeLayout.BELOW, view2.getId());
             paramtotale.setMargins(20, 20, 0, 0);
 
@@ -276,12 +273,12 @@ public class RiepilogoOrdini extends Fragment {
             totaleSerata.setText("Totale serata: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_serata"))));
             testoDaStampare += "\n" + totaleSerata.getText().toString().replace("€", euro) + "\n";
             totaleSerata.setId(View.generateViewId());
-            totaleSerata.setTextSize(25);
+            totaleSerata.setTextSize(15);
             totaleSerata.setLayoutParams(paramtotale);
             totaleSerata.setTextColor(getResources().getColor(R.color.nero));
             layoutInformazioni.addView(totaleSerata);
 
-            RelativeLayout.LayoutParams paramTotaleConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams paramTotaleConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramTotaleConsegna.addRule(RelativeLayout.BELOW, totaleSerata.getId());
             paramTotaleConsegna.setMargins(20, 10, 0, 0);
 
@@ -289,19 +286,19 @@ public class RiepilogoOrdini extends Fragment {
             totaleSerataConsegna.setText("Totale consegne: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_domicilio"))));
             testoDaStampare += totaleSerataConsegna.getText().toString().replace("€", euro) + "\n";
             totaleSerataConsegna.setId(View.generateViewId());
-            totaleSerataConsegna.setTextSize(25);
+            totaleSerataConsegna.setTextSize(15);
             totaleSerataConsegna.setLayoutParams(paramTotaleConsegna);
             totaleSerataConsegna.setTextColor(getResources().getColor(R.color.nero));
             layoutInformazioni.addView(totaleSerataConsegna);
 
-            RelativeLayout.LayoutParams paramTotaleAsporto = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams paramTotaleAsporto = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramTotaleAsporto.addRule(RelativeLayout.BELOW, totaleSerataConsegna.getId());
             paramTotaleAsporto.setMargins(20, 20, 0, 0);
             TextView totaleSerataAsporto = new TextView(context);
             totaleSerataAsporto.setText("Totale asporto: " + new DecimalFormat("#0.00 €").format(Float.parseFloat(lista.get(0).get("totale_asporto"))));
             testoDaStampare += totaleSerataAsporto.getText().toString().replace("€", euro) + "\n";
             totaleSerataAsporto.setId(View.generateViewId());
-            totaleSerataAsporto.setTextSize(25);
+            totaleSerataAsporto.setTextSize(15);
             totaleSerataAsporto.setLayoutParams(paramTotaleAsporto);
             totaleSerataAsporto.setTextColor(getResources().getColor(R.color.nero));
             layoutInformazioni.addView(totaleSerataAsporto);
@@ -321,7 +318,7 @@ public class RiepilogoOrdini extends Fragment {
 
             testoDaStampare += "\n";
 
-            RelativeLayout.LayoutParams paramCountPizze = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams paramCountPizze = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramCountPizze.addRule(RelativeLayout.BELOW, view3.getId());
             paramCountPizze.setMargins(20, 20, 0, 0);
             TextView countPizze = new TextView(context);
@@ -329,12 +326,12 @@ public class RiepilogoOrdini extends Fragment {
             testoDaStampare += countPizze.getText().toString() + "\n";
 
             countPizze.setId(View.generateViewId());
-            countPizze.setTextSize(25);
+            countPizze.setTextSize(15);
             countPizze.setLayoutParams(paramCountPizze);
             countPizze.setTextColor(getResources().getColor(R.color.nero));
             layoutInformazioni.addView(countPizze);
 
-            RelativeLayout.LayoutParams paramCountBibite = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams paramCountBibite = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramCountBibite.addRule(RelativeLayout.BELOW, countPizze.getId());
             paramCountBibite.setMargins(20, 20, 0, 0);
 
@@ -342,12 +339,12 @@ public class RiepilogoOrdini extends Fragment {
             countBibite.setText("Bibite servite: " + lista.get(0).get("totale_bibite"));
             testoDaStampare += countBibite.getText().toString() + "\n";
             countBibite.setId(View.generateViewId());
-            countBibite.setTextSize(25);
+            countBibite.setTextSize(15);
             countBibite.setLayoutParams(paramCountBibite);
             countBibite.setTextColor(getResources().getColor(R.color.nero));
             layoutInformazioni.addView(countBibite);
 
-            RelativeLayout.LayoutParams paramCountGastro = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams paramCountGastro = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
             paramCountGastro.addRule(RelativeLayout.BELOW, countBibite.getId());
             paramCountGastro.setMargins(20, 20, 0, 0);
 
@@ -355,7 +352,7 @@ public class RiepilogoOrdini extends Fragment {
             countGastro.setText("Gastronomia servita: " + lista.get(0).get("totale_gastronomia"));
             testoDaStampare += countGastro.getText().toString() + "\n";
             countGastro.setId(View.generateViewId());
-            countGastro.setTextSize(25);
+            countGastro.setTextSize(15);
             countGastro.setLayoutParams(paramCountGastro);
             countGastro.setTextColor(getResources().getColor(R.color.nero));
             layoutInformazioni.addView(countGastro);
@@ -370,9 +367,17 @@ public class RiepilogoOrdini extends Fragment {
                                 Stampa stampa = new Stampa(getActivity(), context);
                                 stampa.findBT();
                                 stampa.openBT();
-                                stampa.sendData(testoDaStampare + "\n\n\n\n");
+                                stampa.sendData(testoDaStampare + "\n\n");
                                 stampa.closeBT();
                                 testoDaStampare = "";
+                                Toast.makeText(context, "Stampa Effettuata!", Toast.LENGTH_SHORT).show();
+                                new HttpManager.AsyncManager(new AsyncResponse() {
+                                    @Override
+                                    public void processFinish(Object output) {
+                                        aggiornaTabella();
+                                        Toast.makeText(context, "Reset completato!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }, context, "ELIMINA_ORDINI_COMPLETI_SERATA", new String[]{}).execute();
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
@@ -460,17 +465,15 @@ public class RiepilogoOrdini extends Fragment {
                 TableRow row = new TableRow(context);
                 row.setBackgroundResource(R.drawable.table_bottom_style);
 
-                final TextView dataOrdine = makeTableRowWithText(riga.get("dataconsegna"), R.dimen.dim_150dp);
-                final TextView oraOrdine = makeTableRowWithText(riga.get("oraconsegna").substring(0, 5), R.dimen.dim_80dp);
-                final TextView nomeCliente = makeTableRowWithText((riga.get("nome")), R.dimen.dim_150dp);
-                TextView cognomeCliente = makeTableRowWithText(cognome, R.dimen.dim_150dp);
-                TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_100dp);
-                final TextView viaOrdine = makeTableRowWithText((riga.get("via").equals("null") ? " ----- " : riga.get("via")), R.dimen.dim_200dp);
-                final TextView cittaOrdine = makeTableRowWithText(riga.get("citta").equals("null") ? " ----- " : riga.get("citta"), R.dimen.dim_150dp);
-                if (viaOrdine.getText().toString().length() > 8)
-                    viaOrdine.setTextSize(20);
-                if (cittaOrdine.getText().toString().length() > 8)
-                    cittaOrdine.setTextSize(20);
+                final TextView dataOrdine = makeTableRowWithText(riga.get("dataconsegna"), R.dimen.dim_115dp);
+                final TextView oraOrdine = makeTableRowWithText(riga.get("oraconsegna").substring(0, 5), R.dimen.dim_60dp);
+                final TextView nomeCliente = makeTableRowWithText((riga.get("nome")), R.dimen.dim_115dp);
+                TextView cognomeCliente = makeTableRowWithText(cognome, R.dimen.dim_115dp);
+                TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_80dp);
+                final TextView viaOrdine = makeTableRowWithText((riga.get("via").equals("null") ? " ----- " : riga.get("via")), R.dimen.dim_115dp);
+                final TextView cittaOrdine = makeTableRowWithText(riga.get("citta").equals("null") ? " ----- " : riga.get("citta"), R.dimen.dim_125dp);
+                viaOrdine.setTextSize(13);
+                cittaOrdine.setTextSize(13);
                 ImageButton btnMostra = makeTableRowWithImageButton(R.drawable.mostra);
                 ImageButton btnModifica = makeTableRowWithImageButton(R.drawable.modifica_nero);
                 ImageButton btnConsegna = makeTableRowWithImageButton(R.drawable.consegna);
@@ -503,7 +506,7 @@ public class RiepilogoOrdini extends Fragment {
 
                         dialog.show();
 
-                        dialog.getWindow().setLayout(650, arrayFatt.length * 208);
+                        dialog.getWindow().setLayout(360, arrayFatt.length * 150);
 
                         for (int i = 0; i < arrayFatt.length; i++) {
                             final int indice = i;
@@ -515,13 +518,13 @@ public class RiepilogoOrdini extends Fragment {
                                 btnParams.addRule(RelativeLayout.BELOW, layoutDialog.getChildAt(layoutDialog.getChildCount() - 1).getId());
 
                             final Button btnFattorino = new Button(context);
-                            btnFattorino.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_215dp));
+                            btnFattorino.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_115dp));
                             btnFattorino.setGravity(Gravity.CENTER_VERTICAL);
                             btnFattorino.setLayoutParams(btnParams);
                             btnFattorino.setId(View.generateViewId());
                             btnFattorino.setText(arrayFatt[i]);
                             btnFattorino.setTextColor(Color.GRAY);
-                            btnFattorino.setTextSize(20);
+                            btnFattorino.setTextSize(15);
                             btnFattorino.setBackgroundColor(Color.TRANSPARENT);
 
                             RelativeLayout.LayoutParams barraParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
@@ -665,7 +668,7 @@ public class RiepilogoOrdini extends Fragment {
         RelativeLayout layoutDettaglio = new RelativeLayout(context);
         layoutDettaglio.setId(View.generateViewId());
 
-        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramsStatoText = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramsStatoText.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramsStatoText.setMargins(0, 15, 0, 0);
         TextView textStato = new TextView(context);
@@ -674,17 +677,17 @@ public class RiepilogoOrdini extends Fragment {
         textStato.setTextAppearance(context, R.style.testoGrande);
         textStato.setLayoutParams(paramsStatoText);
 
-        RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
+        /*RelativeLayout.LayoutParams paramsConsegna = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
         paramsConsegna.addRule(RelativeLayout.BELOW, textStato.getId());
         paramsConsegna.addRule(RelativeLayout.CENTER_HORIZONTAL);
         TextView textConsegna = new TextView(context);
         textConsegna.setId(View.generateViewId());
         textConsegna.setText("Assegnato a: ");
         textConsegna.setTextAppearance(context, R.style.testoGrande);
-        textConsegna.setLayoutParams(paramsConsegna);
+        textConsegna.setLayoutParams(paramsConsegna);*/
 
-        RelativeLayout.LayoutParams paramsTelefono = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), ViewGroup.LayoutParams.WRAP_CONTENT);
-        paramsTelefono.addRule(RelativeLayout.BELOW, textConsegna.getId());
+        RelativeLayout.LayoutParams paramsTelefono = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), ViewGroup.LayoutParams.WRAP_CONTENT);
+        paramsTelefono.addRule(RelativeLayout.BELOW, textStato.getId());
         paramsTelefono.addRule(RelativeLayout.CENTER_HORIZONTAL);
         TextView textTelefono = new TextView(context);
         textTelefono.setId(View.generateViewId());
@@ -710,7 +713,7 @@ public class RiepilogoOrdini extends Fragment {
         scrollView = dettaglioPizze(sparseDettagli, scrollView);
 
         layoutDettaglio.addView(textStato);
-        layoutDettaglio.addView(textConsegna);
+        //layoutDettaglio.addView(textConsegna);
         layoutDettaglio.addView(textTelefono);
         layoutDettaglio.addView(separator);
         layoutContenitore.addView(layoutDettaglio);
@@ -787,7 +790,7 @@ public class RiepilogoOrdini extends Fragment {
                 mezzometroTxt.setText("1/2 Metro");
                 mezzometroTxt.setLayoutParams(paramsMetro);
                 mezzometroTxt.setId(View.generateViewId());
-                mezzometroTxt.setTextSize(20);
+                mezzometroTxt.setTextSize(15);
                 mezzometroTxt.setTypeface(null, Typeface.BOLD);
                 layoutPizze.addView(mezzometroTxt);
 
@@ -807,7 +810,7 @@ public class RiepilogoOrdini extends Fragment {
             nomeProdottoTxt = new TextView(context);
             nomeProdottoTxt.setText("- " + nomeProdotto);
             nomeProdottoTxt.setId(View.generateViewId());
-            nomeProdottoTxt.setTextSize(20);
+            nomeProdottoTxt.setTextSize(15);
             nomeProdottoTxt.setTypeface(null, Typeface.BOLD);
             nomeProdottoTxt.setLayoutParams(paramsNome);
             layoutPizze.addView(nomeProdottoTxt);
@@ -822,7 +825,7 @@ public class RiepilogoOrdini extends Fragment {
             TextView prezzoPizza = new TextView(context);
             prezzoPizza.setText(new DecimalFormat("#0.00 €").format(Float.parseFloat(prezzoProdotto)));
             prezzoPizza.setId(View.generateViewId());
-            prezzoPizza.setTextSize(20);
+            prezzoPizza.setTextSize(15);
             prezzoPizza.setTypeface(null, Typeface.BOLD);
             prezzoPizza.setLayoutParams(paramsPrezzo);
             layoutPizze.addView(prezzoPizza);
@@ -859,7 +862,9 @@ public class RiepilogoOrdini extends Fragment {
                 final String nomeIngrediente = riga.getKey().toString();
                 final int tipoIngrediente = Integer.parseInt(riga.getValue().toString());
 
-                if (tipoIngrediente == 2) {
+                if (nomeIngrediente.equals("Integrale") || nomeIngrediente.equals("7 Cereali")) {
+                    prezzoPizza.append(" [" + nomeIngrediente + "]");
+                } else if (tipoIngrediente == 2) {
                     tolti = true;
                     nomeingredientiTolti.append(" " + nomeIngrediente);
                 } else if (tipoIngrediente == 1) {
@@ -894,7 +899,7 @@ public class RiepilogoOrdini extends Fragment {
         recyclableTextView = new TextView(context);
         recyclableTextView.setGravity(Gravity.CENTER);
         recyclableTextView.setText(text);
-        recyclableTextView.setTextSize(25);
+        recyclableTextView.setTextSize(15);
         recyclableTextView.setMinimumWidth(getResources().getDimensionPixelSize(resource));
         return recyclableTextView;
     }
@@ -903,7 +908,7 @@ public class RiepilogoOrdini extends Fragment {
         recyclableImageButton = new ImageButton(context);
         recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_45dp));
         recyclableImageButton.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.dim_26dp));
-        recyclableImageButton.setPadding(40, 0, 0, 0);
+        recyclableImageButton.setPadding(10, 0, 0, 0);
         recyclableImageButton.setImageResource(img);
         recyclableImageButton.setBackgroundColor(Color.TRANSPARENT);
         return recyclableImageButton;
@@ -977,7 +982,7 @@ public class RiepilogoOrdini extends Fragment {
                 testoDaStampare += intestazioneMetro + "\n";
 
 
-            if (((idmetro_old != idMetro) && idmetro_old != -1) && i != 0) {
+            /*if (((idmetro_old != idMetro) && idmetro_old != -1) && i != 0) {
 
                 switch (countPizze) {
                     case 1:
@@ -1003,14 +1008,14 @@ public class RiepilogoOrdini extends Fragment {
                 metro = true;
                 countPizze++;
                 countTotale += Float.parseFloat(prezzoprodotto);
-            } else metro = false;
+            } else metro = false;*/
 
             idmetro_old = idMetro;
 
             String nomeprodotto = hashTmp.get("nomeprodotto").toString();
 
-            String ingredientiAggiunti = (metro) ? "  PIU'" : "PIU'";
-            String ingredientiTolti = (metro) ? "  NO" : "NO";
+            String ingredientiAggiunti = (idMetro != -1) ? "  PIU'" : "PIU'";
+            String ingredientiTolti = (idMetro != -1) ? "  NO" : "NO";
 
             HashMap<String, Integer> tmpExtra = (HashMap<String, Integer>) (hashTmp.get("extra"));
             Iterator itrIngredienti = tmpExtra.entrySet().iterator();
@@ -1028,7 +1033,7 @@ public class RiepilogoOrdini extends Fragment {
                     ingredientiAggiunti += " 2x" + nomeIngrediente;
             }
 
-            testoDaStampare += (metro) ? "- " + nomeprodotto + "\n" : "- " + nomeprodotto + " " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(prezzoprodotto)) + "\n";
+            testoDaStampare += (idMetro != -1) ? "   + " + nomeprodotto + " " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(prezzoprodotto)) + "\n" : "- " + nomeprodotto + " " + new DecimalFormat("#0.00 EUR").format(Float.parseFloat(prezzoprodotto)) + "\n";
             if (!(ingredientiTolti.equals("NO") || (ingredientiTolti.equals("  NO")))) {
                 testoDaStampare += " " + ingredientiTolti + "\n";
                 if (ingredientiAggiunti.equals("PIU'") || (ingredientiAggiunti.equals("  PIU'")))
@@ -1041,9 +1046,7 @@ public class RiepilogoOrdini extends Fragment {
         }
 
 
-        System.out.println(countPizze + "" + idmetro_old);
-
-        if (idmetro_old != -1) {
+        /*if (idmetro_old != -1) {
             switch (countPizze) {
                 case 1:
                     countTotale *= 2.5;
@@ -1059,7 +1062,7 @@ public class RiepilogoOrdini extends Fragment {
             if (countPizze != 0)
                 testoDaStampare += "======= (" + new DecimalFormat("#0.00 EUR").format(Funzioni.arrotonda((double) countTotale)) + ") ======\n";
 
-        }
+        }*/
 
 
 
@@ -1076,19 +1079,21 @@ public class RiepilogoOrdini extends Fragment {
         if (!hashOrdineCompletato.get("Nome").equals(""))
             testoDaStampare += ", " + hashOrdineCompletato.get("Nome") + "\n";
         else testoDaStampare += "\n";
-        testoDaStampare += "Tel: " + hashOrdineCompletato.get("Telefono");
+        if (!hashOrdineCompletato.get("Telefono").equals(""))
+            testoDaStampare += "Tel: " + hashOrdineCompletato.get("Telefono") + "\n";
 
-        System.out.print(testoDaStampare);
+        System.out.println(testoDaStampare);
 
-        /*try {
+        try {
             Stampa stampa = new Stampa(getActivity(), context);
             stampa.findBT();
             stampa.openBT();
-            stampa.sendData(testoDaStampare + "\n\n");
+            stampa.sendData(testoDaStampare + "\n");
             stampa.closeBT();
+            Toast.makeText(context, "Stampa Effettuata!", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
 
-        }*/
+        }
     }
 
 

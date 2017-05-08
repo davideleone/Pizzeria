@@ -8,7 +8,7 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
@@ -22,75 +22,75 @@
 
             <TableLayout
                 android:id="@+id/tabell_clienti"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="30dp"
                 android:background="#FDB55D">
 
                 <RelativeLayout
                     android:id="@+id/header"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="#EF634D">
 
                     <TextView
                         android:id="@+id/col_Nome"
-                        android:layout_width="200dp"
+                        android:layout_width="150dp"
                         android:layout_height="60dp"
                         android:gravity="center"
                         android:text="Nome"
                         android:textColor="#ffffff"
-                        android:textSize="25sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/col_Cognome"
-                        android:layout_width="200dp"
+                        android:layout_width="150dp"
                         android:layout_height="60dp"
                         android:layout_toEndOf="@id/col_Nome"
                         android:gravity="center"
                         android:text="Cognome"
                         android:textColor="#ffffff"
-                        android:textSize="25sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/col_Telefono"
-                        android:layout_width="200dp"
+                        android:layout_width="150dp"
                         android:layout_height="60dp"
                         android:layout_toEndOf="@id/col_Cognome"
                         android:gravity="center"
                         android:text="Telefono"
                         android:textColor="#ffffff"
-                        android:textSize="25sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/col_Via"
-                        android:layout_width="200dp"
+                        android:layout_width="150dp"
                         android:layout_height="60dp"
                         android:layout_toEndOf="@id/col_Telefono"
                         android:gravity="center"
                         android:text="Via"
                         android:textColor="#ffffff"
-                        android:textSize="25sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/col_Citta"
-                        android:layout_width="200dp"
+                        android:layout_width="150dp"
                         android:layout_height="60dp"
                         android:layout_toEndOf="@id/col_Via"
                         android:gravity="center"
                         android:text="Città"
                         android:textColor="#ffffff"
-                        android:textSize="25sp" />
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/col_Gestione"
-                        android:layout_width="200dp"
+                        android:layout_width="150dp"
                         android:layout_height="60dp"
                         android:layout_toEndOf="@id/col_Citta"
                         android:gravity="center"
                         android:text="Gestione"
                         android:textColor="#ffffff"
-                        android:textSize="25sp" />
+                        android:textSize="15sp" />
 
                 </RelativeLayout>
             </TableLayout>

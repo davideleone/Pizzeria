@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -131,8 +132,13 @@ public class Clienti extends Fragment {
     }
 
     private void mostraDialog(Object param) {
+        RelativeLayout.LayoutParams paramScroll = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        ScrollView scrollView = new ScrollView(context);
+        scrollView.setLayoutParams(paramScroll);
+
         RelativeLayout inserimentoLayout = new RelativeLayout(context);
-        RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams paramInserimento = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         paramInserimento.addRule(RelativeLayout.CENTER_HORIZONTAL);
         paramInserimento.addRule(RelativeLayout.CENTER_VERTICAL);
         paramInserimento.setMargins(0, 30, 0, 0);
@@ -148,7 +154,7 @@ public class Clienti extends Fragment {
         view.setLayoutParams(paramBarra);
         inserimentoLayout.addView(view);
 
-        RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
         editTextParams.addRule(RelativeLayout.BELOW, view.getId());
         TextInputLayout nomeInput = new TextInputLayout(context);
         editTextParams.setMargins(40, 15, 0, 40);
@@ -160,60 +166,60 @@ public class Clienti extends Fragment {
         final TextInputEditText telefono = new TextInputEditText(context);
         final TextInputEditText via = new TextInputEditText(context);
 
-        nome.setTextSize(25);
+        nome.setTextSize(15);
         nome.setHint("Nome");
         nomeInput.addView(nome);
 
-        RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
         TextInputLayout cognomeInput = new TextInputLayout(context);
         cognomeInput.setId(View.generateViewId());
         editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
         editTextCognomeParams.setMargins(40, 0, 0, 40);
         cognomeInput.setLayoutParams(editTextCognomeParams);
-        cognome.setTextSize(25);
+        cognome.setTextSize(15);
         cognome.setHint("Cognome");
         cognomeInput.addView(cognome);
 
-        RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
         TextInputLayout telefonoInput = new TextInputLayout(context);
         telefonoInput.setId(View.generateViewId());
         editTextTelefonoParams.addRule(RelativeLayout.BELOW, cognomeInput.getId());
         editTextTelefonoParams.setMargins(40, 0, 0, 40);
         telefonoInput.setLayoutParams(editTextTelefonoParams);
-        telefono.setTextSize(25);
+        telefono.setTextSize(15);
         telefono.setHint("Telefono");
         telefono.setInputType(InputType.TYPE_CLASS_PHONE);
         telefonoInput.addView(telefono);
 
-        RelativeLayout.LayoutParams editTextViaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams editTextViaParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
         TextInputLayout viaInput = new TextInputLayout(context);
         viaInput.setId(View.generateViewId());
         editTextViaParams.addRule(RelativeLayout.BELOW, telefonoInput.getId());
         editTextViaParams.setMargins(40, 0, 0, 40);
         viaInput.setLayoutParams(editTextViaParams);
-        via.setTextSize(25);
+        via.setTextSize(15);
         via.setHint("Via/P.zza/Loc.");
         viaInput.addView(via);
 
-        RelativeLayout.LayoutParams editTextCittaTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_100dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams editTextCittaTxtParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
         editTextCittaTxtParams.addRule(RelativeLayout.BELOW, viaInput.getId());
         editTextCittaTxtParams.setMargins(40, 0, 0, 40);
 
         TextView txtCitta = new TextView(context);
-        txtCitta.setTextSize(25);
+        txtCitta.setTextSize(15);
         txtCitta.setText("Citta'");
         txtCitta.setId(View.generateViewId());
         txtCitta.setLayoutParams(editTextCittaTxtParams);
 
-        RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams editTextCittaSpinnerParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
         editTextCittaSpinnerParams.addRule(RelativeLayout.BELOW, viaInput.getId());
         editTextCittaSpinnerParams.addRule(RelativeLayout.END_OF, txtCitta.getId());
         editTextCittaSpinnerParams.addRule(RelativeLayout.ALIGN_BASELINE, txtCitta.getId());
 
-        editTextCittaSpinnerParams.setMargins(40, 0, 0, 40);
+        editTextCittaSpinnerParams.setMargins(0, 0, 0, 40);
 
 
         spinnerCitta.setLayoutParams(editTextCittaSpinnerParams);
@@ -228,6 +234,7 @@ public class Clienti extends Fragment {
             ((ViewGroup) spinnerCitta.getParent()).removeView(spinnerCitta);
         inserimentoLayout.addView(spinnerCitta);
 
+        scrollView.addView(inserimentoLayout);
         String idTemp = "";
         if (param != null) {
             HashMap<String, String> hashDati = (HashMap<String, String>) param;
@@ -249,7 +256,7 @@ public class Clienti extends Fragment {
         final String ID_CLIENTE = idTemp;
 
         final AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(inserimentoLayout)
+                .setView(scrollView)
                 .setTitle("Inserisci Nuovo Cliente")
                 .setPositiveButton("Inserisci", null)
                 .setNegativeButton("Annulla", null)
@@ -338,11 +345,11 @@ public class Clienti extends Fragment {
             TableRow row = new TableRow(context);
             row.setBackgroundResource(R.drawable.table_bottom_style);
 
-            TextView txtNome = makeTableRowWithText(nome, R.dimen.dim_200dp);
-            TextView txtCognome = makeTableRowWithText(cognome, R.dimen.dim_200dp);
-            TextView txtTelefono = makeTableRowWithText(telefono, R.dimen.dim_200dp);
-            TextView txtVia = makeTableRowWithText(via, R.dimen.dim_200dp);
-            TextView txtCitta = makeTableRowWithText(citta, R.dimen.dim_200dp);
+            TextView txtNome = makeTableRowWithText(nome, R.dimen.dim_150dp);
+            TextView txtCognome = makeTableRowWithText(cognome, R.dimen.dim_150dp);
+            TextView txtTelefono = makeTableRowWithText(telefono, R.dimen.dim_150dp);
+            TextView txtVia = makeTableRowWithText(via, R.dimen.dim_150dp);
+            TextView txtCitta = makeTableRowWithText(citta, R.dimen.dim_150dp);
             ImageButton btnModifica = makeTableRowWithImageButton(R.drawable.modifica_nero);
             ImageButton btnElimina = makeTableRowWithImageButton(R.drawable.elimina);
 
@@ -411,14 +418,14 @@ public class Clienti extends Fragment {
         recyclableTextView = new TextView(context);
         recyclableTextView.setGravity(Gravity.CENTER);
         recyclableTextView.setText(text);
-        recyclableTextView.setTextSize(25);
+        recyclableTextView.setTextSize(15);
         recyclableTextView.setMinimumWidth(getResources().getDimensionPixelSize(resource));
         return recyclableTextView;
     }
 
     private ImageButton makeTableRowWithImageButton(int img) {
         recyclableImageButton = new ImageButton(context);
-        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_80dp));
+        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_45dp));
         recyclableImageButton.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.dim_26dp));
         recyclableImageButton.setPadding(40, 0, 0, 0);
         recyclableImageButton.setImageResource(img);

@@ -32,32 +32,32 @@
 
                 <TextView
                     android:id="@+id/col_Nome"
-                    android:layout_width="450dp"
+                    android:layout_width="250dp"
                     android:layout_height="60dp"
                     android:gravity="center"
                     android:text="Nome fattorino"
                     android:textColor="#ffffff"
-                    android:textSize="25sp" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/col_Totale"
-                    android:layout_width="450dp"
+                    android:layout_width="250dp"
                     android:layout_height="60dp"
                     android:layout_toEndOf="@id/col_Nome"
                     android:gravity="center"
                     android:text="Importo totale"
                     android:textColor="#ffffff"
-                    android:textSize="25sp" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/col_Azioni"
-                    android:layout_width="150dp"
+                    android:layout_width="130dp"
                     android:layout_height="60dp"
                     android:layout_toEndOf="@id/col_Totale"
                     android:gravity="center"
-                    android:text="Azioni"
+                    android:text="Riepilogo"
                     android:textColor="#ffffff"
-                    android:textSize="25sp" />
+                    android:textSize="15sp" />
 
             </RelativeLayout>
         </TableLayout>

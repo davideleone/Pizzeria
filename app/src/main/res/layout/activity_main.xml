@@ -23,7 +23,7 @@
             android:id="@+id/flContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="80dp">
+            android:layout_marginTop="55dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -32,8 +32,8 @@
 
                 <ImageView
                     android:id="@+id/logo"
-                    android:layout_width="400dp"
-                    android:layout_height="400dp"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/logo" />
 
@@ -47,7 +47,7 @@
                     android:rotation="-6"
                     android:text="Benvenuti da AcciPizza!"
                     android:textColor="@color/giallo"
-                    android:textSize="70sp" />
+                    android:textSize="40sp" />
 
                 <TextView
                     style="@style/testoPiccolo"
@@ -57,7 +57,8 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="5dp"
                     android:text="Applicazione creata e sviluppata da L.D.V. Dev™- Info tramite email a infoldvdev@gmail.com"
-                    android:textColor="@color/giallo" />
+                    android:textColor="@color/giallo"
+                    android:textSize="10sp" />
 
 
             </RelativeLayout>

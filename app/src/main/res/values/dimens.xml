@@ -16,9 +16,13 @@
     <dimen name="dim_80dp">80dp</dimen>
     <dimen name="dim_45dp">45dp</dimen>
     <dimen name="dim_300dp">300dp</dimen>
+    <dimen name="dim_250dp">250dp</dimen>
     <dimen name="dim_350dp">350dp</dimen>
     <dimen name="dim_100dp">100dp</dimen>
+    <dimen name="dim_115dp">115dp</dimen>
+    <dimen name="dim_125dp">125dp</dimen>
+    <dimen name="dim_60dp">60dp</dimen>
     <dimen name="dim_2dp">2dp</dimen>
-    <dimen name="btn_height">70dp</dimen>
+    <dimen name="btn_height">40dp</dimen>
     <dimen name="btn_width">150dp</dimen>
 </resources>

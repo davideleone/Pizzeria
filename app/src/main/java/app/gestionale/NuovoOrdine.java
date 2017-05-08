@@ -242,7 +242,7 @@ public class NuovoOrdine extends Fragment {
                 final TextInputEditText civico = new TextInputEditText(context);
                 final TextInputEditText citta = new TextInputEditText(context);
 
-                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout cognomeInput = new TextInputLayout(context);
                 editTextCognomeParams.addRule(RelativeLayout.BELOW, view.getId());
@@ -253,33 +253,33 @@ public class NuovoOrdine extends Fragment {
                 adapterClienti = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(listaClienti));
                 cognome.setAdapter(adapterClienti);
 
-                cognome.setTextSize(25);
+                cognome.setTextSize(15);
                 cognome.setHint("Cognome");
                 cognomeInput.addView(cognome);
 
-                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 editTextParams.addRule(RelativeLayout.BELOW, cognomeInput.getId());
                 TextInputLayout nomeInput = new TextInputLayout(context);
                 editTextParams.setMargins(40, 0, 0, 40);
                 nomeInput.setLayoutParams(editTextParams);
                 nomeInput.setId(View.generateViewId());
-                nome.setTextSize(25);
+                nome.setTextSize(15);
                 nome.setHint("Nome");
                 nomeInput.addView(nome);
 
-                RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextTelefonoParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout telefonoInput = new TextInputLayout(context);
                 telefonoInput.setId(View.generateViewId());
                 editTextTelefonoParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
                 editTextTelefonoParams.setMargins(40, 0, 0, 40);
                 telefonoInput.setLayoutParams(editTextTelefonoParams);
-                telefono.setTextSize(25);
+                telefono.setTextSize(15);
                 telefono.setHint("Telefono");
                 telefono.setInputType(InputType.TYPE_CLASS_PHONE);
                 telefonoInput.addView(telefono);
 
-                RelativeLayout.LayoutParams editTextChechboxParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextChechboxParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_150dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 consegna = new CheckBox(context);
                 consegna.setId(View.generateViewId());
@@ -287,7 +287,7 @@ public class NuovoOrdine extends Fragment {
                 editTextChechboxParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 editTextChechboxParams.setMargins(40, 0, 0, 40);
                 consegna.setLayoutParams(editTextChechboxParams);
-                consegna.setTextSize(25);
+                consegna.setTextSize(15);
                 consegna.setText("Consegna");
 
                 RelativeLayout.LayoutParams editLayoutConsegnaParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -314,7 +314,7 @@ public class NuovoOrdine extends Fragment {
                 viaInput.setId(View.generateViewId());
                 editTextViaParams.setMargins(40, 0, 0, 40);
                 viaInput.setLayoutParams(editTextViaParams);
-                via.setTextSize(25);
+                via.setTextSize(15);
                 via.setHint("Via/P.zza/Loc.");
                 if (!viaTrovato.isEmpty())
                     via.setText(viaTrovato);
@@ -325,7 +325,7 @@ public class NuovoOrdine extends Fragment {
                 editTextCittaTxtParams.setMargins(40, 0, 0, 40);
 
                 TextView txtCitta = new TextView(context);
-                txtCitta.setTextSize(25);
+                txtCitta.setTextSize(15);
                 txtCitta.setText("Citta'");
                 txtCitta.setId(View.generateViewId());
                 txtCitta.setLayoutParams(editTextCittaTxtParams);
@@ -346,7 +346,7 @@ public class NuovoOrdine extends Fragment {
                 editTextDataTxtParams.setMargins(40, 0, 0, 40);
 
                 TextView txtData = new TextView(context);
-                txtData.setTextSize(25);
+                txtData.setTextSize(15);
                 txtData.setText("Data");
                 txtData.setId(View.generateViewId());
                 txtData.setLayoutParams(editTextDataTxtParams);
@@ -392,7 +392,7 @@ public class NuovoOrdine extends Fragment {
                 editTextOraTxtParams.setMargins(40, 0, 0, 40);
 
                 TextView txtOra = new TextView(context);
-                txtOra.setTextSize(25);
+                txtOra.setTextSize(15);
                 txtOra.setText("Ora");
                 txtOra.setId(View.generateViewId());
                 txtOra.setLayoutParams(editTextOraTxtParams);
@@ -419,7 +419,7 @@ public class NuovoOrdine extends Fragment {
                 spinnerOre.setAdapter(adapterOre);
                 spinnerOre.setLayoutParams(editTextOraSpinnerParams);
 
-                RelativeLayout.LayoutParams editTextScontoChechboxParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextScontoChechboxParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_150dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 scontoChechbox = new CheckBox(context);
                 scontoChechbox.setId(View.generateViewId());
@@ -427,7 +427,7 @@ public class NuovoOrdine extends Fragment {
                 editTextScontoChechboxParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
                 editTextScontoChechboxParams.setMargins(40, 0, 0, 40);
                 scontoChechbox.setLayoutParams(editTextScontoChechboxParams);
-                scontoChechbox.setTextSize(25);
+                scontoChechbox.setTextSize(15);
                 scontoChechbox.setText("Sconto");
 
                 inserimentoLayout.addView(nomeInput);
@@ -620,7 +620,7 @@ public class NuovoOrdine extends Fragment {
 
     private void completaOrdine(boolean consegna, boolean sconto, String strData, String strOra, String strNome, String strCognome, String strTelefono, String idClienteDaAssociare) {
 
-        Double contoTotale = Double.parseDouble((totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString());
+        Double contoTotale = Double.parseDouble(((totale.length() > 5) ? totale.getText().subSequence(0, 4).toString() : totale.getText().subSequence(0, 3).toString()).replace(",", "."));
 
         if (sconto)
             contoTotale = Funzioni.arrotonda(contoTotale - ((contoTotale * 10) / 100));
@@ -685,15 +685,17 @@ public class NuovoOrdine extends Fragment {
 
                 if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
                     btnProdotto = nuovoBtn("PROSC. E FUNGHI");
+                else if (nomeProdotto.equals("TONNO E CIPOLLA"))
+                    btnProdotto = nuovoBtn("TONNO E CIP.");
                 else
                     btnProdotto = nuovoBtn(nomeProdotto);
 
                 if (layoutBottoniPizze.getChildCount() > 0) {
-                    if (countPizze > 3)
-                        if (countPizze % 4 == 0) {
-                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 3).getId());
+                    if (countPizze > 2)
+                        if (countPizze % 3 == 0) {
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 2).getId());
                         } else {
-                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 4).getId());
+                            layoutBtnDx.addRule(RelativeLayout.BELOW, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 3).getId());
                             layoutBtnDx.addRule(RelativeLayout.END_OF, layoutBottoniPizze.getChildAt(layoutBottoniPizze.getChildCount() - 1).getId());
                         }
                     else
@@ -805,7 +807,7 @@ public class NuovoOrdine extends Fragment {
             List<Integer> listaPizze = sparseMetri.valueAt(i).entrySet().iterator().next().getValue();
             float totaleMetro = 0;
             for (int idPizza : listaPizze)
-                totaleMetro += Float.parseFloat((sparsePrezziProdotti.get(idPizza).getText().toString()).substring(0, sparsePrezziProdotti.get(idPizza).getText().toString().length() - 2));
+                totaleMetro += Float.parseFloat(((sparsePrezziProdotti.get(idPizza).getText().toString()).substring(0, sparsePrezziProdotti.get(idPizza).getText().toString().length() - 2)).replace(",", "."));
             switch (listaPizze.size()) {
                 case 1:
                     totaleMetro *= 2.5;
@@ -882,7 +884,7 @@ public class NuovoOrdine extends Fragment {
     }
 
     private void aggiornaTotale(float prezzo, boolean isSomma) {
-        float current = Float.parseFloat((totale.getText().toString()).substring(0, totale.getText().toString().length() - 2).replace(",", "."));
+        float current = Float.parseFloat(((totale.getText().toString()).substring(0, totale.getText().toString().length() - 2).replace(",", ".")).replace(",", "."));
         current = (isSomma) ? current + prezzo : current - prezzo;
         totale.setText(new DecimalFormat("#0.00 €").format(Funzioni.arrotonda(current)));
     }
@@ -903,6 +905,8 @@ public class NuovoOrdine extends Fragment {
 
         if (nomeProdotto.equals("PROSCIUTTO E FUNGHI"))
             txtPizza = makeTableRowWithText("PROSC. E FUNGHI");
+        else if (nomeProdotto.equals("TONNO E CIPOLLA"))
+            txtPizza = makeTableRowWithText("TONNO E CIP.");
         else
             txtPizza = makeTableRowWithText(nomeProdotto);
 
@@ -940,7 +944,7 @@ public class NuovoOrdine extends Fragment {
             public void onClick(View v) {
                 HttpManager.execSimple("TOGLI_PRODOTTO_FROM_ORDINE", null, valColonna);
                 if (idMetro == -1)
-                    aggiornaTotale(Float.parseFloat((sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)), false);
+                    aggiornaTotale(Float.parseFloat(((sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString()).substring(0, sparsePrezziProdotti.get(Integer.parseInt(valColonna)).getText().toString().length() - 2)).replace(",", ".")), false);
 
                 rimuoviElemento(tipo, rowPizza, idMetro, Integer.parseInt(valColonna));
                 if (tableOrdiniPizza.getChildCount() == 0)
@@ -1110,13 +1114,18 @@ public class NuovoOrdine extends Fragment {
         barraMezzo.setLayoutParams(paramBarra);
 
         //LAYOUT INFERIORE CON TEXTVIEW
+
+        RelativeLayout.LayoutParams paramLayoutAggiunteScrollview = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramLayoutAggiunteScrollview.addRule(RelativeLayout.BELOW, barraMezzo.getId());
+        ScrollView scrollViewlayoutAggiunte = new ScrollView(context);
+        scrollViewlayoutAggiunte.setLayoutParams(paramLayoutAggiunteScrollview);
+
         RelativeLayout.LayoutParams paramLayoutAggiunte = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        paramLayoutAggiunte.addRule(RelativeLayout.BELOW, barraMezzo.getId());
         layoutAggiunte.setLayoutParams(paramLayoutAggiunte);
         if (param != null) {
             paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
             paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            paramAggiunte.setMargins(0, 20, 0, 0);
+            paramAggiunte.setMargins(0, 5, 0, 0);
             aggiunte.setLayoutParams(paramAggiunte);
             aggiunte.setAdapter(adapterAggiunte);
             if (aggiunte.getParent() != null)
@@ -1130,7 +1139,8 @@ public class NuovoOrdine extends Fragment {
         baseLayout.addView(barraMezzo);
         if (layoutAggiunte.getParent() != null)
             ((ViewGroup) layoutAggiunte.getParent()).removeView(layoutAggiunte);
-        baseLayout.addView(layoutAggiunte);
+        scrollViewlayoutAggiunte.addView(layoutAggiunte);
+        baseLayout.addView(scrollViewlayoutAggiunte);
     }
 
     private void fixIngredientiExtra(Object param, int idColonna, String nomePizza) {
@@ -1172,6 +1182,7 @@ public class NuovoOrdine extends Fragment {
 
     private void impostaExtra(String nomePizza, final int valColonna, HashMap<String, Integer> hashExtra) {
         //LAYOUT CHE CONTIENE TUTTO
+        ScrollView scrollViewContenitore = new ScrollView(context);
         contenitoreIngredienti = new RelativeLayout(context);
         //LAYOUT SUPERIORE CON TABELLA CHECKBOX
         layoutIngredienti = new RelativeLayout(context);
@@ -1204,7 +1215,7 @@ public class NuovoOrdine extends Fragment {
                 final CheckBox selezione = new CheckBox(context);
                 selezione.setId(View.generateViewId());
                 selezione.setPadding(5, 0, 5, 0);
-                selezione.setTextSize(25);
+                selezione.setTextSize(15);
                 selezione.setChecked(tipoIngrediente != 2);
                 if (tipoIngrediente == 2) ingrBaseRimossi.add(nomeIngrediente);
                 selezione.setText((tipoIngrediente == 3) ? "2 x " + nomeIngrediente : nomeIngrediente);
@@ -1255,7 +1266,7 @@ public class NuovoOrdine extends Fragment {
                 idUltimoExtra = View.generateViewId();
                 newIngrediente.setId(idUltimoExtra);
                 newIngrediente.setPadding(5, 0, 5, 0);
-                newIngrediente.setTextSize(25);
+                newIngrediente.setTextSize(15);
                 newIngrediente.setChecked(true);
                 newIngrediente.setText((tipoIngrediente == 4) ? "2 x " + nomeIngrediente : nomeIngrediente);
                 layoutAggiunte.addView(newIngrediente);
@@ -1279,9 +1290,9 @@ public class NuovoOrdine extends Fragment {
                     }
                 });
 
-                paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_200dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
+                paramAggiunte = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), getResources().getDimensionPixelSize(R.dimen.dim_45dp));
                 paramAggiunte.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                paramAggiunte.setMargins(0, 20, 0, 0);
+                paramAggiunte.setMargins(0, 10, 0, 0);
                 paramAggiunte.addRule(RelativeLayout.BELOW, idUltimoExtra);
                 aggiunte.setLayoutParams(paramAggiunte);
             }
@@ -1294,11 +1305,15 @@ public class NuovoOrdine extends Fragment {
         aggiunte.setText("");
 
         contenitoreIngredienti.addView(layoutIngredienti);
+        scrollViewContenitore.addView(contenitoreIngredienti);
+        final AlertDialog dialogIngredienti = new AlertDialog.Builder(context)
+                .setTitle("Dettaglio " + nomeProdotto)
+                .setView(scrollViewContenitore)
+                .create();
 
-        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Dettaglio " + nomeProdotto);
-        builder.setView(contenitoreIngredienti);
-        builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+        dialogIngredienti.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
+        dialogIngredienti.setOnCancelListener(new DialogInterface.OnCancelListener() {
             public void onCancel(DialogInterface dialog) {
                 new HttpManager.AsyncManager(new AsyncResponse() {
                     @Override
@@ -1306,7 +1321,7 @@ public class NuovoOrdine extends Fragment {
                         List<HashMap<String, String>> lista = (List<HashMap<String, String>>) output;
                         Float prezzoFinale = Float.parseFloat(lista.get(0).get("prezzo_finale"));
                         if (!isColonnaMetro(valColonna)) {
-                            aggiornaTotale(Float.parseFloat((sparsePrezziProdotti.get(valColonna).getText().toString()).substring(0, sparsePrezziProdotti.get(valColonna).getText().toString().length() - 2)), false);
+                            aggiornaTotale(Float.parseFloat(((sparsePrezziProdotti.get(valColonna).getText().toString()).substring(0, sparsePrezziProdotti.get(valColonna).getText().toString().length() - 2)).replace(",", ".")), false);
                             aggiornaTotale(prezzoFinale, true);
                         }
                         sparsePrezziProdotti.get(valColonna).setText(new DecimalFormat("#0.00 €").format(prezzoFinale));
@@ -1320,12 +1335,12 @@ public class NuovoOrdine extends Fragment {
                 @Override
                 public void processFinish(Object output) {
                     inizializzaAggiunte(output, idColonna, contenitoreIngredienti, ingrBaseRimossi);
-                    builder.create().show();
+                    dialogIngredienti.show();
                 }
             }, null, "GET_AGGIUNTE", new String[]{}).execute();
         } else {
             inizializzaAggiunte(null, idColonna, contenitoreIngredienti, ingrBaseRimossi);
-            builder.create().show();
+            dialogIngredienti.show();
         }
     }
 
@@ -1355,7 +1370,7 @@ public class NuovoOrdine extends Fragment {
                 idUltimoExtra = View.generateViewId();
                 newIngrediente.setId(idUltimoExtra);
                 newIngrediente.setPadding(5, 0, 5, 0);
-                newIngrediente.setTextSize(25);
+                newIngrediente.setTextSize(15);
                 newIngrediente.setChecked(true);
                 newIngrediente.setText(aggiunte.getText().toString());
 
@@ -1418,9 +1433,9 @@ public class NuovoOrdine extends Fragment {
         recyclableTextView = new TextView(context);
         recyclableTextView.setId(View.generateViewId());
         recyclableTextView.setTextColor(getResources().getColor(R.color.giallo));
-        recyclableTextView.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_200dp));
+        recyclableTextView.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_125dp));
         recyclableTextView.setText(text);
-        recyclableTextView.setTextSize(25);
+        recyclableTextView.setTextSize(15);
         return recyclableTextView;
     }
 

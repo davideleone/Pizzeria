@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -94,7 +95,7 @@ public class Fattorini extends Fragment {
                 viewBarra.setLayoutParams(paramBarra);
                 inserimentoLayout.addView(viewBarra);
 
-                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
                 TextInputLayout nomeInput = new TextInputLayout(context);
                 editTextParams.addRule(RelativeLayout.BELOW, viewBarra.getId());
                 editTextParams.setMargins(40, 20, 0, 40);
@@ -104,17 +105,17 @@ public class Fattorini extends Fragment {
                 final TextInputEditText nome = new TextInputEditText(context);
                 final TextInputEditText cognome = new TextInputEditText(context);
 
-                nome.setTextSize(25);
+                nome.setTextSize(15);
                 nome.setHint("Nome Fattorino");
                 nomeInput.addView(nome);
 
-                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_350dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
+                RelativeLayout.LayoutParams editTextCognomeParams = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.dim_250dp), RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                 TextInputLayout cognomeInput = new TextInputLayout(context);
                 editTextCognomeParams.addRule(RelativeLayout.BELOW, nomeInput.getId());
                 editTextCognomeParams.setMargins(40, 0, 0, 40);
                 cognomeInput.setLayoutParams(editTextCognomeParams);
-                cognome.setTextSize(25);
+                cognome.setTextSize(15);
                 cognome.setHint("Cognome Fattorino");
                 cognomeInput.addView(cognome);
 
@@ -187,8 +188,8 @@ public class Fattorini extends Fragment {
                 TableRow row = new TableRow(context);
                 row.setBackgroundResource(R.drawable.table_bottom_style);
 
-                TextView nomeFattorino = makeTableRowWithText(nome, R.dimen.dim_450dp);
-                TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_450dp);
+                TextView nomeFattorino = makeTableRowWithText(nome, R.dimen.dim_250dp);
+                TextView totaleOrdine = makeTableRowWithText(totale, R.dimen.dim_250dp);
 
                 ImageButton btnMostra = makeTableRowWithImageButton(R.drawable.mostra);
                 btnMostra.setOnClickListener(new View.OnClickListener() {
@@ -214,6 +215,10 @@ public class Fattorini extends Fragment {
     }
 
     private void riepilogoFattorini(Object param, String nomeFatt, String totaleConsegne) {
+        RelativeLayout.LayoutParams layoutSCroll = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        ScrollView scrollView = new ScrollView(context);
+        scrollView.setLayoutParams(layoutSCroll);
+
         RelativeLayout contenitoreLayoutFattorino = new RelativeLayout(context);
 
         RelativeLayout.LayoutParams paramBarra = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, getResources().getDimensionPixelSize(R.dimen.dim_2dp));
@@ -254,9 +259,10 @@ public class Fattorini extends Fragment {
             contenitoreLayoutFattorino.addView(totaleText);
         }
 
+        scrollView.addView(contenitoreLayoutFattorino);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Riepilogo Fattorino -" + nomeFatt + " - " + totaleConsegne);
-        builder.setView(contenitoreLayoutFattorino);
+        builder.setTitle("Riepilogo Fattorino - " + nomeFatt + " - " + totaleConsegne);
+        builder.setView(scrollView);
         builder.create().show();
     }
 
@@ -264,14 +270,14 @@ public class Fattorini extends Fragment {
         recyclableTextView = new TextView(context);
         recyclableTextView.setGravity(Gravity.CENTER);
         recyclableTextView.setText(text);
-        recyclableTextView.setTextSize(25);
+        recyclableTextView.setTextSize(15);
         recyclableTextView.setMinimumWidth(getResources().getDimensionPixelSize(resource));
         return recyclableTextView;
     }
 
     private ImageButton makeTableRowWithImageButton(int img) {
         recyclableImageButton = new ImageButton(context);
-        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_150dp));
+        recyclableImageButton.setMinimumWidth(getResources().getDimensionPixelSize(R.dimen.dim_100dp));
         recyclableImageButton.setMaxHeight(getResources().getDimensionPixelSize(R.dimen.dim_26dp));
         recyclableImageButton.setPadding(40, 0, 0, 0);
         recyclableImageButton.setImageResource(img);

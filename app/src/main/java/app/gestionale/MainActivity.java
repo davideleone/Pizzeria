@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLocker {
 
         setContentView(R.layout.activity_main);
 
+        HttpManager.execSimple("ELIMINA_ORDINI_TEMP", this);
+        HttpManager.execSimple("ELIMINA_UTENTI_TEMP", this);
+
         clienti = new ArrayList<>();
         frameLayout = (FrameLayout) findViewById(R.id.flContent);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -104,8 +107,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLocker {
     }
 
     private void inizializzaProdotti(Object param) {
-        ArrayList<HashMap<String, String>> lista = (ArrayList<HashMap<String, String>>) param;
-        listaProdotti = lista;
+        listaProdotti = (ArrayList<HashMap<String, String>>) param;
     }
 
     private void inizializzaCitta(Object param) {
